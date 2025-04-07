@@ -22,9 +22,15 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from '@/lib/utils';
-import { Drawer, DrawerTrigger, DrawerContent } from "@/components/ui/drawer";
+import { Drawer, DrawerTrigger, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const categories = [
   "문학",
@@ -65,7 +71,7 @@ export const Header = () => {
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo and Hamburger Menu */}
         <div className="flex items-center space-x-4">
-          <Drawer open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+          <Drawer open={isSidebarOpen} onOpenChange={setIsSidebarOpen} shouldScaleBackground={false}>
             <DrawerTrigger asChild>
               <Button variant="ghost" className="p-2 text-white">
                 <Menu size={24} />
@@ -74,7 +80,7 @@ export const Header = () => {
             <DrawerContent className="p-0">
               <div className="flex h-full">
                 <div className="w-full">
-                  <div className="p-4">
+                  <div className="p-4 flex justify-between items-center">
                     <Link to="/" onClick={() => setIsSidebarOpen(false)}>
                       <div className="text-xl font-bold flex items-center">
                         <span className="text-secondary-orange">곰클릭</span>
@@ -82,84 +88,101 @@ export const Header = () => {
                         <span className="text-primary-skyblue">책방</span>
                       </div>
                     </Link>
+                    <DrawerClose className="p-2">
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path>
+                      </svg>
+                    </DrawerClose>
                   </div>
                   <div className="h-full overflow-auto">
                     <div className="flex flex-col">
-                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
-                        <Home size={20} className="mr-3 text-gray-600" />
-                        <Link to="/" className="text-gray-800" onClick={() => setIsSidebarOpen(false)}>
-                          메인 화면
-                        </Link>
-                      </div>
-                      
-                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
-                        <BookOpen size={20} className="mr-3 text-gray-600" />
-                        <span className="text-gray-800">도서 관리</span>
-                        <ChevronDown size={18} className="ml-auto text-gray-500" />
-                      </div>
-                      
-                      <div className="bg-gray-50 py-2">
-                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
-                            onClick={() => navigateWithFilter('/books')}>
-                          도서목록
-                        </div>
-                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
-                            onClick={() => navigateWithFilter('/books/details')}>
-                          도서대여현황
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
-                        <Layers size={20} className="mr-3 text-gray-600" />
-                        <span className="text-gray-800">카테고리</span>
-                        <ChevronDown size={18} className="ml-auto text-gray-500" />
-                      </div>
-                      
-                      <div className="bg-gray-50 py-2">
-                        {categories.map((category) => (
-                          <div
-                            key={category}
-                            className="py-2 px-11 text-gray-700 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => navigateWithFilter('/books', `category=${category}`)}
-                          >
-                            {category}
+                      <Accordion type="multiple">
+                        <AccordionItem value="home" className="border-b-0">
+                          <div className="flex items-center py-3 px-4 hover:bg-gray-100">
+                            <Home size={20} className="mr-3 text-gray-600" />
+                            <Link to="/" className="text-gray-800" onClick={() => setIsSidebarOpen(false)}>
+                              메인 화면
+                            </Link>
                           </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
-                        <MessageSquare size={20} className="mr-3 text-gray-600" />
-                        <span className="text-gray-800">커뮤니티</span>
-                        <ChevronDown size={18} className="ml-auto text-gray-500" />
-                      </div>
-                      
-                      <div className="bg-gray-50 py-2">
-                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
-                            onClick={() => navigateWithFilter('/announcements')}>
-                          공지사항
-                        </div>
-                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
-                            onClick={() => navigateWithFilter('/inquiries')}>
-                          문의하기
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
-                        <User size={20} className="mr-3 text-gray-600" />
-                        <span className="text-gray-800">마이 페이지</span>
-                        <ChevronDown size={18} className="ml-auto text-gray-500" />
-                      </div>
-                      
-                      <div className="bg-gray-50 py-2">
-                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
-                            onClick={() => navigateWithFilter('/mypage')}>
-                          내 정보
-                        </div>
-                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
-                            onClick={() => navigateWithFilter('/mypage/history')}>
-                          도서대여내역
-                        </div>
-                      </div>
+                        </AccordionItem>
+                        
+                        <AccordionItem value="books" className="border-b-0">
+                          <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                            <div className="flex items-center">
+                              <BookOpen size={20} className="mr-3 text-gray-600" />
+                              <span className="text-gray-800">도서 관리</span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="bg-gray-50 py-2 px-0">
+                            <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                                onClick={() => navigateWithFilter('/books')}>
+                              도서목록
+                            </div>
+                            <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                                onClick={() => navigateWithFilter('/books/details')}>
+                              도서대여현황
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                        
+                        <AccordionItem value="categories" className="border-b-0">
+                          <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                            <div className="flex items-center">
+                              <Layers size={20} className="mr-3 text-gray-600" />
+                              <span className="text-gray-800">카테고리</span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="bg-gray-50 py-2 px-0">
+                            {categories.map((category) => (
+                              <div
+                                key={category}
+                                className="py-2 px-11 text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => navigateWithFilter('/books', `category=${category}`)}
+                              >
+                                {category}
+                              </div>
+                            ))}
+                          </AccordionContent>
+                        </AccordionItem>
+                        
+                        <AccordionItem value="community" className="border-b-0">
+                          <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                            <div className="flex items-center">
+                              <MessageSquare size={20} className="mr-3 text-gray-600" />
+                              <span className="text-gray-800">커뮤니티</span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="bg-gray-50 py-2 px-0">
+                            <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                                onClick={() => navigateWithFilter('/announcements')}>
+                              공지사항
+                            </div>
+                            <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                                onClick={() => navigateWithFilter('/inquiries')}>
+                              문의하기
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                        
+                        <AccordionItem value="mypage" className="border-b-0">
+                          <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                            <div className="flex items-center">
+                              <User size={20} className="mr-3 text-gray-600" />
+                              <span className="text-gray-800">마이 페이지</span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="bg-gray-50 py-2 px-0">
+                            <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                                onClick={() => navigateWithFilter('/mypage')}>
+                              내 정보
+                            </div>
+                            <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                                onClick={() => navigateWithFilter('/mypage/history')}>
+                              도서대여내역
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </div>
                   </div>
                 </div>
@@ -180,7 +203,7 @@ export const Header = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">전체메뉴</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-0 mt-0 left-0 absolute">
+                <NavigationMenuContent className="bg-white rounded-md p-0 mt-0">
                   <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
                     <div className="space-y-2">
                       <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
@@ -218,7 +241,7 @@ export const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-2 w-auto absolute">
+                <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
                   <div className="grid grid-cols-1 min-w-[200px]">
                     {categories.map((category) => (
                       <p 
@@ -235,7 +258,7 @@ export const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-2 absolute">
+                <NavigationMenuContent className="bg-white rounded-md p-2">
                   <div className="w-[200px]">
                     <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
                        onClick={() => navigate('/announcements')}>공지사항</p>
@@ -247,7 +270,7 @@ export const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-2 absolute">
+                <NavigationMenuContent className="bg-white rounded-md p-2">
                   <div className="w-[200px]">
                     <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
                        onClick={() => navigate('/mypage')}>내정보</p>
@@ -262,31 +285,24 @@ export const Header = () => {
         
         {/* User controls */}
         <div className="flex items-center">
-          <Popover open={searchOpen} onOpenChange={setSearchOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white">
-                <Search size={20} />
+          <div className="relative flex items-center">
+            <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white mr-2">
+              <Input 
+                placeholder="도서 검색..." 
+                className="border-0 focus-visible:ring-0 h-8 w-[200px]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button 
+                type="submit" 
+                variant="ghost" 
+                size="icon"
+                className="h-8 w-8"
+              >
+                <Search size={16} className="text-gray-500" />
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 border-0 w-[280px]" align="end">
-              <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
-                <Input 
-                  placeholder="도서 검색..." 
-                  className="border-0 focus-visible:ring-0"
-                  autoFocus
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button 
-                  type="submit" 
-                  variant="ghost" 
-                  size="icon"
-                >
-                  <Search size={18} className="text-gray-500" />
-                </Button>
-              </form>
-            </PopoverContent>
-          </Popover>
+            </form>
+          </div>
           
           <Link to="/mypage">
             <Button variant="ghost" size="icon" className="text-white">

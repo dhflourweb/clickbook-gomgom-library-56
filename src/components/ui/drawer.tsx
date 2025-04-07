@@ -5,7 +5,7 @@ import { Drawer as DrawerPrimitive } from "vaul"
 import { cn } from "@/lib/utils"
 
 const Drawer = ({
-  shouldScaleBackground = true,
+  shouldScaleBackground = false,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
   <DrawerPrimitive.Root
@@ -27,7 +27,7 @@ const DrawerOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black/80 transition-all duration-100 ease-in-out", className)}
+    className={cn("fixed inset-0 z-50 bg-black/50 transition-all duration-100 data-[state=closed]:duration-100 ease-in-out", className)}
     {...props}
   />
 ))
