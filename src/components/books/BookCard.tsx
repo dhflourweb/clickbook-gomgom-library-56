@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
@@ -16,7 +17,8 @@ interface BookCardProps {
 export const BookCard = ({ book, className }: BookCardProps) => {
   const { user } = useAuth();
   const isAvailable = book.status.available > 0;
-  const isBorrowedByUser = user?.borrowedBooks?.includes(book.id);
+  // Fix: borrowedBooks is a number, not an array
+  const isBorrowedByUser = user?.borrowedBooks === book.id;
   const [isFavorite, setIsFavorite] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
 
