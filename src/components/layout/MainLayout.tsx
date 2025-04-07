@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Header } from './Header';
+import { Footer } from './Footer';
 import { Toaster } from '@/components/ui/sonner';
 
 interface MainLayoutProps {
@@ -33,6 +34,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <main className="flex-1 container mx-auto px-4 py-6">
         {children}
       </main>
+      <Footer />
       <Toaster />
     </div>
   );
