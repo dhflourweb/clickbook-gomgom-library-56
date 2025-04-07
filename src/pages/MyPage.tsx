@@ -18,26 +18,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BookGrid } from '@/components/books/BookGrid';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/sonner';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { MOCK_BOOKS, MOCK_READING_GOAL } from '@/data/mockData';
 import { ReadingGoal } from '@/types';
 
 const MyPage = () => {
   const { user } = useAuth();
-  const toast = useToast;
   const [goal, setGoal] = useState<ReadingGoal>(MOCK_READING_GOAL);
   const [newGoalTarget, setNewGoalTarget] = useState(goal.target.toString());
   
   const handleGoalUpdate = () => {
     const target = parseInt(newGoalTarget);
     if (isNaN(target) || target <= 0) {
-      toast.error('유효한 목표 권수를 입력해주세요.');
+      toast({
+        title: "오류",
+        description: '유효한 목표 권수를 입력해주세요.',
+        variant: "destructive"
+      });
       return;
     }
     
     setGoal({ ...goal, target });
-    toast.success('독서 목표가 업데이트되었습니다.');
+    toast({
+      title: "성공",
+      description: '독서 목표가 업데이트되었습니다.'
+    });
   };
 
   // Mock borrowed books data - in a real app, this would come from an API
