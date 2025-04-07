@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Layers, MessageSquare, User, ArrowUp } from 'lucide-react';
+import { Home, BookOpen, Grid, Bell, User, Menu, ArrowUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Drawer,
@@ -61,21 +61,17 @@ export const BottomNav = () => {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t z-40">
         <div className="grid grid-cols-5 h-14">
-          <Link to="/" className="flex flex-col items-center justify-center text-gray-600 space-y-1">
-            <Home size={20} />
-            <span className="text-xs">전체메뉴</span>
-          </Link>
-          
+          {/* 전체메뉴 */}
           <Drawer>
             <DrawerTrigger asChild>
               <button className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full">
-                <BookOpen size={20} />
-                <span className="text-xs">도서관리</span>
+                <Menu size={20} />
+                <span className="text-xs">전체메뉴</span>
               </button>
             </DrawerTrigger>
             <DrawerContent className="h-[85vh] rounded-t-xl">
               <DrawerHeader>
-                <DrawerTitle className="text-center">도서관리</DrawerTitle>
+                <DrawerTitle className="text-center">전체메뉴</DrawerTitle>
               </DrawerHeader>
               <div className="px-4">
                 <div className="flex flex-col space-y-3">
@@ -87,9 +83,21 @@ export const BottomNav = () => {
                   </button>
                   <button 
                     className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/books/details')}
+                    onClick={() => navigate('/announcements')}
                   >
-                    도서대여현황
+                    공지사항
+                  </button>
+                  <button 
+                    className="w-full py-3 px-4 text-left border-b"
+                    onClick={() => navigate('/mypage')}
+                  >
+                    마이페이지
+                  </button>
+                  <button 
+                    className="w-full py-3 px-4 text-left border-b"
+                    onClick={() => navigate('/inquiries')}
+                  >
+                    문의하기
                   </button>
                 </div>
               </div>
@@ -101,10 +109,11 @@ export const BottomNav = () => {
             </DrawerContent>
           </Drawer>
           
+          {/* 카테고리 */}
           <Drawer>
             <DrawerTrigger asChild>
               <button className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full">
-                <Layers size={20} />
+                <Grid size={20} />
                 <span className="text-xs">카테고리</span>
               </button>
             </DrawerTrigger>
@@ -133,41 +142,19 @@ export const BottomNav = () => {
             </DrawerContent>
           </Drawer>
           
-          <Drawer>
-            <DrawerTrigger asChild>
-              <button className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full">
-                <MessageSquare size={20} />
-                <span className="text-xs">커뮤니티</span>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="h-[50vh] rounded-t-xl">
-              <DrawerHeader>
-                <DrawerTitle className="text-center">커뮤니티</DrawerTitle>
-              </DrawerHeader>
-              <div className="px-4">
-                <div className="flex flex-col space-y-3">
-                  <button 
-                    className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/announcements')}
-                  >
-                    공지사항
-                  </button>
-                  <button 
-                    className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/inquiries')}
-                  >
-                    문의하기
-                  </button>
-                </div>
-              </div>
-              <DrawerFooter>
-                <DrawerClose>
-                  <button className="w-full py-2 bg-gray-100 rounded-md">닫기</button>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+          {/* 홈 (중앙) */}
+          <Link to="/" className="flex flex-col items-center justify-center text-gray-600 space-y-1">
+            <Home size={20} />
+            <span className="text-xs">홈</span>
+          </Link>
           
+          {/* 공지사항 */}
+          <Link to="/announcements" className="flex flex-col items-center justify-center text-gray-600 space-y-1">
+            <Bell size={20} />
+            <span className="text-xs">공지사항</span>
+          </Link>
+          
+          {/* 마이페이지 */}
           <Link to="/mypage" className="flex flex-col items-center justify-center text-gray-600 space-y-1">
             <User size={20} />
             <span className="text-xs">마이페이지</span>

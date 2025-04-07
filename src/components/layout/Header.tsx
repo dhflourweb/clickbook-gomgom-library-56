@@ -32,6 +32,13 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const categories = [
   "문학",
@@ -49,23 +56,29 @@ export const Header = () => {
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowSearchBar(false);
+      setShowSearchModal(false);
     }
   };
 
   const toggleSearchBar = () => {
-    setShowSearchBar(!showSearchBar);
-    if (!showSearchBar) {
-      // Focus the search input when it appears
-      setTimeout(() => {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.focus();
-      }, 100);
+    if (isMobile) {
+      setShowSearchModal(true);
+    } else {
+      setShowSearchBar(!showSearchBar);
+      if (!showSearchBar) {
+        // Focus the search input when it appears
+        setTimeout(() => {
+          const searchInput = document.getElementById('searchInput');
+          if (searchInput) searchInput.focus();
+        }, 100);
+      }
     }
   };
 
@@ -226,6 +239,36 @@ export const Header = () => {
           </Button>
         </div>
       </div>
+
+      {/* Mobile Search Modal */}
+      {isMobile && (
+        <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>도서 검색</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
+              <Input
+                placeholder="도서 검색..."
+                className="flex-1"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+              <Button type="submit">검색</Button>
+            </form>
+            <DialogFooter className="sm:justify-start">
+              <Button 
+                type="button" 
+                variant="secondary" 
+                onClick={() => setShowSearchModal(false)}
+              >
+                취소
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </header>
   );
 };
