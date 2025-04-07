@@ -41,6 +41,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const navigateWithFilter = (path: string, filter?: string) => {
     if (filter) {
@@ -49,6 +50,14 @@ export const Header = () => {
       navigate(path);
     }
     setIsSidebarOpen(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+    }
   };
 
   return (
@@ -171,7 +180,7 @@ export const Header = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">전체메뉴</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-0 mt-0 origin-top-left">
+                <NavigationMenuContent className="bg-white rounded-md p-0 mt-0 left-0 absolute">
                   <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
                     <div className="space-y-2">
                       <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
@@ -182,7 +191,7 @@ export const Header = () => {
                     </div>
                     <div className="space-y-2">
                       <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">카테고리</h3>
-                      {categories.slice(0, 4).map((category) => (
+                      {categories.map((category) => (
                         <p key={category} className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
                            onClick={() => navigate(`/books?filter=category=${category}`)}>
                           {category}
@@ -209,7 +218,7 @@ export const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
+                <NavigationMenuContent className="bg-white rounded-md p-2 w-auto absolute">
                   <div className="grid grid-cols-1 min-w-[200px]">
                     {categories.map((category) => (
                       <p 
@@ -226,7 +235,7 @@ export const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-2">
+                <NavigationMenuContent className="bg-white rounded-md p-2 absolute">
                   <div className="w-[200px]">
                     <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
                        onClick={() => navigate('/announcements')}>공지사항</p>
@@ -238,7 +247,7 @@ export const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white rounded-md p-2">
+                <NavigationMenuContent className="bg-white rounded-md p-2 absolute">
                   <div className="w-[200px]">
                     <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
                        onClick={() => navigate('/mypage')}>내정보</p>
@@ -259,22 +268,23 @@ export const Header = () => {
                 <Search size={20} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 border-0 w-[280px]">
-              <div className="flex items-center border rounded-md">
+            <PopoverContent className="p-0 border-0 w-[280px]" align="end">
+              <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
                 <Input 
-                  placeholder="검색어를 입력하세요" 
+                  placeholder="도서 검색..." 
                   className="border-0 focus-visible:ring-0"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Button 
                   type="submit" 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => navigate('/search')}
                 >
                   <Search size={18} className="text-gray-500" />
                 </Button>
-              </div>
+              </form>
             </PopoverContent>
           </Popover>
           
