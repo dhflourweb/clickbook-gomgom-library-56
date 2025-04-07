@@ -1,6 +1,6 @@
 
-import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -15,6 +15,12 @@ interface MainLayoutProps {
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const { isAuthenticated, isLoading } = useAuth();
   const isMobile = useIsMobile();
+  const location = useLocation();
+  
+  // Scroll to top when location changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   if (isLoading) {
     return (

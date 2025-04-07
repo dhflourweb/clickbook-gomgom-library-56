@@ -56,58 +56,27 @@ export const BottomNav = () => {
   // Don't render on desktop
   if (!isMobile) return null;
 
+  const handleMainMenuClick = () => {
+    // Trigger the header's menu by simulating a click on an element with ID 'header-menu-button'
+    const headerMenuButton = document.getElementById('header-menu-button');
+    if (headerMenuButton) {
+      headerMenuButton.click();
+    }
+  };
+
   return (
     <>
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t z-40">
         <div className="grid grid-cols-5 h-14">
-          {/* 전체메뉴 */}
-          <Drawer>
-            <DrawerTrigger asChild>
-              <button className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full">
-                <Menu size={20} />
-                <span className="text-xs">전체메뉴</span>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="h-[85vh] rounded-t-xl">
-              <DrawerHeader>
-                <DrawerTitle className="text-center">전체메뉴</DrawerTitle>
-              </DrawerHeader>
-              <div className="px-4">
-                <div className="flex flex-col space-y-3">
-                  <button 
-                    className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/books')}
-                  >
-                    도서목록
-                  </button>
-                  <button 
-                    className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/announcements')}
-                  >
-                    공지사항
-                  </button>
-                  <button 
-                    className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/mypage')}
-                  >
-                    마이페이지
-                  </button>
-                  <button 
-                    className="w-full py-3 px-4 text-left border-b"
-                    onClick={() => navigate('/inquiries')}
-                  >
-                    문의하기
-                  </button>
-                </div>
-              </div>
-              <DrawerFooter>
-                <DrawerClose>
-                  <button className="w-full py-2 bg-gray-100 rounded-md">닫기</button>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+          {/* 전체메뉴 - Now triggers the header menu */}
+          <button 
+            className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full"
+            onClick={handleMainMenuClick}
+          >
+            <Menu size={20} />
+            <span className="text-xs">전체메뉴</span>
+          </button>
           
           {/* 카테고리 */}
           <Drawer>
