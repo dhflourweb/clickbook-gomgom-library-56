@@ -15,12 +15,12 @@ export const FeaturedBooks = ({ title, books, viewAllUrl }: FeaturedBooksProps) 
   const displayBooks = books.slice(0, 5);
   
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 pb-6 border-b border-gray-200">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{title}</h2>
         <Link to={viewAllUrl}>
           <Button variant="ghost" className="text-sm font-medium" size="sm">
-            전체보기
+            더보기
             <ChevronRight size={16} className="ml-1" />
           </Button>
         </Link>

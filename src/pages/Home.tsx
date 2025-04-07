@@ -48,11 +48,13 @@ const Home = () => {
         )}
         
         {bestBooksNational.length > 0 && (
-          <FeaturedBooks
-            title="베스트 도서 (국내)"
-            books={bestBooksNational}
-            viewAllUrl="/books?filter=popular"
-          />
+          <div className="pb-6">
+            <FeaturedBooks
+              title="베스트 도서 (국내)"
+              books={bestBooksNational}
+              viewAllUrl="/books?filter=popular"
+            />
+          </div>
         )}
       </div>
     </MainLayout>
