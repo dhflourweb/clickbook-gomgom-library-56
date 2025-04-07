@@ -103,16 +103,12 @@ export const Sidebar = () => {
               <AccordionContent>
                 <div className="pl-8 space-y-1 mt-1">
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
-                       onClick={() => navigateWithFilter('/faq')}>
-                    FAQ
+                       onClick={() => navigateWithFilter('/announcements')}>
+                    공지사항
                   </div>
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
                        onClick={() => navigateWithFilter('/inquiries')}>
                     문의하기
-                  </div>
-                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
-                       onClick={() => navigateWithFilter('/announcements')}>
-                    공지사항
                   </div>
                 </div>
               </AccordionContent>
@@ -133,7 +129,7 @@ export const Sidebar = () => {
                   </div>
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
                        onClick={() => navigateWithFilter('/mypage/history')}>
-                    도서대여내역(반납)
+                    도서대여내역
                   </div>
                 </div>
               </AccordionContent>
