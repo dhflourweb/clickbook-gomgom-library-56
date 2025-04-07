@@ -17,14 +17,30 @@ interface BookCardProps {
 export const BookCard = ({ book, className }: BookCardProps) => {
   const { user } = useAuth();
   const isAvailable = book.status.available > 0;
-  // Fix: borrowedBooks is a number, not an array, and we need to ensure type safety
   const isBorrowedByUser = user?.borrowedBooks === Number(book.id);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
+  
+  // Assume user is the reserver if they've marked it as reserved (in real app, this would come from backend)
+  const isUserReserver = isReserved;
 
   const handleBorrow = (e: React.MouseEvent) => {
     e.preventDefault();
     toast.success(`'${book.title}' 도서를 대여했습니다.`);
+    // In a real app, this would navigate to the borrowing page
+    window.location.href = '/mypage';
+  };
+
+  const handleReturn = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.success(`'${book.title}' 도서를 반납했습니다.`);
+    window.location.href = '/mypage';
+  };
+
+  const handleExtend = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.success(`'${book.title}' 도서 대여를 연장했습니다.`);
+    window.location.href = '/mypage';
   };
 
   const handleReserve = (e: React.MouseEvent) => {
@@ -38,11 +54,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     }
   };
 
-  const handleReturn = (e: React.MouseEvent) => {
-    e.preventDefault();
-    toast.success(`'${book.title}' 도서를 반납했습니다.`);
-  };
-
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsFavorite(!isFavorite);
@@ -52,6 +63,77 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     } else {
       toast.info(`'${book.title}' 도서를 관심 도서에서 제거했습니다.`);
     }
+  };
+
+  // Determine which button to show based on book status and user
+  const renderActionButton = () => {
+    // Case 1: User is the reserver and book is available - Show borrow button
+    if (isUserReserver && isAvailable) {
+      return (
+        <Button 
+          variant="default" 
+          size="sm" 
+          className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
+          onClick={handleBorrow}
+        >
+          대여하기
+        </Button>
+      );
+    }
+    
+    // Case 2: Book is available and user is not a reserver - Show borrow button
+    if (isAvailable && !isUserReserver) {
+      return (
+        <Button 
+          variant="default" 
+          size="sm" 
+          className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
+          onClick={handleBorrow}
+        >
+          대여하기
+        </Button>
+      );
+    }
+    
+    // Case 3: Book is borrowed by current user - Show return and extend buttons
+    if (isBorrowedByUser) {
+      return (
+        <div className="grid grid-cols-2 gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+            onClick={handleReturn}
+          >
+            반납하기
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
+            onClick={handleExtend}
+          >
+            연장하기
+          </Button>
+        </div>
+      );
+    }
+    
+    // Case 4 & 5: Book is borrowed by someone else - Show reserve/cancel button
+    return (
+      <Button 
+        variant={isReserved ? "outline" : "secondary"}
+        size="sm" 
+        className={cn("w-full", 
+          isReserved 
+            ? "border-secondary-green text-secondary-green hover:bg-secondary-green/10" 
+            : "bg-secondary-green hover:bg-secondary-green/90"
+        )}
+        onClick={handleReserve}
+      >
+        {isReserved ? "예약 취소" : "예약하기"}
+      </Button>
+    );
   };
 
   return (
@@ -94,38 +176,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           )}
         </div>
         <div className="mt-2 pt-2 border-t border-gray-100">
-          {isAvailable ? (
-            <Button 
-              variant="default" 
-              size="sm" 
-              className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
-              onClick={handleBorrow}
-            >
-              대여하기
-            </Button>
-          ) : isBorrowedByUser ? (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
-              onClick={handleReturn}
-            >
-              반납하기
-            </Button>
-          ) : (
-            <Button 
-              variant={isReserved ? "outline" : "secondary"}
-              size="sm" 
-              className={cn("w-full", 
-                isReserved 
-                  ? "border-secondary-green text-secondary-green hover:bg-secondary-green/10" 
-                  : "bg-secondary-green hover:bg-secondary-green/90"
-              )}
-              onClick={handleReserve}
-            >
-              {isReserved ? "예약 취소" : "예약하기"}
-            </Button>
-          )}
+          {renderActionButton()}
         </div>
       </div>
     </Link>
