@@ -1,12 +1,18 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, User, LogOut, Menu, X } from 'lucide-react';
+import { Search, User, LogOut, Menu, X, BookOpen, Layers, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/context/AuthContext';
-import { Sidebar } from './Sidebar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
   const { user, logout, hasRole } = useAuth();
@@ -17,16 +23,55 @@ export const Header = () => {
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo and Hamburger Menu */}
         <div className="flex items-center space-x-4">
-          <Sheet>
-            <SheetTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="p-2 text-white">
                 <Menu size={24} />
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-[300px]">
-              <Sidebar />
-            </SheetContent>
-          </Sheet>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-white">
+              <DropdownMenuLabel>메뉴</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              <Link to="/">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Menu className="mr-2 h-4 w-4" />
+                  <span>메인 화면</span>
+                </DropdownMenuItem>
+              </Link>
+              
+              <Link to="/books">
+                <DropdownMenuItem className="cursor-pointer">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  <span>도서 관리</span>
+                </DropdownMenuItem>
+              </Link>
+              
+              <Link to="/categories">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Layers className="mr-2 h-4 w-4" />
+                  <span>카테고리</span>
+                </DropdownMenuItem>
+              </Link>
+              
+              <Link to="/community">
+                <DropdownMenuItem className="cursor-pointer">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  <span>커뮤니티</span>
+                </DropdownMenuItem>
+              </Link>
+              
+              <DropdownMenuSeparator />
+              
+              {hasRole(["admin", "system_admin"]) && (
+                <Link to="/admin">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <span>관리자</span>
+                  </DropdownMenuItem>
+                </Link>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Link to="/" className="text-xl font-bold flex items-center">
             <span className="text-secondary-orange">곰클릭</span>
