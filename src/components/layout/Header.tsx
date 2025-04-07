@@ -165,108 +165,66 @@ export const Header = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">도서관리</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white p-0 min-w-[600px]">
-                  <div className="grid grid-cols-1 border-b border-gray-200">
-                    <div className="p-3 font-medium text-sm bg-gray-50">
-                      도서관리
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 divide-x p-0">
-                    <div className="p-4 space-y-2">
-                      <div onClick={() => navigate('/books')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        전체도서목록
-                      </div>
-                      <div onClick={() => navigate('/books?filter=new')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        신규도서
-                      </div>
-                      <div onClick={() => navigate('/books?filter=recommended')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        추천도서
-                      </div>
-                      <div onClick={() => navigate('/books?filter=best')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        베스트도서(국내)
-                      </div>
-                    </div>
-                  </div>
+                <NavigationMenuContent className="bg-white">
+                  <ul className="grid w-[200px] p-2">
+                    <li onClick={() => navigate('/books')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      전체도서목록
+                    </li>
+                    <li onClick={() => navigate('/books?filter=new')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      신규도서
+                    </li>
+                    <li onClick={() => navigate('/books?filter=recommended')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      추천도서
+                    </li>
+                    <li onClick={() => navigate('/books?filter=best')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      베스트도서(국내)
+                    </li>
+                  </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white p-0 min-w-[600px]">
-                  <div className="grid grid-cols-1 border-b border-gray-200">
-                    <div className="p-3 font-medium text-sm bg-gray-50">
-                      카테고리
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 divide-x p-0">
-                    <div className="p-4 space-y-2">
-                      {categories.slice(0, 4).map((category) => (
-                        <div 
-                          key={category} 
-                          onClick={() => navigate(`/books?filter=category=${category}`)} 
-                          className="cursor-pointer text-sm hover:text-primary-deepblue"
-                        >
-                          {category}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="p-4 space-y-2">
-                      {categories.slice(4).map((category) => (
-                        <div 
-                          key={category} 
-                          onClick={() => navigate(`/books?filter=category=${category}`)} 
-                          className="cursor-pointer text-sm hover:text-primary-deepblue"
-                        >
-                          {category}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="col-span-3"></div>
-                  </div>
+                <NavigationMenuContent className="bg-white">
+                  <ul className="grid w-[200px] p-2">
+                    {categories.map((category) => (
+                      <li 
+                        key={category} 
+                        onClick={() => navigate(`/books?filter=category=${category}`)} 
+                        className="cursor-pointer py-2 px-3 hover:bg-muted"
+                      >
+                        {category}
+                      </li>
+                    ))}
+                  </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white p-0 min-w-[600px]">
-                  <div className="grid grid-cols-1 border-b border-gray-200">
-                    <div className="p-3 font-medium text-sm bg-gray-50">
-                      커뮤니티
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 divide-x p-0">
-                    <div className="p-4 space-y-2">
-                      <div onClick={() => navigate('/announcements')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        공지사항
-                      </div>
-                      <div onClick={() => navigate('/inquiries')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        문의하기
-                      </div>
-                    </div>
-                    <div className="col-span-4"></div>
-                  </div>
+                <NavigationMenuContent className="bg-white">
+                  <ul className="grid w-[200px] p-2">
+                    <li onClick={() => navigate('/announcements')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      공지사항
+                    </li>
+                    <li onClick={() => navigate('/inquiries')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      문의하기
+                    </li>
+                  </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white p-0 min-w-[600px]">
-                  <div className="grid grid-cols-1 border-b border-gray-200">
-                    <div className="p-3 font-medium text-sm bg-gray-50">
-                      마이페이지
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 divide-x p-0">
-                    <div className="p-4 space-y-2">
-                      <div onClick={() => navigate('/mypage')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        내 정보
-                      </div>
-                      <div onClick={() => navigate('/mypage/history')} className="cursor-pointer text-sm hover:text-primary-deepblue">
-                        도서대여내역
-                      </div>
-                    </div>
-                    <div className="col-span-4"></div>
-                  </div>
+                <NavigationMenuContent className="bg-white">
+                  <ul className="grid w-[200px] p-2">
+                    <li onClick={() => navigate('/mypage')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      내 정보
+                    </li>
+                    <li onClick={() => navigate('/mypage/history')} className="cursor-pointer py-2 px-3 hover:bg-muted">
+                      도서대여내역
+                    </li>
+                  </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenuList>
