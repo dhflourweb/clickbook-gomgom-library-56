@@ -1,8 +1,8 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Users, Settings, MessageSquare, Home, 
-  BookMarked, BarChart3, Award, ChevronDown, ChevronRight 
+  BookMarked, BarChart3, Award, ChevronDown, ChevronRight, Layers, User
 } from 'lucide-react';
 import {
   Accordion,
@@ -12,9 +12,28 @@ import {
 } from "@/components/ui/accordion";
 import { useAuth } from '@/context/AuthContext';
 
+const categories = [
+  "문학",
+  "경제/경영",
+  "자기개발",
+  "인문/역사",
+  "사회",
+  "취미/생활",
+  "기타"
+];
+
 export const Sidebar = () => {
   const { hasRole } = useAuth();
+  const navigate = useNavigate();
   const isAdmin = hasRole(["admin", "system_admin"]);
+  
+  const navigateWithFilter = (path: string, filter?: string) => {
+    if (filter) {
+      navigate(`${path}?filter=${filter}`);
+    } else {
+      navigate(path);
+    }
+  };
   
   return (
     <div className="h-full flex flex-col bg-sidebar py-6">
@@ -40,9 +59,44 @@ export const Sidebar = () => {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="pl-8 space-y-1 mt-1">
-                  <SidebarLink to="/books" label="전체 도서" />
-                  <SidebarLink to="/books/borrowed" label="대여 중인 도서" />
-                  <SidebarLink to="/books/reserved" label="예약 중인 도서" />
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/books')}>
+                    전체도서목록
+                  </div>
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/books', 'new')}>
+                    신규도서
+                  </div>
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/books', 'recommended')}>
+                    추천도서
+                  </div>
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/books', 'best')}>
+                    베스트도서(국내)
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="categories" className="border-none">
+              <AccordionTrigger className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium">
+                <div className="flex items-center">
+                  <Layers size={20} className="mr-2" />
+                  <span>카테고리</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="pl-8 space-y-1 mt-1">
+                  {categories.map((category) => (
+                    <div
+                      key={category}
+                      className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                      onClick={() => navigateWithFilter('/books', `category=${category}`)}
+                    >
+                      {category}
+                    </div>
+                  ))}
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -56,8 +110,14 @@ export const Sidebar = () => {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="pl-8 space-y-1 mt-1">
-                  <SidebarLink to="/announcements" label="공지사항" />
-                  <SidebarLink to="/inquiries" label="문의하기" />
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/announcements')}>
+                    공지사항
+                  </div>
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/inquiries')}>
+                    문의하기
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -65,15 +125,20 @@ export const Sidebar = () => {
             <AccordionItem value="mypage" className="border-none">
               <AccordionTrigger className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium">
                 <div className="flex items-center">
-                  <Award size={20} className="mr-2" />
+                  <User size={20} className="mr-2" />
                   <span>마이 페이지</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="pl-8 space-y-1 mt-1">
-                  <SidebarLink to="/mypage" label="내 정보" />
-                  <SidebarLink to="/mypage/goals" label="독서 목표" />
-                  <SidebarLink to="/mypage/history" label="대여 기록" />
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/mypage')}>
+                    내 정보
+                  </div>
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/mypage/history')}>
+                    도서대여내역
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>
