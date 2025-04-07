@@ -59,58 +59,96 @@ export const Header = () => {
                 <Menu size={24} />
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="h-[85vh] bg-white rounded-t-md">
-              <div className="p-4">
-                <Link to="/" onClick={() => setIsSidebarOpen(false)}>
-                  <div className="text-xl font-bold flex items-center mb-6">
-                    <span className="text-secondary-orange">곰클릭</span>
-                    <span className="text-black">+</span>
-                    <span className="text-primary-skyblue">책방</span>
+            <DrawerContent className="h-[85vh] bg-white rounded-t-md p-0">
+              <div className="flex h-full">
+                <div className="w-full">
+                  <div className="p-4">
+                    <Link to="/" onClick={() => setIsSidebarOpen(false)}>
+                      <div className="text-xl font-bold flex items-center">
+                        <span className="text-secondary-orange">곰클릭</span>
+                        <span className="text-black">+</span>
+                        <span className="text-primary-skyblue">책방</span>
+                      </div>
+                    </Link>
                   </div>
-                </Link>
-                
-                <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
-                    <ul className="space-y-2">
-                      <li className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                          onClick={() => navigateWithFilter('/books')}>도서목록</li>
-                      <li className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                          onClick={() => navigateWithFilter('/books/details')}>도서대여현황</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">카테고리</h3>
-                    <ul className="space-y-2">
-                      {categories.map((category) => (
-                        <li key={category}
-                            className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                            onClick={() => navigateWithFilter(`/books?filter=category=${category}`)}>
-                          {category}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">커뮤니티</h3>
-                    <ul className="space-y-2">
-                      <li className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                          onClick={() => navigateWithFilter('/announcements')}>공지사항</li>
-                      <li className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                          onClick={() => navigateWithFilter('/inquiries')}>문의하기</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">마이페이지</h3>
-                    <ul className="space-y-2">
-                      <li className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                          onClick={() => navigateWithFilter('/mypage')}>내정보</li>
-                      <li className="text-gray-700 hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer" 
-                          onClick={() => navigateWithFilter('/mypage/history')}>도서대여내역</li>
-                    </ul>
+                  <div className="h-full overflow-auto">
+                    <div className="flex flex-col">
+                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
+                        <Home size={20} className="mr-3 text-gray-600" />
+                        <Link to="/" className="text-gray-800" onClick={() => setIsSidebarOpen(false)}>
+                          메인 화면
+                        </Link>
+                      </div>
+                      
+                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
+                        <BookOpen size={20} className="mr-3 text-gray-600" />
+                        <span className="text-gray-800">도서 관리</span>
+                        <ChevronDown size={18} className="ml-auto text-gray-500" />
+                      </div>
+                      
+                      <div className="bg-gray-50 py-2">
+                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/books')}>
+                          도서목록
+                        </div>
+                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/books/details')}>
+                          도서대여현황
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
+                        <Layers size={20} className="mr-3 text-gray-600" />
+                        <span className="text-gray-800">카테고리</span>
+                        <ChevronDown size={18} className="ml-auto text-gray-500" />
+                      </div>
+                      
+                      <div className="bg-gray-50 py-2">
+                        {categories.map((category) => (
+                          <div
+                            key={category}
+                            className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/books', `category=${category}`)}
+                          >
+                            {category}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
+                        <MessageSquare size={20} className="mr-3 text-gray-600" />
+                        <span className="text-gray-800">커뮤니티</span>
+                        <ChevronDown size={18} className="ml-auto text-gray-500" />
+                      </div>
+                      
+                      <div className="bg-gray-50 py-2">
+                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/announcements')}>
+                          공지사항
+                        </div>
+                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/inquiries')}>
+                          문의하기
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center py-3 px-4 hover:bg-gray-100">
+                        <User size={20} className="mr-3 text-gray-600" />
+                        <span className="text-gray-800">마이 페이지</span>
+                        <ChevronDown size={18} className="ml-auto text-gray-500" />
+                      </div>
+                      
+                      <div className="bg-gray-50 py-2">
+                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/mypage')}>
+                          내 정보
+                        </div>
+                        <div className="py-2 px-11 text-gray-700 hover:bg-gray-100"
+                            onClick={() => navigateWithFilter('/mypage/history')}>
+                          도서대여내역
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -205,6 +243,10 @@ export const Header = () => {
         
         {/* User controls */}
         <div className="flex items-center">
+          <Button variant="ghost" size="icon" className="text-white" onClick={() => navigate('/search')}>
+            <Search size={20} />
+          </Button>
+          
           <Link to="/mypage">
             <Button variant="ghost" size="icon" className="text-white">
               <User size={20} />
