@@ -5,6 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Toaster } from '@/components/ui/sonner';
+import { BottomNav } from '@/components/mobile/BottomNav';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,6 +14,7 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const { isAuthenticated, isLoading } = useAuth();
+  const isMobile = useIsMobile();
 
   if (isLoading) {
     return (
@@ -31,10 +34,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-6">
+      <main className="flex-1 container mx-auto px-4 py-6 pb-20">
         {children}
       </main>
       <Footer />
+      <BottomNav />
       <Toaster />
     </div>
   );

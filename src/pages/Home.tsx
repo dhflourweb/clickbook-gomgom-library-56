@@ -11,6 +11,7 @@ import {
   getPopularBooks 
 } from '@/data/mockData';
 import { Book } from '@/types';
+import { Separator } from '@/components/ui/separator';
 
 const Home = () => {
   const newBooks = getNewBooks();
@@ -24,27 +25,36 @@ const Home = () => {
         <Banner items={MOCK_BANNER_ITEMS} />
         
         {newBooks.length > 0 && (
-          <FeaturedBooks
-            title="신규 도서"
-            books={newBooks}
-            viewAllUrl="/books?filter=new"
-          />
+          <>
+            <FeaturedBooks
+              title="신규 도서"
+              books={newBooks}
+              viewAllUrl="/books?filter=new"
+            />
+            <Separator className="my-6" />
+          </>
         )}
         
         {recommendedBooks.length > 0 && (
-          <FeaturedBooks
-            title="추천 도서"
-            books={recommendedBooks}
-            viewAllUrl="/books?filter=recommended"
-          />
+          <>
+            <FeaturedBooks
+              title="추천 도서"
+              books={recommendedBooks}
+              viewAllUrl="/books?filter=recommended"
+            />
+            <Separator className="my-6" />
+          </>
         )}
         
         {bestBooksInternal.length > 0 && (
-          <FeaturedBooks
-            title="베스트 도서 (사내)"
-            books={bestBooksInternal}
-            viewAllUrl="/books?filter=best"
-          />
+          <>
+            <FeaturedBooks
+              title="베스트 도서 (사내)"
+              books={bestBooksInternal}
+              viewAllUrl="/books?filter=best"
+            />
+            <Separator className="my-6" />
+          </>
         )}
         
         {bestBooksNational.length > 0 && (
