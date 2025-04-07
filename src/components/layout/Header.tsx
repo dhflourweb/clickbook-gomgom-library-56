@@ -61,94 +61,39 @@ export const Header = () => {
                 <Menu size={24} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 bg-white">
-              <DropdownMenuLabel>메뉴</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Menu className="mr-2 h-4 w-4" />
-                  <span>메인 화면</span>
-                </DropdownMenuItem>
-              </Link>
-              
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  <span>도서 관리</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-white">
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/books')}>
-                    전체도서목록
+            <DropdownMenuContent className="w-[500px] bg-white rounded-md p-0">
+              <div className="grid grid-cols-3 gap-4 p-4">
+                <div className="space-y-2">
+                  <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/books')} className="px-0">
+                    <span className="text-gray-700">도서목록</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/books', 'new')}>
-                    신규도서
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/books/details')} className="px-0">
+                    <span className="text-gray-700">도서대여현황</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/books', 'recommended')}>
-                    추천도서
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">마이페이지</h3>
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/mypage')} className="px-0">
+                    <span className="text-gray-700">내정보</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/books', 'best')}>
-                    베스트도서(국내)
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/mypage/history')} className="px-0">
+                    <span className="text-gray-700">도서대여내역(반납)</span>
                   </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Layers className="mr-2 h-4 w-4" />
-                  <span>카테고리</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-white">
-                  {categories.map((category) => (
-                    <DropdownMenuItem 
-                      key={category} 
-                      onClick={() => navigateWithFilter('/books', `category=${category}`)}
-                    >
-                      {category}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  <span>커뮤니티</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-white">
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/announcements')}>
-                    공지사항
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">커뮤니티</h3>
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/faq')} className="px-0">
+                    <span className="text-gray-700">FAQ</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/inquiries')}>
-                    문의하기
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/inquiries')} className="px-0">
+                    <span className="text-gray-700">문의하기</span>
                   </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>마이페이지</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="bg-white">
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/mypage')}>
-                    내 정보
+                  <DropdownMenuItem onClick={() => navigateWithFilter('/announcements')} className="px-0">
+                    <span className="text-gray-700">공지사항</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigateWithFilter('/mypage/history')}>
-                    도서대여내역
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              
-              <DropdownMenuSeparator />
-              
-              {hasRole(["admin", "system_admin"]) && (
-                <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <span>관리자</span>
-                  </DropdownMenuItem>
-                </Link>
-              )}
+                </div>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -164,67 +109,60 @@ export const Header = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">도서관리</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white">
-                  <ul className="grid w-[200px] p-2">
-                    <li onClick={() => navigate('/books')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      전체도서목록
-                    </li>
-                    <li onClick={() => navigate('/books?filter=new')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      신규도서
-                    </li>
-                    <li onClick={() => navigate('/books?filter=recommended')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      추천도서
-                    </li>
-                    <li onClick={() => navigate('/books?filter=best')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      베스트도서(국내)
-                    </li>
-                  </ul>
+                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">전체메뉴</NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-white rounded-md p-0">
+                  <div className="grid grid-cols-3 gap-4 w-[500px] p-4">
+                    <div className="space-y-2">
+                      <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/books')}>도서목록</p>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/books/details')}>도서대여현황</p>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">마이페이지</h3>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/mypage')}>내정보</p>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/mypage/history')}>도서대여내역(반납)</p>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">커뮤니티</h3>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/faq')}>FAQ</p>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/inquiries')}>문의하기</p>
+                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                         onClick={() => navigate('/announcements')}>공지사항</p>
+                    </div>
+                  </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white">
-                  <ul className="grid w-[200px] p-2">
+                <NavigationMenuContent className="bg-white rounded-md p-2">
+                  <div className="grid grid-cols-1 w-[200px]">
                     {categories.map((category) => (
-                      <li 
+                      <p 
                         key={category} 
-                        onClick={() => navigate(`/books?filter=category=${category}`)} 
-                        className="cursor-pointer py-2 px-3 hover:bg-muted"
+                        className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                        onClick={() => navigate(`/books?filter=category=${category}`)}
                       >
                         {category}
-                      </li>
+                      </p>
                     ))}
-                  </ul>
+                  </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white">
-                  <ul className="grid w-[200px] p-2">
-                    <li onClick={() => navigate('/announcements')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      공지사항
-                    </li>
-                    <li onClick={() => navigate('/inquiries')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      문의하기
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white">
-                  <ul className="grid w-[200px] p-2">
-                    <li onClick={() => navigate('/mypage')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      내 정보
-                    </li>
-                    <li onClick={() => navigate('/mypage/history')} className="cursor-pointer py-2 px-3 hover:bg-muted">
-                      도서대여내역
-                    </li>
-                  </ul>
+                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">공지사항</NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-white rounded-md p-2">
+                  <div className="w-[200px]">
+                    <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
+                       onClick={() => navigate('/announcements')}>공지사항</p>
+                  </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenuList>

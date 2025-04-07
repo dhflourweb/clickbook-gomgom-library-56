@@ -54,26 +54,18 @@ export const Sidebar = () => {
               <AccordionTrigger className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium">
                 <div className="flex items-center">
                   <BookOpen size={20} className="mr-2" />
-                  <span>도서 관리</span>
+                  <span>도서관리</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="pl-8 space-y-1 mt-1">
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
                        onClick={() => navigateWithFilter('/books')}>
-                    전체도서목록
+                    도서목록
                   </div>
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
-                       onClick={() => navigateWithFilter('/books', 'new')}>
-                    신규도서
-                  </div>
-                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
-                       onClick={() => navigateWithFilter('/books', 'recommended')}>
-                    추천도서
-                  </div>
-                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
-                       onClick={() => navigateWithFilter('/books', 'best')}>
-                    베스트도서(국내)
+                       onClick={() => navigateWithFilter('/books/details')}>
+                    도서대여현황
                   </div>
                 </div>
               </AccordionContent>
@@ -111,12 +103,16 @@ export const Sidebar = () => {
               <AccordionContent>
                 <div className="pl-8 space-y-1 mt-1">
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
-                       onClick={() => navigateWithFilter('/announcements')}>
-                    공지사항
+                       onClick={() => navigateWithFilter('/faq')}>
+                    FAQ
                   </div>
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
                        onClick={() => navigateWithFilter('/inquiries')}>
                     문의하기
+                  </div>
+                  <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
+                       onClick={() => navigateWithFilter('/announcements')}>
+                    공지사항
                   </div>
                 </div>
               </AccordionContent>
@@ -137,7 +133,7 @@ export const Sidebar = () => {
                   </div>
                   <div className="py-2 px-3 rounded-md hover:bg-sidebar-accent text-sm font-medium cursor-pointer"
                        onClick={() => navigateWithFilter('/mypage/history')}>
-                    도서대여내역
+                    도서대여내역(반납)
                   </div>
                 </div>
               </AccordionContent>
