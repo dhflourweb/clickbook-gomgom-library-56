@@ -17,8 +17,8 @@ interface BookCardProps {
 export const BookCard = ({ book, className }: BookCardProps) => {
   const { user } = useAuth();
   const isAvailable = book.status.available > 0;
-  // Fix: borrowedBooks is a number, not an array
-  const isBorrowedByUser = user?.borrowedBooks === book.id;
+  // Fix: borrowedBooks is a number, not an array, and we need to ensure type safety
+  const isBorrowedByUser = user?.borrowedBooks === Number(book.id);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
 

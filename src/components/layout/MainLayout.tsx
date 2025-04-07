@@ -32,13 +32,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-6 pb-20">
+      <main className="flex-1 container mx-auto px-4 py-8 pb-24">
         {children}
       </main>
       <Footer />
-      <BottomNav />
+      {isMobile && <BottomNav />}
       <Toaster />
     </div>
   );

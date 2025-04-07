@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, User, LogOut, Home, BookOpen, MessageSquare, ChevronDown, Layers } from 'lucide-react';
+import { Search, User, LogOut, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -48,11 +48,24 @@ export const Header = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchBar, setShowSearchBar] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSearchBar(false);
+    }
+  };
+
+  const toggleSearchBar = () => {
+    setShowSearchBar(!showSearchBar);
+    if (!showSearchBar) {
+      // Focus the search input when it appears
+      setTimeout(() => {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.focus();
+      }, 100);
     }
   };
 
@@ -158,24 +171,32 @@ export const Header = () => {
         
         {/* User controls */}
         <div className="flex items-center">
-          <div className="relative flex items-center">
-            <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white mr-2">
-              <Input 
-                placeholder="도서 검색..." 
-                className="border-0 focus-visible:ring-0 h-8 w-[200px] md:w-[200px] sm:w-[140px]"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button 
-                type="submit" 
-                variant="ghost" 
-                size="icon"
-                className="h-8 w-8"
-              >
-                <Search size={16} className="text-gray-500" />
-              </Button>
-            </form>
-          </div>
+          {showSearchBar ? (
+            <div className="relative flex items-center animated-search">
+              <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
+                <Input 
+                  id="searchInput"
+                  placeholder="도서 검색..." 
+                  className="border-0 focus-visible:ring-0 h-8 w-[200px] md:w-[240px] sm:w-[180px]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={toggleSearchBar}
+                >
+                  <X size={16} className="text-gray-500" />
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <Button variant="ghost" size="icon" className="text-white" onClick={toggleSearchBar}>
+              <Search size={20} />
+            </Button>
+          )}
           
           <Link to="/mypage">
             <Button variant="ghost" size="icon" className="text-white">
