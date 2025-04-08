@@ -61,8 +61,20 @@ export const Sidebar = () => {
                     도서목록
                   </div>
                   <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
-                       onClick={() => navigateWithFilter('/books/details')}>
-                    도서대여현황
+                       onClick={() => navigate('/books?sort=최신등록순')}>
+                    신규도서
+                  </div>
+                  <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
+                       onClick={() => navigate('/books?sort=추천순')}>
+                    추천도서
+                  </div>
+                  <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
+                       onClick={() => navigate('/books?sort=베스트도서순')}>
+                    베스트도서(사내)
+                  </div>
+                  <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
+                       onClick={() => navigate('/books?sort=베스트도서순')}>
+                    베스트도서(국내)
                   </div>
                 </div>
               </AccordionContent>

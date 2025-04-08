@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -48,7 +47,7 @@ interface FilterState {
 const CATEGORIES = ["전체", "문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
 
 const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약가능'];
-const SORT_OPTIONS = ['추천순', '평점순', '최신순', '제목순'];
+const SORT_OPTIONS = ['인기도순', '최신등록순', '평점순', '이름순', '추천순', '베스트도서순'];
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 100];
 
 export const BookFilters = ({ 
@@ -62,7 +61,7 @@ export const BookFilters = ({
     query: '',
     category: '전체',
     status: '전체',
-    sort: '추천순',
+    sort: '인기도순',
     favorite: false,
     ...(initialFilter || {})
   });
@@ -312,7 +311,7 @@ export const BookFilters = ({
         </Select>
       </div>
       
-      <div className="w-24">
+      <div className="w-28">
         <Select
           value={filters.sort}
           onValueChange={(value) => handleSelectChange('sort', value)}

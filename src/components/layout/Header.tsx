@@ -79,7 +79,10 @@ export const Header = () => {
                             <div className="space-y-2">
                               <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
                               <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books')}>도서목록</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books/details')}>도서대여현황</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=추천순')}>추천도서</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(사내)</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(국내)</p>
                             </div>
                             <div className="space-y-2">
                               <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">카테고리</h3>
@@ -102,6 +105,19 @@ export const Header = () => {
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100">도서관리</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
+                          <div className="grid grid-cols-1 min-w-[200px]">
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books')}>도서목록</p>
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=추천순')}>추천도서</p>
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(사내)</p>
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(국내)</p>
+                          </div>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+
+                      <NavigationMenuItem>
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100">카테고리</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
                           <div className="grid grid-cols-1 min-w-[200px]">
@@ -118,16 +134,6 @@ export const Header = () => {
                           <div className="w-[200px]">
                             <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/announcements')}>공지사항</p>
                             <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/inquiries')}>문의하기</p>
-                          </div>
-                        </NavigationMenuContent>
-                      </NavigationMenuItem>
-
-                      <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100">마이페이지</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-md p-2">
-                          <div className="w-[200px]">
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/mypage')}>내정보</p>
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/mypage/history')}>도서대여내역</p>
                           </div>
                         </NavigationMenuContent>
                       </NavigationMenuItem>

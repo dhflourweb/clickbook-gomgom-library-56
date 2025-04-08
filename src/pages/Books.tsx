@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -32,21 +31,19 @@ const Books = () => {
     query: '',
     category: '전체',
     status: '전체',
-    sort: '추천순',
+    sort: '인기도순',
     favorite: false,
   });
 
-  // Parse URL query parameters when page loads or URL changes
   useEffect(() => {
     const queryParam = searchParams.get('query') || '';
     const categoryParam = searchParams.get('category') || '전체';
     const statusParam = searchParams.get('status') || '전체';
-    const sortParam = searchParams.get('sort') || '추천순';
+    const sortParam = searchParams.get('sort') || '인기도순';
     const favoriteParam = searchParams.get('favorite') === 'true';
     const pageParam = parseInt(searchParams.get('page') || '1');
     const perPageParam = parseInt(searchParams.get('perPage') || '24');
     
-    // Handle special case when coming from category links
     const filterParam = searchParams.get('filter');
     let finalCategory = categoryParam;
     
@@ -71,16 +68,13 @@ const Books = () => {
   const applyFilters = (filters: any, page = 1, perPage = itemsPerPage) => {
     setLoading(true);
     
-    // Simulate API delay
     setTimeout(() => {
       let filteredBooks = [...MOCK_BOOKS];
       
-      // Apply category filter
       if (filters.category !== '전체') {
         filteredBooks = filteredBooks.filter(book => book.category === filters.category);
       }
       
-      // Apply status filter
       if (filters.status !== '전체') {
         if (filters.status === '대여가능') {
           filteredBooks = filteredBooks.filter(book => book.status.available > 0);
@@ -89,7 +83,6 @@ const Books = () => {
         }
       }
       
-      // Apply search query
       if (filters.query) {
         const query = filters.query.toLowerCase();
         filteredBooks = filteredBooks.filter(book => 
@@ -99,22 +92,29 @@ const Books = () => {
         );
       }
       
-      // Apply sorting
-      if (filters.sort === '추천순') {
+      if (filters.sort === '인기도순') {
+        filteredBooks.sort((a, b) => (b.status.borrowed || 0) - (a.status.borrowed || 0));
+      } else if (filters.sort === '최신등록순') {
+        filteredBooks.sort((a, b) => new Date(b.registeredDate).getTime() - new Date(a.registeredDate).getTime());
+      } else if (filters.sort === '평점순') {
+        filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      } else if (filters.sort === '이름순') {
+        filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (filters.sort === '추천순') {
         filteredBooks.sort((a, b) => {
           const aHasRecommended = a.badges.includes('recommended');
           const bHasRecommended = b.badges.includes('recommended');
           return bHasRecommended ? 1 : aHasRecommended ? -1 : 0;
         });
-      } else if (filters.sort === '평점순') {
-        filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      } else if (filters.sort === '제목순') {
-        filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (filters.sort === '베스트도서순') {
+        filteredBooks.sort((a, b) => {
+          const aHasBest = a.badges.includes('best');
+          const bHasBest = b.badges.includes('best');
+          return bHasBest ? 1 : aHasBest ? -1 : 0;
+        });
       }
       
-      // If favorite filter is on, mark all returned books as favorites
       if (filters.favorite) {
-        // For demonstration, we'll mark them as favorites
         filteredBooks = filteredBooks.map(book => ({
           ...book,
           isFavorite: true
@@ -125,7 +125,6 @@ const Books = () => {
       setTotalBooks(total);
       setTotalPages(Math.ceil(total / perPage));
       
-      // Apply pagination
       const startIndex = (page - 1) * perPage;
       const endIndex = startIndex + perPage;
       const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
@@ -133,20 +132,18 @@ const Books = () => {
       setBooks(paginatedBooks);
       setLoading(false);
       
-      // Show toast notification with filter results
       toast(`${total}권의 도서가 검색되었습니다. (${startIndex + 1}-${Math.min(endIndex, total)}권 표시)`);
     }, 300);
   };
 
   const handleSearch = (newFilter: any) => {
-    // Update URL with new search parameters
     const params = new URLSearchParams();
     if (newFilter.query) params.set('query', newFilter.query);
     if (newFilter.category !== '전체') params.set('category', newFilter.category);
     if (newFilter.status !== '전체') params.set('status', newFilter.status);
-    if (newFilter.sort !== '추천순') params.set('sort', newFilter.sort);
+    if (newFilter.sort !== '인기도순') params.set('sort', newFilter.sort);
     if (newFilter.favorite) params.set('favorite', 'true');
-    params.set('page', '1'); // Reset to first page on new search
+    params.set('page', '1');
     params.set('perPage', itemsPerPage.toString());
     
     setSearchParams(params);
@@ -167,7 +164,7 @@ const Books = () => {
   const handleItemsPerPageChange = (newItemsPerPage: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('perPage', newItemsPerPage.toString());
-    params.set('page', '1'); // Reset to first page when changing items per page
+    params.set('page', '1');
     
     setSearchParams(params);
     setItemsPerPage(newItemsPerPage);
@@ -175,15 +172,12 @@ const Books = () => {
     applyFilters(filter, 1, newItemsPerPage);
   };
 
-  // Generate an array of page numbers to display (showing 5 pages at a time)
   const getPageNumbers = () => {
     const pageNumbers = [];
     
-    // Logic to display 5 page numbers centered around current page when possible
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
     
-    // Adjust startPage if we're near the end to always show 5 pages when possible
     if (totalPages > 5 && endPage === totalPages) {
       startPage = Math.max(1, endPage - 4);
     }
@@ -198,7 +192,6 @@ const Books = () => {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Enhanced header design */}
         <div className="flex flex-col">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-lg">
@@ -237,7 +230,6 @@ const Books = () => {
           <>
             <BookGrid books={books} />
             
-            {/* Pagination */}
             <Pagination className="mt-8">
               <PaginationContent>
                 <PaginationItem>
