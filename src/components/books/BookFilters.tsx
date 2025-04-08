@@ -140,6 +140,7 @@ export const BookFilters = ({
     }
   };
 
+  // Mobile filter that contains only core filters
   const MobileFilters = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -148,7 +149,7 @@ export const BookFilters = ({
           필터
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
+      <SheetContent side="bottom" className="h-[60vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>검색 필터</SheetTitle>
         </SheetHeader>
@@ -209,63 +210,6 @@ export const BookFilters = ({
               </SelectContent>
             </Select>
           </div>
-          
-          <div>
-            <label className="text-sm font-medium">표시 개수</label>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => onItemsPerPageChange(Number(value))}
-            >
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="표시 개수 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {ITEMS_PER_PAGE_OPTIONS.map((count) => (
-                  <SelectItem key={count} value={count.toString()}>
-                    {count}개씩 보기
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="mobile-favorite"
-              name="favorite"
-              checked={tempFilters.favorite}
-              onChange={handleInputChange}
-              className="w-4 h-4 rounded border-gray-300"
-            />
-            <label htmlFor="mobile-favorite" className="text-sm font-medium">
-              관심 도서만 보기
-            </label>
-          </div>
-          
-          {onViewModeChange && (
-            <div>
-              <label className="text-sm font-medium block mb-2">보기 방식</label>
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant={viewMode === 'grid' ? 'default' : 'outline'} 
-                  onClick={() => handleViewModeToggle('grid')}
-                  className="flex-1"
-                >
-                  <Grid size={16} className="mr-1" /> 그리드
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={viewMode === 'list' ? 'default' : 'outline'} 
-                  onClick={() => handleViewModeToggle('list')} 
-                  className="flex-1"
-                >
-                  <List size={16} className="mr-1" /> 목록
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
         <SheetFooter>
           <SheetClose asChild>
@@ -306,6 +250,66 @@ export const BookFilters = ({
         </div>
       </DialogContent>
     </Dialog>
+  );
+
+  // Mobile controls outside filter sheet
+  const MobileExtraControls = () => (
+    <div className="flex flex-col gap-3 mt-3 border-t pt-3">
+      <div className="flex justify-between items-center">
+        <label className="text-sm font-medium">표시 개수</label>
+        <Select
+          value={itemsPerPage.toString()}
+          onValueChange={(value) => onItemsPerPageChange(Number(value))}
+        >
+          <SelectTrigger className="w-24 h-9">
+            <SelectValue placeholder="개수" />
+          </SelectTrigger>
+          <SelectContent>
+            {ITEMS_PER_PAGE_OPTIONS.map((count) => (
+              <SelectItem key={count} value={count.toString()}>
+                {count}개
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <label className="text-sm font-medium">관심 도서만</label>
+        <input
+          type="checkbox"
+          id="mobile-favorite"
+          name="favorite"
+          checked={filters.favorite}
+          onChange={handleInputChange}
+          className="w-5 h-5 rounded border-gray-300"
+        />
+      </div>
+
+      {onViewModeChange && (
+        <div className="flex justify-between items-center">
+          <label className="text-sm font-medium">보기 방식</label>
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant={viewMode === 'grid' ? 'default' : 'outline'} 
+              onClick={() => handleViewModeToggle('grid')}
+              className="px-2 py-1 h-9"
+            >
+              <Grid size={16} />
+            </Button>
+            <Button 
+              size="sm" 
+              variant={viewMode === 'list' ? 'default' : 'outline'} 
+              onClick={() => handleViewModeToggle('list')} 
+              className="px-2 py-1 h-9"
+            >
+              <List size={16} />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 
   const DesktopFilters = () => (
@@ -442,10 +446,13 @@ export const BookFilters = ({
       )}
       
       {isMobile && (
-        <div className="flex justify-between items-center">
-          <MobileSearchModal />
-          <MobileFilters />
-        </div>
+        <>
+          <div className="flex justify-between items-center">
+            <MobileSearchModal />
+            <MobileFilters />
+          </div>
+          <MobileExtraControls />
+        </>
       )}
     </div>
   );

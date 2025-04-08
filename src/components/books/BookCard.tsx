@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
@@ -43,21 +44,25 @@ export const BookCard = ({ book, className }: BookCardProps) => {
 
   const handleBorrow = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setBorrowDialogOpen(true);
   };
 
   const handleReturn = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setReturnDialogOpen(true);
   };
 
   const handleExtend = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setExtendDialogOpen(true);
   };
 
   const handleReserve = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsReserved(!isReserved);
     
     if (!isReserved) {
@@ -69,6 +74,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
 
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsFavorite(!isFavorite);
     
     if (!isFavorite) {
@@ -150,6 +156,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           size="sm" 
           className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
           disabled={true}
+          onClick={(e) => e.stopPropagation()} // Stop propagation to prevent navigation
         >
           예약불가
         </Button>

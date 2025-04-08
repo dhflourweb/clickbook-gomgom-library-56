@@ -174,12 +174,9 @@ const Books = () => {
       
       setBooks(paginatedBooks);
       setLoading(false);
-      
-      toast(`${total}권의 도서가 검색되었습니다. (${startIndex + 1}-${Math.min(endIndex, total)}권 표시)`);
     }, 300);
   };
 
-  // New function to handle column sorting
   const applySortByField = (books: Book[], field: string, direction: 'asc' | 'desc') => {
     return [...books].sort((a, b) => {
       let valueA, valueB;
@@ -233,7 +230,6 @@ const Books = () => {
     });
   };
 
-  // Function to handle column header click for sorting
   const handleColumnSort = (field: string) => {
     const newDirection = sortField === field && sortDirection === 'desc' ? 'asc' : 'desc';
     setSortField(field);
@@ -324,7 +320,6 @@ const Books = () => {
     navigate(`/books/${bookId}`);
   };
 
-  // Handle book actions for list view
   const handleBookAction = (e: React.MouseEvent, action: 'borrow' | 'return' | 'extend' | 'reserve', book: Book) => {
     e.stopPropagation();
     setSelectedBook(book);
@@ -336,7 +331,6 @@ const Books = () => {
     } else if (action === 'extend') {
       setExtendDialogOpen(true);
     } else if (action === 'reserve') {
-      // Toggle reserve status
       const updatedBooks = books.map(b => {
         if (b.id === book.id) {
           const isCurrentlyReserved = b.status.reserved;
@@ -359,7 +353,6 @@ const Books = () => {
     }
   };
 
-  // Render a sortable column header
   const SortableColumnHeader = ({ field, width, children }: { field: string, width?: string, children: React.ReactNode }) => (
     <TableHead 
       className={`cursor-pointer hover:bg-gray-100 ${width || ''}`}
@@ -372,7 +365,6 @@ const Books = () => {
     </TableHead>
   );
 
-  // Loading skeleton for list view
   const ListViewLoadingSkeleton = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <Table>
@@ -419,7 +411,6 @@ const Books = () => {
     </div>
   );
 
-  // Modify the BookListView function to handle reservation state
   const BookListView = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <Table>
@@ -541,6 +532,7 @@ const Books = () => {
                         size="sm" 
                         className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
                         disabled={true}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         예약불가
                       </Button>
@@ -666,7 +658,6 @@ const Books = () => {
         )}
       </div>
       
-      {/* Dialogs for list view actions */}
       {selectedBook && (
         <>
           <BorrowBookDialog 
