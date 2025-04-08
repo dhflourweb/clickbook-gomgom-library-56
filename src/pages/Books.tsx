@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -43,7 +42,6 @@ const Books = () => {
   const [itemsPerPage, setItemsPerPage] = useState(24); // Default is 24
   const [totalBooks, setTotalBooks] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
@@ -73,7 +71,6 @@ const Books = () => {
     const favoriteParam = searchParams.get('favorite') === 'true';
     const pageParam = parseInt(searchParams.get('page') || '1');
     const perPageParam = parseInt(searchParams.get('perPage') || '24');
-    const viewParam = searchParams.get('view') as 'grid' | 'list' || 'grid';
     
     const filterParam = searchParams.get('filter');
     let finalCategory = categoryParam;
@@ -93,7 +90,6 @@ const Books = () => {
     setFilter(newFilter);
     setCurrentPage(pageParam);
     setItemsPerPage(perPageParam);
-    setViewMode(viewParam);
     applyFilters(newFilter, pageParam, perPageParam);
   }, [location.search]);
 
@@ -247,7 +243,6 @@ const Books = () => {
     if (newFilter.favorite) params.set('favorite', 'true');
     params.set('page', '1');
     params.set('perPage', itemsPerPage.toString());
-    params.set('view', viewMode);
     
     setSearchParams(params);
     setFilter(newFilter);
@@ -273,14 +268,6 @@ const Books = () => {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1);
     applyFilters(filter, 1, newItemsPerPage);
-  };
-
-  const handleViewModeChange = (mode: 'grid' | 'list') => {
-    const params = new URLSearchParams(searchParams);
-    params.set('view', mode);
-    
-    setSearchParams(params);
-    setViewMode(mode);
   };
 
   const getPageNumbers = () => {
@@ -425,7 +412,6 @@ const Books = () => {
   );
 
   const BookListView = () => {
-    // For mobile devices, render a simplified list view
     if (isMobile) {
       return (
         <div className="space-y-4">
@@ -465,6 +451,7 @@ const Books = () => {
                         </div>
                         <div className="flex flex-col items-end gap-1">
                           <button
+                            type="button"
                             className={`p-1.5 rounded-full transition-colors ${
                               isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
                             }`}
@@ -557,7 +544,6 @@ const Books = () => {
       );
     }
 
-    // Desktop list view
     return (
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <Table>
@@ -598,6 +584,7 @@ const Books = () => {
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <button
+                      type="button"
                       className={`p-1.5 rounded-full transition-colors ${
                         isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
                       }`}
@@ -732,31 +719,17 @@ const Books = () => {
             initialFilter={filter}
             onItemsPerPageChange={handleItemsPerPageChange}
             itemsPerPage={itemsPerPage}
-            onViewModeChange={handleViewModeChange}
-            viewMode={viewMode}
           />
         </div>
         
         {loading ? (
           <div>
-            {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {Array.from({ length: itemsPerPage }).map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-gray-200 aspect-[3/4] rounded-md mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <ListViewLoadingSkeleton />
-            )}
+            <ListViewLoadingSkeleton />
           </div>
         ) : (
           <>
-            {viewMode === 'grid' ? (
-              <BookGrid books={books} />
+            {isMobile ? (
+              <BookListView />
             ) : (
               <BookListView />
             )}

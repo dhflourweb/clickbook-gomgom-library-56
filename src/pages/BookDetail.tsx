@@ -4,42 +4,25 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { BadgeDisplay } from '@/components/ui/badge-display';
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { Heart } from 'lucide-react';
 import { getBookById, getReviewsForBook } from '@/data/mockData';
 import { useAuth } from '@/context/AuthContext';
 import { StarRating } from '@/components/books/StarRating';
+import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
+import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
+import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { user } = useAuth();
-  const [locationInput, setLocationInput] = useState('');
-  const [reviewContent, setReviewContent] = useState('');
-  const [rating, setRating] = useState(5);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isReserved, setIsReserved] = useState(false);
+  
+  // Dialog states
+  const [borrowDialogOpen, setBorrowDialogOpen] = useState(false);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [extendDialogOpen, setExtendDialogOpen] = useState(false);
   
   if (!id) {
     navigate('/books');
@@ -55,73 +38,107 @@ const BookDetail = () => {
 
   const reviews = getReviewsForBook(id);
   const isAvailable = book.status.available > 0;
+  const isBorrowedByUser = book.borrowedByCurrentUser || false;
   
-  const handleBorrow = () => {
-    // In a real app, this would call an API to borrow the book
-    toast({
-      title: "도서 대여 신청 완료",
-      description: `'${book.title}' 도서를 대여했습니다. 지정된 위치에서 수령해주세요.`,
-    });
+  // Check if user has reached borrowing limit
+  const hasReachedBorrowLimit = user?.borrowedCount >= 2;
+  
+  const handleBorrow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setBorrowDialogOpen(true);
   };
 
-  const handleReturn = () => {
-    if (!locationInput.trim()) {
-      toast({
-        title: "오류",
-        description: "도서 위치를 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
+  const handleReturn = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setReturnDialogOpen(true);
+  };
+  
+  const handleExtend = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setExtendDialogOpen(true);
+  };
+
+  const handleReserve = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsReserved(!isReserved);
+  };
+  
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsFavorite(!isFavorite);
+  };
+  
+  // Determine which button to show based on book status and user
+  const renderActionButtons = () => {
+    // Case 1: Book is available - Show borrow button
+    if (isAvailable) {
+      return (
+        <Button 
+          variant="default" 
+          className="bg-primary hover:bg-primary/90"
+          onClick={handleBorrow}
+          disabled={hasReachedBorrowLimit}
+        >
+          대여하기
+        </Button>
+      );
     }
     
-    // In a real app, this would call an API to return the book
-    toast({
-      title: "도서 반납 완료",
-      description: `'${book.title}' 도서가 성공적으로 반납되었습니다.`,
-    });
-  };
-
-  const handleReserve = () => {
-    // In a real app, this would call an API to reserve the book
-    toast({
-      title: "도서 예약 신청 완료",
-      description: `'${book.title}' 도서 예약이 완료되었습니다. 대여 가능 시 알림을 드립니다.`,
-    });
-  };
-  
-  const handleExtend = () => {
-    // In a real app, this would call an API to extend the book
-    toast({
-      title: "대여 기간 연장 완료",
-      description: `'${book.title}' 도서의 대여 기간이 7일 연장되었습니다.`,
-    });
-  };
-  
-  const handleSubmitReview = () => {
-    if (!reviewContent.trim()) {
-      toast({
-        title: "오류",
-        description: "리뷰 내용을 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
+    // Case 2: Book is borrowed by current user - Show return and extend buttons
+    if (isBorrowedByUser) {
+      return (
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+            onClick={handleReturn}
+          >
+            반납하기
+          </Button>
+          <Button 
+            variant="outline" 
+            className="border-primary text-primary hover:bg-primary/10"
+            onClick={handleExtend}
+            disabled={!book.isExtendable}
+          >
+            연장하기
+          </Button>
+        </div>
+      );
     }
     
-    // In a real app, this would call an API to submit the review
-    toast({
-      title: "리뷰 등록 완료",
-      description: "도서 리뷰가 성공적으로 등록되었습니다.",
-    });
+    // Case 3: Book is not reservable - Show disabled reservation button
+    if (book.isReservable === false) {
+      return (
+        <div 
+          onClick={(e) => e.preventDefault()}
+        >
+          <Button 
+            variant="secondary"
+            className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+            disabled={true}
+          >
+            예약불가
+          </Button>
+        </div>
+      );
+    }
     
-    setReviewContent('');
-    setRating(5);
+    // Case 4: Book is borrowed by someone else - Show reserve/cancel button
+    return (
+      <Button 
+        variant={isReserved ? "outline" : "secondary"}
+        className={
+          isReserved 
+            ? "border-primary text-primary hover:bg-primary/10" 
+            : "bg-secondary hover:bg-secondary/90"
+        }
+        onClick={handleReserve}
+      >
+        {isReserved ? "예약 취소" : "예약하기"}
+      </Button>
+    );
   };
-
-  // Mock functions to simulate user permissions
-  const canBorrow = isAvailable && user?.borrowedBooks !== undefined && user.borrowedBooks < 2;
-  const canReserve = !isAvailable && user?.reservedBooks !== undefined && user.reservedBooks < 1;
-  const canReturn = true; // Mock: In real app, check if user has borrowed this book
-  const canExtend = true; // Mock: In real app, check if book is borrowed and hasn't been extended
 
   return (
     <MainLayout>
@@ -130,11 +147,28 @@ const BookDetail = () => {
           <div className="md:flex">
             {/* Book cover */}
             <div className="md:w-1/3 p-6">
-              <img
-                src={book.coverImage}
-                alt={`${book.title} 표지`}
-                className="w-full aspect-[3/4] object-cover rounded-md shadow-md"
-              />
+              <div className="relative">
+                <img
+                  src={book.coverImage}
+                  alt={`${book.title} 표지`}
+                  className="w-full aspect-[3/4] object-cover rounded-md shadow-md"
+                />
+                <button
+                  className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
+                    isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
+                  }`}
+                  onClick={handleFavoriteToggle}
+                  aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
+                >
+                  <Heart 
+                    size={18} 
+                    fill={isFavorite ? "currentColor" : "none"} 
+                    stroke={isFavorite ? "currentColor" : "#000000"}
+                    strokeWidth={1.5}
+                    className="transition-all"
+                  />
+                </button>
+              </div>
             </div>
             
             {/* Book details */}
@@ -167,76 +201,7 @@ const BookDetail = () => {
               
               {/* Action buttons */}
               <div className="flex flex-wrap gap-2 mt-6">
-                {canBorrow && (
-                  <Button onClick={handleBorrow} className="bg-secondary-green hover:bg-secondary-green/90">
-                    대여하기
-                  </Button>
-                )}
-                
-                {canReserve && (
-                  <Button onClick={handleReserve} className="bg-secondary-blue hover:bg-secondary-blue/90">
-                    예약하기
-                  </Button>
-                )}
-                
-                {canReturn && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="border-point-red text-point-red hover:bg-point-red/10">
-                        반납하기
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>도서 반납</DialogTitle>
-                        <DialogDescription>
-                          반납 위치를 명확히 입력해 주세요. 다른 사용자가 쉽게 찾을 수 있도록 상세하게 작성해주세요.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="location">반납 위치</Label>
-                          <Input
-                            id="location"
-                            placeholder="예: 3층 개발서적 책장 A-5"
-                            value={locationInput}
-                            onChange={(e) => setLocationInput(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button variant="outline" className="mr-2">
-                          취소
-                        </Button>
-                        <Button onClick={handleReturn} className="bg-point-red hover:bg-point-red/90">
-                          반납 완료
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
-                
-                {canExtend && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline">연장하기</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>대여 기간 연장</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          도서 대여 기간을 7일 연장합니다. 연장은 1회만 가능합니다.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>취소</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleExtend}>
-                          연장하기
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+                {renderActionButtons()}
               </div>
             </div>
           </div>
@@ -250,27 +215,25 @@ const BookDetail = () => {
           <div className="mb-6 border-b border-gray-200 pb-6">
             <h3 className="text-lg font-medium mb-2">리뷰 작성</h3>
             <div className="mb-4">
-              <Label htmlFor="rating">평점</Label>
+              <label htmlFor="rating">평점</label>
               <div className="mt-1">
                 <StarRating
-                  value={rating}
-                  onChange={setRating}
+                  value={5}
+                  onChange={() => {}}
                   max={5}
                 />
               </div>
             </div>
             <div className="mb-4">
-              <Label htmlFor="review">리뷰 내용</Label>
-              <Textarea
+              <label htmlFor="review">리뷰 내용</label>
+              <textarea
                 id="review"
                 placeholder="이 책에 대한 의견을 남겨주세요."
-                className="mt-1"
+                className="w-full p-2 border rounded-md"
                 rows={4}
-                value={reviewContent}
-                onChange={(e) => setReviewContent(e.target.value)}
               />
             </div>
-            <Button onClick={handleSubmitReview}>
+            <Button>
               리뷰 등록
             </Button>
           </div>
@@ -296,6 +259,25 @@ const BookDetail = () => {
           </div>
         </div>
       </div>
+      
+      {/* Dialogs */}
+      <BorrowBookDialog 
+        book={book}
+        isOpen={borrowDialogOpen}
+        onOpenChange={setBorrowDialogOpen}
+      />
+      
+      <ReturnBookDialog 
+        book={book}
+        isOpen={returnDialogOpen}
+        onOpenChange={setReturnDialogOpen}
+      />
+      
+      <ExtendBookDialog 
+        book={book}
+        isOpen={extendDialogOpen}
+        onOpenChange={setExtendDialogOpen}
+      />
     </MainLayout>
   );
 };
