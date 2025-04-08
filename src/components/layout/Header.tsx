@@ -72,8 +72,8 @@ export const Header = () => {
                   <NavigationMenu>
                     <NavigationMenuList className="gap-1">
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-xs font-medium">전체메뉴</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-md p-0 shadow-lg border border-gray-100">
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">전체메뉴</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-md p-0 shadow-lg border border-gray-100 absolute left-0">
                           <div className="grid grid-cols-4 gap-3 p-4">
                             <div className="space-y-1">
                               <h3 className="text-primary-deepblue text-xs font-medium mb-1.5 border-b pb-1">도서관리</h3>
@@ -104,7 +104,7 @@ export const Header = () => {
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-xs font-medium">도서관리</NavigationMenuTrigger>
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">도서관리</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2 w-auto shadow-lg border border-gray-100">
                           <div className="grid grid-cols-1 min-w-[160px]">
                             <p className="text-gray-700 text-[11px] py-1 cursor-pointer hover:bg-gray-50 px-2 rounded-md" onClick={() => navigate('/books')}>도서목록</p>
@@ -117,7 +117,7 @@ export const Header = () => {
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-xs font-medium">카테고리</NavigationMenuTrigger>
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">카테고리</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2 w-auto shadow-lg border border-gray-100">
                           <div className="grid grid-cols-1 min-w-[160px]">
                             {categories.map(category => <p key={category} className="text-gray-700 text-[11px] py-1 cursor-pointer hover:bg-gray-50 px-2 rounded-md" onClick={() => navigate(`/books?filter=category=${category}`)}>
@@ -128,7 +128,7 @@ export const Header = () => {
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-xs font-medium">커뮤니티</NavigationMenuTrigger>
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">커뮤니티</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2 shadow-lg border border-gray-100">
                           <div className="w-[160px]">
                             <p className="text-gray-700 text-[11px] py-1 cursor-pointer hover:bg-gray-50 px-2 rounded-md" onClick={() => navigate('/announcements')}>공지사항</p>
