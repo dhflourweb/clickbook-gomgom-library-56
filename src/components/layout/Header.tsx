@@ -40,6 +40,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+import logo from '@/assets/images/icon_logo.svg';
+
 const categories = [
   "문학",
   "경제/경영",
@@ -83,192 +85,205 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-primary-deepblue text-white py-3 px-4 sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center">
-          <Link to="/" className="text-xl font-bold flex items-center">
-            <span className="text-secondary-orange">곰클릭</span>
-            <span className="text-white">+</span>
-            <span className="text-primary-skyblue">책방</span>
-          </Link>
+      <>
+        <div className="t-banner">
+          <p>
+            지식을 넓히는 첫걸음! 사내문고 서비스에서 다양한 도서를 만나보세요.
+          </p>
         </div>
-        
-        {/* Desktop Navigation Menu */}
-        {!isMobile && (
-          <div className="flex items-center">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">전체메뉴</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white rounded-md p-0 mt-0">
-                    <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
-                      <div className="space-y-2">
-                        <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
-                        <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                           onClick={() => navigate('/books')}>도서목록</p>
-                        <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                           onClick={() => navigate('/books/details')}>도서대여현황</p>
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">카테고리</h3>
-                        {categories.map((category) => (
-                          <p key={category} className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                             onClick={() => navigate(`/books?filter=category=${category}`)}>
-                            {category}
-                          </p>
-                        ))}
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">커뮤니티</h3>
-                        <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                           onClick={() => navigate('/announcements')}>공지사항</p>
-                        <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                           onClick={() => navigate('/inquiries')}>문의하기</p>
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">마이페이지</h3>
-                        <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                           onClick={() => navigate('/mypage')}>내정보</p>
-                        <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                           onClick={() => navigate('/mypage/history')}>도서대여내역</p>
-                      </div>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
-                    <div className="grid grid-cols-1 min-w-[200px]">
-                      {categories.map((category) => (
-                        <p 
-                          key={category} 
-                          className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
-                          onClick={() => navigate(`/books?filter=category=${category}`)}
-                        >
-                          {category}
-                        </p>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white rounded-md p-2">
-                    <div className="w-[200px]">
-                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                         onClick={() => navigate('/announcements')}>공지사항</p>
-                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                         onClick={() => navigate('/inquiries')}>문의하기</p>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white rounded-md p-2">
-                    <div className="w-[200px]">
-                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                         onClick={() => navigate('/mypage')}>내정보</p>
-                      <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" 
-                         onClick={() => navigate('/mypage/history')}>도서대여내역</p>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-        )}
-        
-        {/* User controls */}
-        <div className="flex items-center">
-          {showSearchBar ? (
-            <div className="relative flex items-center animated-search">
-              <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
-                <Input 
-                  id="searchInput"
-                  placeholder="도서 검색..." 
-                  className="border-0 focus-visible:ring-0 h-8 w-[200px] md:w-[240px] sm:w-[180px]"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={toggleSearchBar}
-                >
-                  <X size={16} className="text-gray-500" />
-                </Button>
-              </form>
+        <header className="bg-primary-deepblue text-white py-3 px-4 sticky top-0 z-50">
+          <div className="container mx-auto flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link to="/" className="text-xl font-bold flex items-center">
+                <img src={logo} alt=""/>
+                {/*<span className="text-secondary-orange">곰클릭</span>*/}
+                {/*<span className="text-white">+</span>*/}
+                {/*<span className="text-primary-skyblue">책방</span>*/}
+              </Link>
             </div>
-          ) : (
-            <Button variant="ghost" size="icon" className="text-white" onClick={toggleSearchBar}>
-              <Search size={20} />
-            </Button>
-          )}
-          
-          <Link to="/mypage">
-            <Button variant="ghost" size="icon" className="text-white">
-              <User size={20} />
-            </Button>
-          </Link>
-          
-          {hasRole(["admin", "system_admin"]) && (
-            <Link to="/admin">
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="ml-2 text-xs bg-transparent border-white text-white hover:bg-white/20"
-              >
-                관리자
-              </Button>
-            </Link>
-          )}
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={logout}
-            className="text-white"
-          >
-            <LogOut size={20} />
-          </Button>
-        </div>
-      </div>
 
-      {/* Mobile Search Modal */}
-      {isMobile && (
-        <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>도서 검색</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <Input
-                placeholder="도서 검색..."
-                className="flex-1"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-              />
-              <Button type="submit">검색</Button>
-            </form>
-            <DialogFooter className="sm:justify-start">
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={() => setShowSearchModal(false)}
+            {/* Desktop Navigation Menu */}
+            {!isMobile && (
+                <div className="flex items-center">
+                  <NavigationMenu>
+                    <NavigationMenuList>
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger
+                            className="bg-transparent text-white hover:bg-primary-deepblue/50">전체메뉴</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-md p-0 mt-0">
+                          <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
+                            <div className="space-y-2">
+                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                 onClick={() => navigate('/books')}>도서목록</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                 onClick={() => navigate('/books/details')}>도서대여현황</p>
+                            </div>
+                            <div className="space-y-2">
+                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">카테고리</h3>
+                              {categories.map((category) => (
+                                  <p key={category}
+                                     className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                     onClick={() => navigate(`/books?filter=category=${category}`)}>
+                                    {category}
+                                  </p>
+                              ))}
+                            </div>
+                            <div className="space-y-2">
+                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">커뮤니티</h3>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                 onClick={() => navigate('/announcements')}>공지사항</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                 onClick={() => navigate('/inquiries')}>문의하기</p>
+                            </div>
+                            <div className="space-y-2">
+                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">마이페이지</h3>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                 onClick={() => navigate('/mypage')}>내정보</p>
+                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                 onClick={() => navigate('/mypage/history')}>도서대여내역</p>
+                            </div>
+                          </div>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger
+                            className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
+                          <div className="grid grid-cols-1 min-w-[200px]">
+                            {categories.map((category) => (
+                                <p
+                                    key={category}
+                                    className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                                    onClick={() => navigate(`/books?filter=category=${category}`)}
+                                >
+                                  {category}
+                                </p>
+                            ))}
+                          </div>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger
+                            className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-md p-2">
+                          <div className="w-[200px]">
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                               onClick={() => navigate('/announcements')}>공지사항</p>
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                               onClick={() => navigate('/inquiries')}>문의하기</p>
+                          </div>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+
+                      <NavigationMenuItem>
+                        <NavigationMenuTrigger
+                            className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-md p-2">
+                          <div className="w-[200px]">
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                               onClick={() => navigate('/mypage')}>내정보</p>
+                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
+                               onClick={() => navigate('/mypage/history')}>도서대여내역</p>
+                          </div>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                </div>
+            )}
+
+            {/* User controls */}
+            <div className="flex items-center">
+              {showSearchBar ? (
+                  <div className="relative flex items-center animated-search">
+                    <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
+                      <Input
+                          id="searchInput"
+                          placeholder="도서 검색..."
+                          className="border-0 focus-visible:ring-0 h-8 w-[200px] md:w-[240px] sm:w-[180px]"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={toggleSearchBar}
+                      >
+                        <X size={16} className="text-gray-500"/>
+                      </Button>
+                    </form>
+                  </div>
+              ) : (
+                  <Button variant="ghost" size="icon" className="text-white" onClick={toggleSearchBar}>
+                    <Search size={20}/>
+                  </Button>
+              )}
+
+              <Link to="/mypage">
+                <Button variant="ghost" size="icon" className="text-white">
+                  <User size={20}/>
+                </Button>
+              </Link>
+
+              {hasRole(["admin", "system_admin"]) && (
+                  <Link to="/admin">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-2 text-xs bg-transparent border-white text-white hover:bg-white/20"
+                    >
+                      관리자
+                    </Button>
+                  </Link>
+              )}
+
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={logout}
+                  className="text-white"
               >
-                취소
+                <LogOut size={20}/>
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </header>
-  );
+            </div>
+          </div>
+
+          {/* Mobile Search Modal */}
+          {isMobile && (
+              <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>도서 검색</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleSearch} className="flex items-center gap-2">
+                    <Input
+                        placeholder="도서 검색..."
+                        className="flex-1"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus
+                    />
+                    <Button type="submit">검색</Button>
+                  </form>
+                  <DialogFooter className="sm:justify-start">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setShowSearchModal(false)}
+                    >
+                      취소
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+          )}
+        </header>
+        </>
+        );
 };
