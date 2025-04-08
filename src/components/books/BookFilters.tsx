@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Search, Filter, LayoutGrid, LayoutList } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -41,7 +40,6 @@ interface FilterState {
   favorite: boolean;
 }
 
-// Using the same categories as in Header.tsx
 const CATEGORIES = ["전체", "문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
 
 const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약중'];
@@ -68,7 +66,6 @@ export const BookFilters = ({
 
   const [tempFilters, setTempFilters] = useState(filters);
 
-  // Update filters when initialFilter changes
   useEffect(() => {
     if (initialFilter) {
       setFilters(initialFilter);
@@ -102,7 +99,6 @@ export const BookFilters = ({
         [name]: newValue,
       }));
       
-      // For mobile, auto-submit when checkbox changes
       if (type === 'checkbox') {
         const updatedTempFilters = {
           ...tempFilters,
@@ -118,7 +114,6 @@ export const BookFilters = ({
       };
       setFilters(updatedFilters);
       
-      // Auto-submit when checkbox changes
       if (type === 'checkbox') {
         onSearch(updatedFilters);
       }
@@ -132,13 +127,11 @@ export const BookFilters = ({
       const updatedFilters = { ...filters, [name]: value };
       setFilters(updatedFilters);
       
-      // Auto-submit when select changes
       onSearch(updatedFilters);
     }
   };
 
   const handleViewModeToggle = (mode: 'grid' | 'list') => {
-    // Don't change view mode on mobile - always stay in list mode
     if (isMobile) return;
     
     if (onViewModeChange) {
@@ -152,7 +145,6 @@ export const BookFilters = ({
     onSearch(updatedFilters);
   };
 
-  // Mobile filter that contains only core filters
   const MobileFilters = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -232,7 +224,6 @@ export const BookFilters = ({
     </Sheet>
   );
 
-  // Mobile controls outside filter sheet
   const MobileExtraControls = () => (
     <div className="flex flex-col gap-3 mt-3 border-t pt-3">
       <div className="flex justify-between items-center">
@@ -262,8 +253,6 @@ export const BookFilters = ({
           onCheckedChange={handleFavoriteToggle}
         />
       </div>
-      
-      {/* View mode toggle removed for mobile */}
     </div>
   );
 
