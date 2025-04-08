@@ -58,10 +58,11 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 3층 개발서적',
     source: 'purchase',
     badges: ['popular'],
-    status: { available: 1, total: 1, borrowed: 0 },
+    status: { available: 0, total: 1, borrowed: 1 },
     rating: 4.7,
     registeredDate: '2023-07-22',
-    description: '코드 리팩터링에 대한 기술과 원칙을 설명하는 개발자를 위한 필독서입니다.'
+    description: '코드 리팩터링에 대한 기술과 원칙을 설명하는 개발자를 위한 필독서입니다.',
+    isReservable: false
   },
   {
     id: 'book4',
@@ -75,10 +76,15 @@ export const MOCK_BOOKS: Book[] = [
     location: '별관 2층 자기계발',
     source: 'donation',
     badges: ['new'],
-    status: { available: 3, total: 3, borrowed: 0 },
+    status: { available: 0, total: 3, borrowed: 3 },
     rating: 4.2,
     registeredDate: '2024-01-05',
-    description: '진정한 전문성을 기르는 효과적인 학습법에 대한 책입니다.'
+    description: '진정한 전문성을 기르는 효과적인 학습법에 대한 책입니다.',
+    borrowedByCurrentUser: true,
+    borrowDate: '2024-03-15',
+    returnDueDate: '2024-04-10',
+    isExtendable: false,
+    hasBeenExtended: true
   },
   {
     id: 'book5',
@@ -96,7 +102,8 @@ export const MOCK_BOOKS: Book[] = [
     rating: 4.8,
     registeredDate: '2023-03-17',
     description: '인간의 역사와 미래에 대한 통찰을 담은 세계적인 베스트셀러입니다.',
-    isFavorite: true
+    isFavorite: true,
+    isReservable: false
   },
   {
     id: 'book6',

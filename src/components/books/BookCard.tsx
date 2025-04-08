@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
@@ -143,7 +142,21 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       );
     }
     
-    // Case 4 & 5: Book is borrowed by someone else - Show reserve/cancel button
+    // Case 4: Book is not reservable - Show disabled reservation button
+    if (book.isReservable === false) {
+      return (
+        <Button 
+          variant="secondary"
+          size="sm" 
+          className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+          disabled={true}
+        >
+          예약불가
+        </Button>
+      );
+    }
+    
+    // Case 5: Book is borrowed by someone else - Show reserve/cancel button
     return (
       <Button 
         variant={isReserved ? "outline" : "secondary"}

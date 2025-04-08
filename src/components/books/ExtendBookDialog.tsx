@@ -101,11 +101,23 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
                 />
               </div>
             </div>
+
+            {book.hasBeenExtended && (
+              <div className="rounded-md bg-yellow-50 p-3 text-sm text-yellow-800 border border-yellow-200">
+                <p className="font-medium">이 도서는 이미 연장되었습니다</p>
+                <p className="mt-1">도서 연장은 최대 {SYSTEM_SETTINGS.maxExtensionCount}회만 가능합니다.</p>
+              </div>
+            )}
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
-            <Button onClick={handleExtend}>연장하기</Button>
+            <Button 
+              onClick={handleExtend}
+              disabled={book.hasBeenExtended}
+            >
+              연장하기
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

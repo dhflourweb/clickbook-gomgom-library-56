@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -420,6 +419,7 @@ const Books = () => {
     </div>
   );
 
+  // Modify the BookListView function to handle reservation state
   const BookListView = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <Table>
@@ -535,14 +535,26 @@ const Books = () => {
                           연장
                         </Button>
                       </div>
-                    ) : (
+                    ) : book.isReservable === false ? (
                       <Button 
                         variant="secondary"
                         size="sm" 
-                        className="bg-secondary hover:bg-secondary/90"
+                        className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+                        disabled={true}
+                      >
+                        예약불가
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant={book.status.reserved ? "outline" : "secondary"}
+                        size="sm" 
+                        className={book.status.reserved
+                          ? "border-primary text-primary hover:bg-primary/10"
+                          : "bg-secondary hover:bg-secondary/90"
+                        }
                         onClick={(e) => handleBookAction(e, 'reserve', book)}
                       >
-                        예약하기
+                        {book.status.reserved ? "예약 취소" : "예약하기"}
                       </Button>
                     )}
                   </div>

@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { StarRating } from '@/components/books/StarRating';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface ReturnBookDialogProps {
   book: Book;
@@ -77,25 +77,13 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
           <div className="grid grid-cols-4 gap-2 py-2">
             <Label htmlFor="returnLocation" className="text-sm font-medium">반납 위치</Label>
             <div className="col-span-3">
-              <RadioGroup 
-                id="returnLocation" 
-                value={returnLocation} 
-                onValueChange={setReturnLocation}
-                className="flex flex-col space-y-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="본관 1층 반납함" id="loc1" />
-                  <Label htmlFor="loc1" className="text-sm">본관 1층 반납함</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="별관 로비 반납함" id="loc2" />
-                  <Label htmlFor="loc2" className="text-sm">별관 로비 반납함</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="사서에게 직접 반납" id="loc3" />
-                  <Label htmlFor="loc3" className="text-sm">사서에게 직접 반납</Label>
-                </div>
-              </RadioGroup>
+              <Input
+                id="returnLocation"
+                value={returnLocation}
+                onChange={(e) => setReturnLocation(e.target.value)}
+                placeholder="반납 위치를 입력하세요"
+                className="w-full"
+              />
             </div>
           </div>
 
