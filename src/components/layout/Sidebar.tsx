@@ -11,16 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useAuth } from '@/context/AuthContext';
-
-const categories = [
-  "문학",
-  "경제/경영",
-  "자기개발",
-  "인문/역사",
-  "사회",
-  "취미/생활",
-  "기타"
-];
+import { categories } from '@/components/layout/Header';
 
 export const Sidebar = () => {
   const { hasRole } = useAuth();

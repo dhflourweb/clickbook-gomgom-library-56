@@ -44,15 +44,8 @@ interface FilterState {
   favorite: boolean;
 }
 
-const CATEGORIES = [
-  '전체',
-  'IT/개발',
-  '경영/경제',
-  '자기계발',
-  '소설',
-  '인문/사회',
-  '과학/기술',
-];
+// Using the same categories as in Header.tsx
+const CATEGORIES = ["전체", "문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
 
 const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약가능'];
 const SORT_OPTIONS = ['추천순', '평점순', '최신순', '제목순'];
@@ -89,6 +82,12 @@ export const BookFilters = ({
     onSearch(filters);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const handleMobileSearch = () => {
     setFilters(tempFilters);
     onSearch(tempFilters);
@@ -98,16 +97,24 @@ export const BookFilters = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     
+    const newValue = type === 'checkbox' ? checked : value;
+    
     if (isMobile) {
       setTempFilters(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : value,
+        [name]: newValue,
       }));
     } else {
-      setFilters(prev => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value,
-      }));
+      const updatedFilters = {
+        ...filters,
+        [name]: newValue,
+      };
+      setFilters(updatedFilters);
+      
+      // Auto-submit when checkbox changes
+      if (type === 'checkbox') {
+        onSearch(updatedFilters);
+      }
     }
   };
 
@@ -115,7 +122,11 @@ export const BookFilters = ({
     if (isMobile) {
       setTempFilters(prev => ({ ...prev, [name]: value }));
     } else {
-      setFilters(prev => ({ ...prev, [name]: value }));
+      const updatedFilters = { ...filters, [name]: value };
+      setFilters(updatedFilters);
+      
+      // Auto-submit when select changes
+      onSearch(updatedFilters);
     }
   };
 
@@ -251,6 +262,9 @@ export const BookFilters = ({
             onChange={handleInputChange}
             className="mt-2"
             autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleMobileSearch();
+            }}
           />
           <Button onClick={handleMobileSearch} className="w-full">
             검색
@@ -347,8 +361,6 @@ export const BookFilters = ({
           관심 도서만
         </label>
       </div>
-      
-      <Button onClick={handleSearch} size="sm" className="ml-auto">검색</Button>
     </div>
   );
 
@@ -356,21 +368,19 @@ export const BookFilters = ({
     <div className="space-y-4">
       {!isMobile && (
         <div className="flex items-center gap-3 flex-wrap md:flex-nowrap">
-          <div className="w-full md:w-56 relative shrink-0">
+          <div className="w-full md:w-80 relative shrink-0">
             <Input
               type="text"
               name="query"
               placeholder="도서명, 저자, 출판사 검색..."
               value={filters.query}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               className="pr-10 h-10"
             />
-            <button
-              onClick={handleSearch}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-            >
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">
               <Search size={18} />
-            </button>
+            </div>
           </div>
           <DesktopFilters />
         </div>

@@ -7,7 +7,7 @@ import { BookGrid } from '@/components/books/BookGrid';
 import { getBooksByCategory, MOCK_BOOKS } from '@/data/mockData';
 import { Book } from '@/types';
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { 
   Pagination, 
   PaginationContent, 
@@ -16,6 +16,7 @@ import {
   PaginationNext, 
   PaginationPrevious 
 } from '@/components/ui/pagination';
+import { Separator } from '@/components/ui/separator';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -23,7 +24,7 @@ const Books = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(24); // Default changed to 24
+  const [itemsPerPage, setItemsPerPage] = useState(24); // Default is 24
   const [totalBooks, setTotalBooks] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   
@@ -43,7 +44,7 @@ const Books = () => {
     const sortParam = searchParams.get('sort') || '추천순';
     const favoriteParam = searchParams.get('favorite') === 'true';
     const pageParam = parseInt(searchParams.get('page') || '1');
-    const perPageParam = parseInt(searchParams.get('perPage') || '24'); // Default changed to 24
+    const perPageParam = parseInt(searchParams.get('perPage') || '24');
     
     // Handle special case when coming from category links
     const filterParam = searchParams.get('filter');
@@ -197,7 +198,21 @@ const Books = () => {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">전체 도서</h1>
+        {/* Enhanced header design */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-lg">
+              <BookOpen className="h-6 w-6 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold">전체 도서</h1>
+          </div>
+          <div className="mt-2">
+            <Separator />
+            <p className="text-sm text-muted-foreground mt-2">
+              다양한 카테고리의 도서를 검색하고 찾아보세요. 총 {totalBooks}권의 도서가 있습니다.
+            </p>
+          </div>
+        </div>
         
         <div className="bg-white rounded-lg shadow-sm p-6">
           <BookFilters 

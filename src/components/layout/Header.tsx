@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, ChevronDown, X } from 'lucide-react';
@@ -11,7 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import logo from '@/assets/images/icon_logo.svg';
-const categories = ["문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
+
+// Define categories - these will be consistent across the app
+export const categories = ["문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
+
 export const Header = () => {
   const {
     user,
@@ -57,9 +61,6 @@ export const Header = () => {
             <div className="flex items-center">
               <Link to="/" className="text-xl font-bold flex items-center">
                 <img src={logo} alt="" />
-                {/*<span className="text-secondary-orange">곰클릭</span>*/}
-                {/*<span className="text-white">+</span>*/}
-                {/*<span className="text-primary-skyblue">책방</span>*/}
               </Link>
             </div>
 
