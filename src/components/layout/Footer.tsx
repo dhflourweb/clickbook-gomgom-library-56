@@ -16,9 +16,9 @@ export const Footer = () => {
           <div className="box">
             <div className="ft-left">
               <div className="info">
-                <p className="whitespace-nowrap">
+                <p className="whitespace-nowrap text-white">
                   문의전화번호 :
-                  <Link to={`tel:02-3455-0000`}> 02-3455-0000</Link>
+                  <Link to={`tel:02-3455-0000`} className="text-white"> 02-3455-0000</Link>
                 </p>
               </div>
             </div>

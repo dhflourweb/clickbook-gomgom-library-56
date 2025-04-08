@@ -66,13 +66,13 @@ export const Banner = ({ items }: BannerProps) => {
                 isMobile ? "p-4" : "p-6 mx-[70px]"
               )}>
                 <h2 className={cn(
-                  "font-bold mb-2",
+                  "font-bold mb-2 text-white",
                   isMobile ? "text-xl" : "text-2xl"
                 )}>
                   {item.title}
                 </h2>
                 <p className={cn(
-                  "mb-4 opacity-90",
+                  "mb-4 opacity-90 text-white",
                   isMobile ? "text-sm line-clamp-2" : ""
                 )}>
                   {item.description}

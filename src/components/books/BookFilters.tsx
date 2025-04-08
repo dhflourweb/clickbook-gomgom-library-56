@@ -235,7 +235,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
 
   const DesktopFilters = () => (
     <div className="flex flex-wrap gap-3 items-center">
-      <div className="w-32">
+      <div className="w-28">
         <Select
           value={filters.category}
           onValueChange={(value) => handleSelectChange('category', value)}
@@ -310,8 +310,8 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
   return (
     <div className="space-y-4">
       {!isMobile && (
-        <div className="flex items-center gap-2">
-          <div className="flex-1 relative">
+        <div className="flex items-center gap-3">
+          <div className="w-[200px] relative">
             <Input
               type="text"
               name="query"
@@ -327,16 +327,15 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
               <Search size={18} />
             </button>
           </div>
+          <DesktopFilters />
         </div>
       )}
       
-      {isMobile ? (
+      {isMobile && (
         <div className="flex justify-between items-center">
           <MobileSearchModal />
           <MobileFilters />
         </div>
-      ) : (
-        <DesktopFilters />
       )}
     </div>
   );

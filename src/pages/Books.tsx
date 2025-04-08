@@ -7,12 +7,16 @@ import { BookGrid } from '@/components/books/BookGrid';
 import { getBooksByCategory, MOCK_BOOKS } from '@/data/mockData';
 import { Book } from '@/types';
 import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   
   const [filter, setFilter] = useState({
     query: '',
@@ -29,6 +33,8 @@ const Books = () => {
     const statusParam = searchParams.get('status') || '전체';
     const sortParam = searchParams.get('sort') || '추천순';
     const favoriteParam = searchParams.get('favorite') === 'true';
+    const pageParam = parseInt(searchParams.get('page') || '1');
+    const perPageParam = parseInt(searchParams.get('perPage') || '12');
     
     // Handle special case when coming from category links
     const filterParam = searchParams.get('filter');
@@ -47,10 +53,12 @@ const Books = () => {
     };
     
     setFilter(newFilter);
-    applyFilters(newFilter);
+    setCurrentPage(pageParam);
+    setItemsPerPage(perPageParam);
+    applyFilters(newFilter, pageParam, perPageParam);
   }, [location.search]);
 
-  const applyFilters = (filters: any) => {
+  const applyFilters = (filters: any, page = 1, perPage = itemsPerPage) => {
     setLoading(true);
     
     // Simulate API delay
@@ -96,18 +104,25 @@ const Books = () => {
       
       // If favorite filter is on, mark all returned books as favorites
       if (filters.favorite) {
-        // For demonstration, we'll just show fewer books but mark them as favorites
-        filteredBooks = filteredBooks.slice(0, 3).map(book => ({
+        // For demonstration, we'll mark them as favorites
+        filteredBooks = filteredBooks.map(book => ({
           ...book,
           isFavorite: true
         }));
       }
       
-      setBooks(filteredBooks);
+      const totalBooks = filteredBooks.length;
+      
+      // Apply pagination
+      const startIndex = (page - 1) * perPage;
+      const endIndex = startIndex + perPage;
+      const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+      
+      setBooks(paginatedBooks);
       setLoading(false);
       
       // Show toast notification with filter results
-      toast(`${filteredBooks.length}권의 도서가 검색되었습니다.`);
+      toast(`${totalBooks}권의 도서가 검색되었습니다. (${startIndex + 1}-${Math.min(endIndex, totalBooks)}권 표시)`);
     }, 300);
   };
 
@@ -119,10 +134,33 @@ const Books = () => {
     if (newFilter.status !== '전체') params.set('status', newFilter.status);
     if (newFilter.sort !== '추천순') params.set('sort', newFilter.sort);
     if (newFilter.favorite) params.set('favorite', 'true');
+    params.set('page', '1'); // Reset to first page on new search
+    params.set('perPage', itemsPerPage.toString());
     
     setSearchParams(params);
     setFilter(newFilter);
-    applyFilters(newFilter);
+    setCurrentPage(1);
+    applyFilters(newFilter, 1, itemsPerPage);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', newPage.toString());
+    
+    setSearchParams(params);
+    setCurrentPage(newPage);
+    applyFilters(filter, newPage, itemsPerPage);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('perPage', newItemsPerPage.toString());
+    params.set('page', '1'); // Reset to first page when changing items per page
+    
+    setSearchParams(params);
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+    applyFilters(filter, 1, newItemsPerPage);
   };
 
   return (
@@ -134,9 +172,24 @@ const Books = () => {
           <BookFilters onSearch={handleSearch} initialFilter={filter} />
         </div>
         
+        <div className="flex justify-end items-center space-x-2">
+          <span className="text-sm text-gray-500">표시 개수:</span>
+          {[12, 24, 48, 100].map((count) => (
+            <Button
+              key={count}
+              size="sm"
+              variant={itemsPerPage === count ? "default" : "outline"}
+              onClick={() => handleItemsPerPageChange(count)}
+              className={itemsPerPage === count ? "bg-primary-deepblue" : ""}
+            >
+              {count}
+            </Button>
+          ))}
+        </div>
+        
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-            {Array.from({ length: 10 }).map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {Array.from({ length: itemsPerPage }).map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-gray-200 aspect-[3/4] rounded-md mb-2"></div>
                 <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -145,7 +198,35 @@ const Books = () => {
             ))}
           </div>
         ) : (
-          <BookGrid books={books} />
+          <>
+            <BookGrid books={books} />
+            
+            {/* Pagination */}
+            <div className="flex justify-center mt-8">
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <span className="text-sm px-4 py-2 bg-white rounded border">
+                  {currentPage}
+                </span>
+                
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </MainLayout>

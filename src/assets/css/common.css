@@ -67,6 +67,7 @@
     font-size: 1rem;
     line-height: 1.625rem;
     font-weight: 500;
+    color: #fff;
 }
 
 .footer .box .ft-left .info {
@@ -76,6 +77,7 @@
 .footer .box .ft-left .info span {
     font-size: 0.875rem;
     line-height: 1.5rem;
+    color: #fff;
 }
 
 .footer .box .ft-left .info span:nth-child(odd):after {
@@ -96,11 +98,13 @@
     line-height: 1.625rem;
     font-weight: 500;
     text-align: right;
+    color: #fff;
 }
 
 .footer .box .ft-right p a {
     display: inline-block;
     margin-left: 0.625rem;
+    color: #fff;
 }
 
 .footer .box .ft-right ul {
@@ -115,6 +119,7 @@
 .footer .box .ft-right ul li a {
     font-size: 0.875rem;
     line-height: 1.5rem;
+    color: #fff;
 }
 
 .footer .ft-bottom {
@@ -131,11 +136,12 @@
     -ms-flex-align: center;
     align-items: center;
     padding: 0.75rem 0 1.875rem;
-    border-top: 0.0625rem solid #DFDFDF;
+    border-top: 0.0625rem solid rgba(255, 255, 255, 0.2);
 }
 
 .footer .ft-bottom p {
     font-size: 0.875rem;
+    color: #fff;
 }
 
 .footer .ft-bottom ul {
@@ -150,4 +156,5 @@
     display: block;
     width: 2.25rem;
     height: 2.25rem;
+    color: #fff;
 }
