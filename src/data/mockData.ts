@@ -1,4 +1,3 @@
-
 import { Book, Announcement, Review, ReadingGoal } from '@/types';
 
 export const MOCK_BOOKS: Book[] = [
@@ -7,6 +6,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '클린 코드: 애자일 소프트웨어 장인 정신',
     author: '로버트 C. 마틴',
     publisher: '인사이트',
+    publishDate: '2013-12-24',
     isbn: '9788966260959',
     coverImage: 'https://picsum.photos/seed/book1/300/400',
     category: 'IT/개발',
@@ -22,6 +22,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '함께 자라기: 애자일로 가는 길',
     author: '김창준',
     publisher: '인사이트',
+    publishDate: '2019-03-20',
     isbn: '9788966262335',
     coverImage: 'https://picsum.photos/seed/book2/300/400',
     category: 'IT/개발',
@@ -37,6 +38,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '리팩터링: 코드 품질을 개선하는 기술',
     author: '마틴 파울러',
     publisher: '한빛미디어',
+    publishDate: '2020-06-15',
     isbn: '9791162242742',
     coverImage: 'https://picsum.photos/seed/book3/300/400',
     category: 'IT/개발',
@@ -52,6 +54,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '1만 시간의 재발견',
     author: '안데르스 에릭슨, 로버트 풀',
     publisher: '비즈니스북스',
+    publishDate: '2019-08-10',
     isbn: '9788963352138',
     coverImage: 'https://picsum.photos/seed/book4/300/400',
     category: '자기계발',
@@ -67,6 +70,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '사피엔스: 유인원에서 사이보그까지',
     author: '유발 하라리',
     publisher: '김영사',
+    publishDate: '2015-11-24',
     isbn: '9788934972464',
     coverImage: 'https://picsum.photos/seed/book5/300/400',
     category: '인문/사회',
@@ -82,6 +86,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '그릿: 열정, 끈기, 인내의 힘',
     author: '앤절라 더크워스',
     publisher: '비즈니스북스',
+    publishDate: '2017-02-15',
     isbn: '9788965705918',
     coverImage: 'https://picsum.photos/seed/book6/300/400',
     category: '자기계발',
@@ -97,6 +102,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '어떻게 일할 것인가',
     author: '고영성, 김앤드류',
     publisher: '스노우폭스북스',
+    publishDate: '2020-05-12',
     isbn: '9791187512035',
     coverImage: 'https://picsum.photos/seed/book7/300/400',
     category: '경영/경제',
@@ -112,6 +118,7 @@ export const MOCK_BOOKS: Book[] = [
     title: '소프트웨어 아키텍처의 기초',
     author: '마크 리처즈, 닐 포드',
     publisher: '한빛미디어',
+    publishDate: '2021-01-30',
     isbn: '9791162245484',
     coverImage: 'https://picsum.photos/seed/book8/300/400',
     category: 'IT/개발',
