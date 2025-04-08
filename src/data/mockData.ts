@@ -17,7 +17,12 @@ export const MOCK_BOOKS: Book[] = [
     rating: 4.8,
     registeredDate: '2023-05-15',
     description: '프로그래머라면 꼭 읽어야 할 클린 코드에 대한 책입니다. 더 나은 코드를 작성하는 방법과 프로그래밍 원칙을 설명합니다.',
-    isFavorite: true
+    isFavorite: true,
+    borrowedByCurrentUser: true,
+    borrowDate: '2024-04-01',
+    returnDueDate: '2024-04-15',
+    isExtendable: true,
+    hasBeenExtended: false
   },
   {
     id: 'book2',
@@ -34,7 +39,12 @@ export const MOCK_BOOKS: Book[] = [
     status: { available: 0, total: 2, borrowed: 2 },
     rating: 4.9,
     registeredDate: '2023-06-10',
-    description: '애자일 방법론과 팀 문화에 대한 국내 저자의 인사이트가 담긴 책입니다.'
+    description: '애자일 방법론과 팀 문화에 대한 국내 저자의 인사이트가 담긴 책입니다.',
+    borrowedByCurrentUser: true,
+    borrowDate: '2024-03-20',
+    returnDueDate: '2024-04-03',
+    isExtendable: false,
+    hasBeenExtended: true
   },
   {
     id: 'book3',
@@ -126,7 +136,7 @@ export const MOCK_BOOKS: Book[] = [
   {
     id: 'book8',
     title: '소프트웨어 아키텍처의 기초',
-    author: '마크 리처즈, 닐 포드',
+    author: '마크 리처즈, 닀 포드',
     publisher: '한빛미디어',
     publishDate: '2021-01-30',
     isbn: '9791162245484',
@@ -223,7 +233,7 @@ export const MOCK_BOOKS: Book[] = [
     status: { available: 0, total: 3, borrowed: 3 },
     rating: 4.6,
     registeredDate: '2023-08-22',
-    description: '현대 사회의 다양한 윤리적 딜레마를 철학적 관점에서 분석합니다.'
+    description: '현대 사��의 다양한 윤리적 딜레마를 철학적 관점에서 분석합니다.'
   },
   {
     id: 'book14',
@@ -372,6 +382,13 @@ export const MOCK_READING_GOAL: ReadingGoal = {
   current: 8,
 };
 
+export const SYSTEM_SETTINGS = {
+  borrowDays: 14,  // Default borrowing period in days
+  extensionDays: 7,  // Default extension period in days
+  maxBorrowLimit: 2,  // Maximum books a user can borrow
+  maxExtensionCount: 1  // Maximum number of extensions allowed per book
+};
+
 export const getRecommendedBooks = (): Book[] => {
   return MOCK_BOOKS.filter(book => book.badges.includes('recommended'));
 };
@@ -403,4 +420,9 @@ export const getBookById = (id: string): Book | undefined => {
 
 export const getReviewsForBook = (bookId: string): Review[] => {
   return MOCK_REVIEWS.filter(review => review.bookId === bookId);
+};
+
+export const hasReachedBorrowLimit = (userId: string): boolean => {
+  const borrowedCount = MOCK_BOOKS.filter(book => book.borrowedByCurrentUser).length;
+  return borrowedCount >= SYSTEM_SETTINGS.maxBorrowLimit;
 };

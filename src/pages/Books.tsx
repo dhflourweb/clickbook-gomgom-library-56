@@ -4,7 +4,7 @@ import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { BookFilters } from '@/components/books/BookFilters';
 import { BookGrid } from '@/components/books/BookGrid';
-import { getBooksByCategory, MOCK_BOOKS } from '@/data/mockData';
+import { getBooksByCategory, MOCK_BOOKS, getFavoriteBooks } from '@/data/mockData';
 import { Book } from '@/types';
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, BookOpen, Heart, ArrowUpDown } from 'lucide-react';
@@ -30,6 +30,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { BadgeDisplay } from '@/components/ui/badge-display';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
+import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
+import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -43,6 +46,12 @@ const Books = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { user } = useAuth();
+  
+  // Dialog states for the list view
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [borrowDialogOpen, setBorrowDialogOpen] = useState(false);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [extendDialogOpen, setExtendDialogOpen] = useState(false);
   
   const [filter, setFilter] = useState({
     query: '',
@@ -120,6 +129,11 @@ const Books = () => {
         );
       }
       
+      // Apply favorite filter
+      if (filters.favorite) {
+        filteredBooks = getFavoriteBooks();
+      }
+      
       // Apply sorting
       if (filters.sort === '인기도순') {
         filteredBooks.sort((a, b) => (b.status.borrowed || 0) - (a.status.borrowed || 0));
@@ -149,11 +163,6 @@ const Books = () => {
       // Apply custom column sorting if selected
       if (sortField) {
         filteredBooks = applySortByField(filteredBooks, sortField, sortDirection);
-      }
-      
-      // Apply favorite filter
-      if (filters.favorite) {
-        filteredBooks = filteredBooks.filter(book => book.isFavorite);
       }
       
       const total = filteredBooks.length;
@@ -316,6 +325,41 @@ const Books = () => {
     navigate(`/books/${bookId}`);
   };
 
+  // Handle book actions for list view
+  const handleBookAction = (e: React.MouseEvent, action: 'borrow' | 'return' | 'extend' | 'reserve', book: Book) => {
+    e.stopPropagation();
+    setSelectedBook(book);
+    
+    if (action === 'borrow') {
+      setBorrowDialogOpen(true);
+    } else if (action === 'return') {
+      setReturnDialogOpen(true);
+    } else if (action === 'extend') {
+      setExtendDialogOpen(true);
+    } else if (action === 'reserve') {
+      // Toggle reserve status
+      const updatedBooks = books.map(b => {
+        if (b.id === book.id) {
+          const isCurrentlyReserved = b.status.reserved;
+          if (!isCurrentlyReserved) {
+            toast.success(`'${b.title}' 도서를 예약했습니다.`);
+          } else {
+            toast.info(`'${b.title}' 도서 예약을 취소했습니다.`);
+          }
+          return { 
+            ...b, 
+            status: { 
+              ...b.status, 
+              reserved: !isCurrentlyReserved 
+            }
+          };
+        }
+        return b;
+      });
+      setBooks(updatedBooks);
+    }
+  };
+
   // Render a sortable column header
   const SortableColumnHeader = ({ field, width, children }: { field: string, width?: string, children: React.ReactNode }) => (
     <TableHead 
@@ -335,22 +379,22 @@ const Books = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-24">상태</TableHead>
+            <TableHead className="w-28">상태</TableHead>
             <TableHead className="w-12">즐겨찾기</TableHead>
             <TableHead className="w-[300px]">도서정보</TableHead>
-            <TableHead className="w-28">저자</TableHead>
-            <TableHead className="w-24">카테고리</TableHead>
-            <TableHead className="w-24">위치</TableHead>
+            <TableHead className="w-32">저자</TableHead>
+            <TableHead className="w-28">카테고리</TableHead>
+            <TableHead className="w-28">위치</TableHead>
             <TableHead className="w-24">추천수</TableHead>
             <TableHead className="w-24">대여횟수</TableHead>
             <TableHead className="w-24">평점</TableHead>
-            <TableHead className="w-32">기능</TableHead>
+            <TableHead className="w-40">기능</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {Array.from({ length: itemsPerPage }).map((_, i) => (
             <TableRow key={i}>
-              <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-24" /></TableCell>
               <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
@@ -363,12 +407,12 @@ const Books = () => {
                 </div>
               </TableCell>
               <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
               <TableCell><Skeleton className="h-4 w-8" /></TableCell>
               <TableCell><Skeleton className="h-4 w-8" /></TableCell>
               <TableCell><Skeleton className="h-4 w-10" /></TableCell>
-              <TableCell><Skeleton className="h-8 w-24" /></TableCell>
+              <TableCell><Skeleton className="h-8 w-36" /></TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -381,22 +425,22 @@ const Books = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <SortableColumnHeader field="status" width="w-24">상태</SortableColumnHeader>
+            <SortableColumnHeader field="status" width="w-28">상태</SortableColumnHeader>
             <TableHead className="w-12">즐겨찾기</TableHead>
             <SortableColumnHeader field="title" width="w-[300px]">도서정보</SortableColumnHeader>
-            <SortableColumnHeader field="author" width="w-28">저자</SortableColumnHeader>
-            <SortableColumnHeader field="category" width="w-24">카테고리</SortableColumnHeader>
-            <SortableColumnHeader field="location" width="w-24">위치</SortableColumnHeader>
+            <SortableColumnHeader field="author" width="w-32">저자</SortableColumnHeader>
+            <SortableColumnHeader field="category" width="w-28">카테고리</SortableColumnHeader>
+            <SortableColumnHeader field="location" width="w-28">위치</SortableColumnHeader>
             <SortableColumnHeader field="recommendations" width="w-24">추천수</SortableColumnHeader>
             <SortableColumnHeader field="borrowed" width="w-24">대여횟수</SortableColumnHeader>
             <SortableColumnHeader field="rating" width="w-24">평점</SortableColumnHeader>
-            <TableHead className="w-32">기능</TableHead>
+            <TableHead className="w-40">기능</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {books.map((book) => {
             const isAvailable = book.status.available > 0;
-            const isBorrowedByUser = user?.borrowedBooks === Number(book.id);
+            const isBorrowedByUser = book.borrowedByCurrentUser || false;
             const isFavorite = book.isFavorite || false;
             
             return (
@@ -405,8 +449,8 @@ const Books = () => {
                 className="cursor-pointer hover:bg-gray-50"
                 onClick={() => navigateToBookDetail(book.id)}
               >
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${
+                <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                     isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
                     book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
                     'bg-gray-200 text-gray-600'
@@ -442,12 +486,12 @@ const Books = () => {
                       <div className="font-medium mb-1">{book.title}</div>
                       <div className="text-xs text-gray-500">{book.publisher}</div>
                       <div className="flex gap-1 mt-1">
-                        <BadgeDisplay badges={book.badges} size="sm" />
+                        <BadgeDisplay badges={book.badges} size="xs" />
                       </div>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{book.author}</TableCell>
+                <TableCell className="whitespace-nowrap">{book.author}</TableCell>
                 <TableCell>{book.category}</TableCell>
                 <TableCell>{book.location || 'A-1-2'}</TableCell>
                 <TableCell>{book.recommendations || 0}</TableCell>
@@ -459,13 +503,14 @@ const Books = () => {
                     </span>
                   )}
                 </TableCell>
-                <TableCell onClick={(e) => e.stopPropagation()}>
+                <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1 items-center">
                     {isAvailable ? (
                       <Button 
                         variant="default" 
                         size="sm" 
                         className="bg-primary hover:bg-primary/90"
+                        onClick={(e) => handleBookAction(e, 'borrow', book)}
                         disabled={user?.borrowedCount >= 2}
                       >
                         대여하기
@@ -476,6 +521,7 @@ const Books = () => {
                           variant="outline" 
                           size="sm" 
                           className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                          onClick={(e) => handleBookAction(e, 'return', book)}
                         >
                           반납
                         </Button>
@@ -483,6 +529,8 @@ const Books = () => {
                           variant="outline" 
                           size="sm" 
                           className="border-primary text-primary hover:bg-primary/10"
+                          onClick={(e) => handleBookAction(e, 'extend', book)}
+                          disabled={!book.isExtendable}
                         >
                           연장
                         </Button>
@@ -491,7 +539,8 @@ const Books = () => {
                       <Button 
                         variant="secondary"
                         size="sm" 
-                        className="bg-secondary-green hover:bg-secondary-green/90"
+                        className="bg-secondary hover:bg-secondary/90"
+                        onClick={(e) => handleBookAction(e, 'reserve', book)}
                       >
                         예약하기
                       </Button>
@@ -604,6 +653,29 @@ const Books = () => {
           </>
         )}
       </div>
+      
+      {/* Dialogs for list view actions */}
+      {selectedBook && (
+        <>
+          <BorrowBookDialog 
+            book={selectedBook}
+            isOpen={borrowDialogOpen}
+            onOpenChange={setBorrowDialogOpen}
+          />
+          
+          <ReturnBookDialog 
+            book={selectedBook}
+            isOpen={returnDialogOpen}
+            onOpenChange={setReturnDialogOpen}
+          />
+          
+          <ExtendBookDialog 
+            book={selectedBook}
+            isOpen={extendDialogOpen}
+            onOpenChange={setExtendDialogOpen}
+          />
+        </>
+      )}
     </MainLayout>
   );
 };
