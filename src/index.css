@@ -1,3 +1,46 @@
+@font-face {
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  src:
+          url('src/assets/fonts/Pretendard-Regular.eot?') format('eot'),
+          url('src/assets/fonts/Pretendard-Regular.woff') format('woff'),
+          url('src/assets/fonts/Pretendard-Regular.woff2') format('woff2'),
+          url('src/assets/fonts/Pretendard-Regular.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: Pretendard;
+  font-weight: 500;
+  font-style: normal;
+  src:
+          url('src/assets/fonts/Pretendard-Medium.eot?') format('eot'),
+          url('src/assets/fonts/Pretendard-Medium.woff') format('woff'),
+          url('src/assets/fonts/Pretendard-Medium.woff2') format('woff2'),
+          url('src/assets/fonts/Pretendard-Medium.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  src:
+          url('src/assets/fonts/Pretendard-SemiBold.eot?') format('eot'),
+          url('src/assets/fonts/Pretendard-SemiBold.woff') format('woff'),
+          url('src/assets/fonts/Pretendard-SemiBold.woff2') format('woff2'),
+          url('src/assets/fonts/Pretendard-SemiBold.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  src:
+          url('src/assets/fonts/Pretendard-Bold.eot?') format('eot'),
+          url('src/assets/fonts/Pretendard-Bold.woff') format('woff'),
+          url('src/assets/fonts/Pretendard-Bold.woff2') format('woff2'),
+          url('src/assets/fonts/Pretendard-Bold.ttf') format('opentype');
+}
 
 @tailwind base;
 @tailwind components;
