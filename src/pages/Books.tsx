@@ -1,14 +1,19 @@
 
 import { useState, useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { BookFilters } from '@/components/books/BookFilters';
 import { BookGrid } from '@/components/books/BookGrid';
 import { getBooksByCategory, MOCK_BOOKS } from '@/data/mockData';
 import { Book } from '@/types';
+import { toast } from "sonner";
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
   const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  
   const [filter, setFilter] = useState({
     query: '',
     category: '전체',
@@ -17,36 +22,58 @@ const Books = () => {
     favorite: false,
   });
 
+  // Parse URL query parameters when page loads or URL changes
   useEffect(() => {
-    // Parse URL query parameters if needed
-    // This would be filled out in a real application
-  }, []);
+    const queryParam = searchParams.get('query') || '';
+    const categoryParam = searchParams.get('category') || '전체';
+    const statusParam = searchParams.get('status') || '전체';
+    const sortParam = searchParams.get('sort') || '추천순';
+    const favoriteParam = searchParams.get('favorite') === 'true';
+    
+    // Handle special case when coming from category links
+    const filterParam = searchParams.get('filter');
+    let finalCategory = categoryParam;
+    
+    if (filterParam && filterParam.startsWith('category=')) {
+      finalCategory = filterParam.split('=')[1];
+    }
 
-  const handleSearch = (newFilter: any) => {
-    setLoading(true);
+    const newFilter = {
+      query: queryParam,
+      category: finalCategory,
+      status: statusParam,
+      sort: sortParam,
+      favorite: favoriteParam
+    };
+    
     setFilter(newFilter);
+    applyFilters(newFilter);
+  }, [location.search]);
+
+  const applyFilters = (filters: any) => {
+    setLoading(true);
     
     // Simulate API delay
     setTimeout(() => {
       let filteredBooks = [...MOCK_BOOKS];
       
       // Apply category filter
-      if (newFilter.category !== '전체') {
-        filteredBooks = filteredBooks.filter(book => book.category === newFilter.category);
+      if (filters.category !== '전체') {
+        filteredBooks = filteredBooks.filter(book => book.category === filters.category);
       }
       
       // Apply status filter
-      if (newFilter.status !== '전체') {
-        if (newFilter.status === '대여가능') {
+      if (filters.status !== '전체') {
+        if (filters.status === '대여가능') {
           filteredBooks = filteredBooks.filter(book => book.status.available > 0);
-        } else if (newFilter.status === '대여중') {
+        } else if (filters.status === '대여중') {
           filteredBooks = filteredBooks.filter(book => book.status.available === 0);
         }
       }
       
       // Apply search query
-      if (newFilter.query) {
-        const query = newFilter.query.toLowerCase();
+      if (filters.query) {
+        const query = filters.query.toLowerCase();
         filteredBooks = filteredBooks.filter(book => 
           book.title.toLowerCase().includes(query) || 
           book.author.toLowerCase().includes(query) || 
@@ -55,26 +82,43 @@ const Books = () => {
       }
       
       // Apply sorting
-      if (newFilter.sort === '추천순') {
+      if (filters.sort === '추천순') {
         filteredBooks.sort((a, b) => {
           const aHasRecommended = a.badges.includes('recommended');
           const bHasRecommended = b.badges.includes('recommended');
           return bHasRecommended ? 1 : aHasRecommended ? -1 : 0;
         });
-      } else if (newFilter.sort === '평점순') {
+      } else if (filters.sort === '평점순') {
         filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      } else if (newFilter.sort === '제목순') {
+      } else if (filters.sort === '제목순') {
         filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
       }
       
       // Apply favorite filter (for demonstration, we'll just show fewer books)
-      if (newFilter.favorite) {
+      if (filters.favorite) {
         filteredBooks = filteredBooks.slice(0, 3);
       }
       
       setBooks(filteredBooks);
       setLoading(false);
+      
+      // Show toast notification with filter results
+      toast(`${filteredBooks.length}권의 도서가 검색되었습니다.`);
     }, 300);
+  };
+
+  const handleSearch = (newFilter: any) => {
+    // Update URL with new search parameters
+    const params = new URLSearchParams();
+    if (newFilter.query) params.set('query', newFilter.query);
+    if (newFilter.category !== '전체') params.set('category', newFilter.category);
+    if (newFilter.status !== '전체') params.set('status', newFilter.status);
+    if (newFilter.sort !== '추천순') params.set('sort', newFilter.sort);
+    if (newFilter.favorite) params.set('favorite', 'true');
+    
+    setSearchParams(params);
+    setFilter(newFilter);
+    applyFilters(newFilter);
   };
 
   return (
@@ -83,7 +127,7 @@ const Books = () => {
         <h1 className="text-2xl font-bold">전체 도서</h1>
         
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <BookFilters onSearch={handleSearch} />
+          <BookFilters onSearch={handleSearch} initialFilter={filter} />
         </div>
         
         {loading ? (

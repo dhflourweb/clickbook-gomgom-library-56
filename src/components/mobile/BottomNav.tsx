@@ -128,13 +128,13 @@ export const BottomNav = () => {
         </div>
       </nav>
       
-      {/* Full Menu Drawer */}
+      {/* Full Menu Drawer - Updated to have proper scrolling */}
       <Drawer open={showFullMenu} onOpenChange={setShowFullMenu}>
-        <DrawerContent className="h-[85vh] rounded-t-xl">
+        <DrawerContent className="max-h-[85vh] rounded-t-xl overflow-hidden">
           <DrawerHeader>
             <DrawerTitle className="text-center">전체메뉴</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4">
+          <div className="overflow-y-auto px-4 pb-4" style={{ maxHeight: "calc(85vh - 120px)" }}>
             <div className="flex flex-col space-y-3">
               {/* 도서 관리 */}
               <div className="mb-4">
@@ -152,7 +152,7 @@ export const BottomNav = () => {
                   <button 
                     className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
-                      navigate('/books/details');
+                      navigate('/books/rentals');
                       setShowFullMenu(false);
                     }}
                   >

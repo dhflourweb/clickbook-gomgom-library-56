@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BookFiltersProps {
   onSearch: (filters: FilterState) => void;
+  initialFilter?: FilterState;
 }
 
 interface FilterState {
@@ -54,7 +55,7 @@ const CATEGORIES = [
 const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약가능'];
 const SORT_OPTIONS = ['추천순', '평점순', '최신순', '제목순'];
 
-export const BookFilters = ({ onSearch }: BookFiltersProps) => {
+export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
   const isMobile = useIsMobile();
   const [filters, setFilters] = useState<FilterState>({
     query: '',
@@ -62,9 +63,18 @@ export const BookFilters = ({ onSearch }: BookFiltersProps) => {
     status: '전체',
     sort: '추천순',
     favorite: false,
+    ...(initialFilter || {})
   });
 
   const [tempFilters, setTempFilters] = useState(filters);
+
+  // Update filters when initialFilter changes
+  useEffect(() => {
+    if (initialFilter) {
+      setFilters(initialFilter);
+      setTempFilters(initialFilter);
+    }
+  }, [initialFilter]);
 
   const handleSearch = () => {
     onSearch(filters);
@@ -192,6 +202,36 @@ export const BookFilters = ({ onSearch }: BookFiltersProps) => {
     </Sheet>
   );
 
+  const MobileSearchModal = () => (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Search size={20} />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>도서 검색</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <Input
+            type="text"
+            name="query"
+            placeholder="도서명, 저자, 출판사 검색..."
+            value={tempFilters.query}
+            onChange={handleInputChange}
+          />
+          <Button onClick={() => {
+            setFilters(prev => ({ ...prev, query: tempFilters.query }));
+            onSearch({ ...filters, query: tempFilters.query });
+          }} className="w-full">
+            검색
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   const DesktopFilters = () => (
     <div className="flex flex-wrap gap-3 items-center">
       <div className="flex-1 min-w-[180px]">
@@ -284,11 +324,15 @@ export const BookFilters = ({ onSearch }: BookFiltersProps) => {
           </button>
         </div>
         
-        {isMobile ? <MobileFilters /> : null}
+        {isMobile && <MobileSearchModal />}
+        {isMobile && <MobileFilters />}
       </div>
       
       {!isMobile && (
-        <DesktopFilters />
+        <>
+          <DesktopFilters />
+          <Button onClick={handleSearch} className="mt-2">검색</Button>
+        </>
       )}
     </div>
   );
