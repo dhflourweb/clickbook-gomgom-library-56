@@ -7,8 +7,7 @@ import {
   MOCK_BANNER_ITEMS, 
   getNewBooks,
   getRecommendedBooks,
-  getBestBooks,
-  getPopularBooks 
+  getBestBooks
 } from '@/data/mockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
@@ -18,8 +17,7 @@ import { cn } from '@/lib/utils';
 const Home = () => {
   const newBooks = getNewBooks();
   const recommendedBooks = getRecommendedBooks();
-  const bestBooksInternal = getBestBooks();
-  const bestBooksNational = getPopularBooks(); // Using popular books as national best books
+  const bestBooks = getBestBooks();
   const isMobile = useIsMobile();
 
   return (
@@ -70,10 +68,10 @@ const Home = () => {
             </section>
           )}
           
-          {bestBooksInternal.length > 0 && (
+          {bestBooks.length > 0 && (
             <section className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
-                <h2 className="text-lg font-semibold text-primary-deepblue">베스트 도서 (사내)</h2>
+                <h2 className="text-lg font-semibold text-primary-deepblue">베스트 도서</h2>
                 <Link to="/books?sort=베스트도서순">
                   <Button variant="ghost" className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 hover:bg-transparent p-0 h-auto" size="sm">
                     더보기
@@ -81,22 +79,7 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-              <BookCarousel books={bestBooksInternal} />
-            </section>
-          )}
-          
-          {bestBooksNational.length > 0 && (
-            <section className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
-                <h2 className="text-lg font-semibold text-primary-deepblue">베스트 도서 (국내)</h2>
-                <Link to="/books?sort=베스트도서순">
-                  <Button variant="ghost" className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 hover:bg-transparent p-0 h-auto" size="sm">
-                    더보기
-                    <ChevronRight size={16} className="ml-1" />
-                  </Button>
-                </Link>
-              </div>
-              <BookCarousel books={bestBooksNational} />
+              <BookCarousel books={bestBooks} />
             </section>
           )}
         </div>

@@ -12,7 +12,7 @@ export const MOCK_BOOKS: Book[] = [
     category: '기타',
     location: '본관 3층 개발서적',
     source: 'purchase',
-    badges: ['recommended', 'popular'],
+    badges: ['recommended'],
     status: { available: 2, total: 3, borrowed: 1 },
     rating: 4.8,
     registeredDate: '2023-05-15',
@@ -57,7 +57,7 @@ export const MOCK_BOOKS: Book[] = [
     category: '기타',
     location: '본관 3층 개발서적',
     source: 'purchase',
-    badges: ['popular'],
+    badges: [],
     status: { available: 0, total: 1, borrowed: 1 },
     rating: 4.7,
     registeredDate: '2023-07-22',
@@ -97,7 +97,7 @@ export const MOCK_BOOKS: Book[] = [
     category: '인문/역사',
     location: '본관 2층 인문학',
     source: 'purchase',
-    badges: ['best', 'popular'],
+    badges: ['best'],
     status: { available: 0, total: 5, borrowed: 5 },
     rating: 4.8,
     registeredDate: '2023-03-17',
@@ -143,7 +143,7 @@ export const MOCK_BOOKS: Book[] = [
   {
     id: 'book8',
     title: '소프트웨어 아키텍처의 기초',
-    author: '마크 리처즈, 닀 포드',
+    author: '마크 리처즈, 닠 포드',
     publisher: '한빛미디어',
     publishDate: '2021-01-30',
     isbn: '9791162245484',
@@ -168,7 +168,7 @@ export const MOCK_BOOKS: Book[] = [
     category: '문학',
     location: '본관 1층 문학',
     source: 'purchase',
-    badges: ['popular'],
+    badges: [],
     status: { available: 3, total: 5, borrowed: 2 },
     rating: 4.7,
     registeredDate: '2022-11-10',
@@ -236,11 +236,11 @@ export const MOCK_BOOKS: Book[] = [
     category: '사회',
     location: '본관 2층 사회과학',
     source: 'purchase',
-    badges: ['popular'],
+    badges: [],
     status: { available: 0, total: 3, borrowed: 3 },
     rating: 4.6,
     registeredDate: '2023-08-22',
-    description: '현대 사��의 다양한 윤리적 딜레마를 철학적 관점에서 분석합니다.'
+    description: '현대 사의 다양한 윤리적 딜레마를 철학적 관점에서 분석합니다.'
   },
   {
     id: 'book14',
@@ -406,10 +406,6 @@ export const getNewBooks = (): Book[] => {
 
 export const getBestBooks = (): Book[] => {
   return MOCK_BOOKS.filter(book => book.badges.includes('best'));
-};
-
-export const getPopularBooks = (): Book[] => {
-  return MOCK_BOOKS.filter(book => book.badges.includes('popular'));
 };
 
 export const getFavoriteBooks = (): Book[] => {

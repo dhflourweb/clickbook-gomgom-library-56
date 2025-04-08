@@ -10,7 +10,6 @@ interface BadgeDisplayProps {
 const badgeLabels: Record<NonNullable<BookBadge>, string> = {
   'new': '신규',
   'recommended': '추천',
-  'popular': '인기',
   'best': '베스트'
 };
 
@@ -29,7 +28,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
   return (
     <div className="flex flex-wrap gap-1.5">
       {badges
-        .filter((badge): badge is NonNullable<BookBadge> => badge !== null)
+        .filter((badge): badge is NonNullable<BookBadge> => badge !== null && badge !== 'popular')
         .map(badge => {
           let badgeClassName = "font-medium rounded-md";
           
@@ -39,7 +38,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
           } else if (badge === 'recommended') {
             badgeClassName += " bg-secondary-green text-white";
           } else if (badge === 'best') {
-            badgeClassName += " bg-[#9b87f5] text-white";
+            badgeClassName += " bg-point-red text-white";
           } else {
             badgeClassName += " badge-" + badge;
           }
