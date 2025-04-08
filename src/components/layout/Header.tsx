@@ -27,14 +27,17 @@ export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      // Modified to redirect to /books with search query parameter
+      navigate(`/books?query=${encodeURIComponent(searchQuery.trim())}`);
       setShowSearchBar(false);
       setShowSearchModal(false);
     }
   };
+  
   const toggleSearchBar = () => {
     if (isMobile) {
       setShowSearchModal(true);
@@ -49,6 +52,7 @@ export const Header = () => {
       }
     }
   };
+  
   return <>
         <div className="t-banner text-sm md:text-base">
           <p className="text-white">
@@ -133,16 +137,26 @@ export const Header = () => {
 
             {/* User controls */}
             <div className="flex items-center">
-              {showSearchBar ? <div className="relative flex items-center animated-search">
-                    <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
-                      <Input id="searchInput" placeholder="도서 검색..." className="border-0 focus-visible:ring-0 h-8 w-[200px] md:w-[240px] sm:w-[180px]" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={toggleSearchBar}>
-                        <X size={16} className="text-gray-500" />
-                      </Button>
-                    </form>
-                  </div> : <Button variant="ghost" size="icon" className="text-black" onClick={toggleSearchBar}>
-                    <Search size={20} />
-                  </Button>}
+              {showSearchBar ? (
+                <div className="relative flex items-center animated-search">
+                  <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
+                    <Input 
+                      id="searchInput" 
+                      placeholder="도서명, 저자, 출판사 검색..." 
+                      className="border-0 focus-visible:ring-0 h-10 w-[280px] md:w-[320px] sm:w-[240px]"
+                      value={searchQuery} 
+                      onChange={e => setSearchQuery(e.target.value)}
+                    />
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={toggleSearchBar}>
+                      <X size={16} className="text-gray-500" />
+                    </Button>
+                  </form>
+                </div>
+              ) : (
+                <Button variant="ghost" size="icon" className="text-black" onClick={toggleSearchBar}>
+                  <Search size={20} />
+                </Button>
+              )}
 
               <Link to="/mypage">
                 <Button variant="ghost" size="icon" className="text-black">
@@ -163,22 +177,30 @@ export const Header = () => {
           </div>
 
           {/* Mobile Search Modal */}
-          {isMobile && <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>도서 검색</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleSearch} className="flex items-center gap-2">
-                    <Input placeholder="도서 검색..." className="flex-1" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} autoFocus />
-                    <Button type="submit">검색</Button>
-                  </form>
-                  <DialogFooter className="sm:justify-start">
-                    <Button type="button" variant="secondary" onClick={() => setShowSearchModal(false)}>
-                      취소
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>}
+          {isMobile && (
+            <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>도서 검색</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSearch} className="flex items-center gap-2">
+                  <Input 
+                    placeholder="도서명, 저자, 출판사 검색..." 
+                    className="flex-1" 
+                    value={searchQuery} 
+                    onChange={e => setSearchQuery(e.target.value)} 
+                    autoFocus 
+                  />
+                  <Button type="submit">검색</Button>
+                </form>
+                <DialogFooter className="sm:justify-start">
+                  <Button type="button" variant="secondary" onClick={() => setShowSearchModal(false)}>
+                    취소
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </header>
-        </>;
+      </>;
 };
