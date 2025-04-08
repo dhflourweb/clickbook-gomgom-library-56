@@ -11,6 +11,7 @@ export interface Book {
   status: {
     total: number;
     available: number;
+    borrowed?: number;  // Add the borrowed property
   };
   badges: BookBadge[];
   rating?: number;
@@ -19,6 +20,7 @@ export interface Book {
   isbn: string;
   location: string;
   source: string;
+  registeredDate: string;  // Add registeredDate property
 }
 
 export type BookBadge = 'new' | 'recommended' | 'popular' | 'best' | null;

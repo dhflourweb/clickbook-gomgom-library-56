@@ -13,8 +13,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 3층 개발서적',
     source: 'purchase',
     badges: ['recommended', 'popular'],
-    status: { available: 2, total: 3 },
+    status: { available: 2, total: 3, borrowed: 1 },
     rating: 4.8,
+    registeredDate: '2023-05-15',
     description: '프로그래머라면 꼭 읽어야 할 클린 코드에 대한 책입니다. 더 나은 코드를 작성하는 방법과 프로그래밍 원칙을 설명합니다.'
   },
   {
@@ -29,8 +30,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 3층 개발서적',
     source: 'purchase',
     badges: ['best'],
-    status: { available: 0, total: 2 },
+    status: { available: 0, total: 2, borrowed: 2 },
     rating: 4.9,
+    registeredDate: '2023-06-10',
     description: '애자일 방법론과 팀 문화에 대한 국내 저자의 인사이트가 담긴 책입니다.'
   },
   {
@@ -45,8 +47,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 3층 개발서적',
     source: 'purchase',
     badges: ['popular'],
-    status: { available: 1, total: 1 },
+    status: { available: 1, total: 1, borrowed: 0 },
     rating: 4.7,
+    registeredDate: '2023-07-22',
     description: '코드 리팩터링에 대한 기술과 원칙을 설명하는 개발자를 위한 필독서입니다.'
   },
   {
@@ -55,14 +58,15 @@ export const MOCK_BOOKS: Book[] = [
     author: '안데르스 에릭슨, 로버트 풀',
     publisher: '비즈니스북스',
     publishDate: '2019-08-10',
-    isbn: '9788963352138',
+    isbn: '8963352138',
     coverImage: 'https://picsum.photos/seed/book4/300/400',
     category: '자기개발',
     location: '별관 2층 자기계발',
     source: 'donation',
     badges: ['new'],
-    status: { available: 3, total: 3 },
+    status: { available: 3, total: 3, borrowed: 0 },
     rating: 4.2,
+    registeredDate: '2024-01-05',
     description: '진정한 전문성을 기르는 효과적인 학습법에 대한 책입니다.'
   },
   {
@@ -77,8 +81,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 2층 인문학',
     source: 'purchase',
     badges: ['best', 'popular'],
-    status: { available: 0, total: 5 },
+    status: { available: 0, total: 5, borrowed: 5 },
     rating: 4.8,
+    registeredDate: '2023-03-17',
     description: '인간의 역사와 미래에 대한 통찰을 담은 세계적인 베스트셀러입니다.'
   },
   {
@@ -93,8 +98,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '별관 2층 자기계발',
     source: 'purchase',
     badges: ['recommended'],
-    status: { available: 1, total: 2 },
+    status: { available: 1, total: 2, borrowed: 1 },
     rating: 4.5,
+    registeredDate: '2023-09-05',
     description: '성공의 핵심 요소인 그릿(끈기)에 대해 설명하는 책입니다.'
   },
   {
@@ -109,8 +115,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '별관 1층 경영서적',
     source: 'purchase',
     badges: ['new', 'recommended'],
-    status: { available: 2, total: 3 },
+    status: { available: 2, total: 3, borrowed: 1 },
     rating: 4.3,
+    registeredDate: '2024-02-20',
     description: '일에서 성과를 내는 방법과 성장하는 방법에 대한 실용적인 조언이 담긴 책입니다.'
   },
   {
@@ -125,8 +132,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 3층 개발서적',
     source: 'purchase',
     badges: ['new'],
-    status: { available: 1, total: 1 },
+    status: { available: 1, total: 1, borrowed: 0 },
     rating: 4.6,
+    registeredDate: '2024-03-15',
     description: '소프트웨어 아키텍처의 기본 개념과 패턴을 설명하는 책입니다.'
   },
   {
@@ -141,8 +149,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 1층 문학',
     source: 'purchase',
     badges: ['popular'],
-    status: { available: 3, total: 5 },
+    status: { available: 3, total: 5, borrowed: 2 },
     rating: 4.7,
+    registeredDate: '2022-11-10',
     description: '자아의 발견과 성장에 관한 헤르만 헤세의 대표작입니다.'
   },
   {
@@ -157,8 +166,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 1층 문학',
     source: 'purchase',
     badges: ['best'],
-    status: { available: 1, total: 2 },
+    status: { available: 1, total: 2, borrowed: 1 },
     rating: 4.5,
+    registeredDate: '2023-02-28',
     description: '노인 어부와 거대한 물고기의 이야기를 담은 헤밍웨이의 걸작입니다.'
   },
   {
@@ -173,8 +183,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '별관 1층 경영서적',
     source: 'purchase',
     badges: ['recommended'],
-    status: { available: 2, total: 2 },
+    status: { available: 2, total: 2, borrowed: 0 },
     rating: 4.3,
+    registeredDate: '2023-04-15',
     description: '일상 속 경제 원리를 쉽게 풀어낸 경제학 입문서입니다.'
   },
   {
@@ -189,8 +200,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '별관 3층 취미',
     source: 'donation',
     badges: ['new'],
-    status: { available: 1, total: 1 },
+    status: { available: 1, total: 1, borrowed: 0 },
     rating: 4.2,
+    registeredDate: '2024-04-01',
     description: '집에서 할 수 있는 다양한 정원 가꾸기 방법을 소개합니다.'
   },
   {
@@ -205,8 +217,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 2층 사회과학',
     source: 'purchase',
     badges: ['popular'],
-    status: { available: 0, total: 3 },
+    status: { available: 0, total: 3, borrowed: 3 },
     rating: 4.6,
+    registeredDate: '2023-08-22',
     description: '현대 사회의 다양한 윤리적 딜레마를 철학적 관점에서 분석합니다.'
   },
   {
@@ -221,8 +234,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '별관 3층 라이프스타일',
     source: 'purchase',
     badges: ['recommended'],
-    status: { available: 2, total: 2 },
+    status: { available: 2, total: 2, borrowed: 0 },
     rating: 4.1,
+    registeredDate: '2023-10-15',
     description: '적게 소유하고 최대한 깊이 있게 삶을 사는 방법에 대해 안내합니다.'
   },
   {
@@ -237,8 +251,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 2층 역사',
     source: 'purchase',
     badges: [],
-    status: { available: 1, total: 1 },
+    status: { available: 1, total: 1, borrowed: 0 },
     rating: 4.4,
+    registeredDate: '2023-05-30',
     description: '한국사의 주요 사건들을 새로운 시각에서 조명한 역사서입니다.'
   },
   {
@@ -253,8 +268,9 @@ export const MOCK_BOOKS: Book[] = [
     location: '본관 2층 인문학',
     source: 'purchase',
     badges: ['new'],
-    status: { available: 3, total: 3 },
+    status: { available: 3, total: 3, borrowed: 0 },
     rating: 4.0,
+    registeredDate: '2024-03-01',
     description: '세계 각국의 문화와 역사에 대한 개괄적인 소개를 담고 있습니다.'
   }
 ];
