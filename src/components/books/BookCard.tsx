@@ -78,6 +78,10 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     return "대여중";
   };
 
+  const handleCardClick = (e: React.MouseEvent, to: string) => {
+    // Allow default navigation
+  };
+
   // Determine which button to show based on book status and user
   const renderActionButton = () => {
     // Case 1: User is the reserver and book is available - Show borrow button
@@ -149,10 +153,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
             size="sm" 
             className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
             disabled={true}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
           >
             예약불가
           </Button>
@@ -180,11 +180,16 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   return (
     <>
       <div 
-        className={cn("book-card transition-all hover:shadow-md hover:scale-[1.02] hover:border-primary/30", className)}
+        className={cn("book-card transition-all hover:shadow-md hover:scale-[1.02] hover:border-primary/30 cursor-pointer", className)}
+        onClick={(e) => handleCardClick(e, `/books/${book.id}`)}
       >
         <Link 
           to={`/books/${book.id}`} 
           className="block"
+          onClick={(e) => {
+            // Let the parent div handle the click
+            e.stopPropagation();
+          }}
         >
           <div className="relative">
             <img
@@ -196,7 +201,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
               <BadgeDisplay badges={book.badges} size="sm" />
             </div>
             <button
-              type="button"
               className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
                 isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
               }`}
@@ -239,7 +243,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
               </div>
             </div>
           </Link>
-          <div className="mt-2 pt-2 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
+          <div className="mt-2 pt-2 border-t border-gray-100">
             {renderActionButton()}
           </div>
         </div>

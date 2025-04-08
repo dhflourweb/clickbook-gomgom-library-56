@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Grid, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +21,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -29,6 +36,8 @@ interface BookFiltersProps {
   initialFilter?: FilterState;
   onItemsPerPageChange: (value: number) => void;
   itemsPerPage: number;
+  onViewModeChange?: (mode: 'grid' | 'list') => void;
+  viewMode?: 'grid' | 'list';
 }
 
 interface FilterState {
@@ -50,7 +59,9 @@ export const BookFilters = ({
   onSearch, 
   initialFilter, 
   onItemsPerPageChange,
-  itemsPerPage
+  itemsPerPage,
+  onViewModeChange,
+  viewMode = 'grid'
 }: BookFiltersProps) => {
   const isMobile = useIsMobile();
   const [filters, setFilters] = useState<FilterState>({
@@ -63,6 +74,7 @@ export const BookFilters = ({
   });
 
   const [tempFilters, setTempFilters] = useState(filters);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
 
   // Update filters when initialFilter changes
   useEffect(() => {
@@ -85,6 +97,7 @@ export const BookFilters = ({
   const handleMobileSearch = () => {
     setFilters(tempFilters);
     onSearch(tempFilters);
+    setSearchDialogOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,10 +136,18 @@ export const BookFilters = ({
     }
   };
 
+  const handleViewModeToggle = (mode: 'grid' | 'list') => {
+    if (onViewModeChange) {
+      onViewModeChange(mode);
+    }
+  };
+
   const handleFavoriteToggle = (checked: boolean) => {
-    const updatedFilters = { ...filters, favorite: checked };
-    setFilters(updatedFilters);
-    onSearch(updatedFilters);
+    if (isMobile) {
+      const updatedFilters = { ...filters, favorite: checked };
+      setFilters(updatedFilters);
+      onSearch(updatedFilters);
+    }
   };
 
   // Mobile filter that contains only core filters
@@ -209,6 +230,38 @@ export const BookFilters = ({
     </Sheet>
   );
 
+  const MobileSearchModal = () => (
+    <Dialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Search size={20} />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>도서 검색</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <Input
+            type="text"
+            name="query"
+            placeholder="도서명, 저자, 출판사 검색..."
+            value={tempFilters.query}
+            onChange={handleInputChange}
+            className="mt-2"
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleMobileSearch();
+            }}
+          />
+          <Button onClick={handleMobileSearch} className="w-full">
+            검색
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   // Mobile controls outside filter sheet
   const MobileExtraControls = () => (
     <div className="flex flex-col gap-3 mt-3 border-t pt-3">
@@ -239,6 +292,30 @@ export const BookFilters = ({
           onCheckedChange={handleFavoriteToggle}
         />
       </div>
+
+      {onViewModeChange && (
+        <div className="flex justify-between items-center">
+          <label className="text-sm font-medium">보기 방식</label>
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant={viewMode === 'grid' ? 'default' : 'outline'} 
+              onClick={() => handleViewModeToggle('grid')}
+              className="px-2 py-1 h-9"
+            >
+              <Grid size={16} />
+            </Button>
+            <Button 
+              size="sm" 
+              variant={viewMode === 'list' ? 'default' : 'outline'} 
+              onClick={() => handleViewModeToggle('list')} 
+              className="px-2 py-1 h-9"
+            >
+              <List size={16} />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -331,6 +408,27 @@ export const BookFilters = ({
           관심 도서만
         </label>
       </div>
+      
+      {onViewModeChange && (
+        <div className="flex gap-1 ml-auto">
+          <Button 
+            size="sm" 
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            onClick={() => handleViewModeToggle('grid')}
+            className="px-2"
+          >
+            <Grid size={16} />
+          </Button>
+          <Button 
+            size="sm" 
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            onClick={() => handleViewModeToggle('list')}
+            className="px-2"
+          >
+            <List size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -358,18 +456,8 @@ export const BookFilters = ({
       
       {isMobile && (
         <>
-          <div className="flex gap-2 items-center">
-            <div className="flex-1">
-              <Input
-                type="text"
-                name="query"
-                placeholder="도서명, 저자, 출판사 검색..."
-                value={filters.query}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                className="h-10"
-              />
-            </div>
+          <div className="flex justify-between items-center">
+            <MobileSearchModal />
             <MobileFilters />
           </div>
           <MobileExtraControls />
