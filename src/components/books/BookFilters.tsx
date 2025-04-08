@@ -67,6 +67,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
   });
 
   const [tempFilters, setTempFilters] = useState(filters);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
 
   // Update filters when initialFilter changes
   useEffect(() => {
@@ -83,6 +84,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
   const handleMobileSearch = () => {
     setFilters(tempFilters);
     onSearch(tempFilters);
+    setSearchDialogOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +119,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
           필터
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[80vh]">
+      <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>검색 필터</SheetTitle>
         </SheetHeader>
@@ -203,7 +205,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
   );
 
   const MobileSearchModal = () => (
-    <Dialog>
+    <Dialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Search size={20} />
@@ -220,11 +222,10 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
             placeholder="도서명, 저자, 출판사 검색..."
             value={tempFilters.query}
             onChange={handleInputChange}
+            className="mt-2"
+            autoFocus
           />
-          <Button onClick={() => {
-            setFilters(prev => ({ ...prev, query: tempFilters.query }));
-            onSearch({ ...filters, query: tempFilters.query });
-          }} className="w-full">
+          <Button onClick={handleMobileSearch} className="w-full">
             검색
           </Button>
         </div>
@@ -234,7 +235,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
 
   const DesktopFilters = () => (
     <div className="flex flex-wrap gap-3 items-center">
-      <div className="flex-1 min-w-[180px]">
+      <div className="w-32">
         <Select
           value={filters.category}
           onValueChange={(value) => handleSelectChange('category', value)}
@@ -252,7 +253,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
         </Select>
       </div>
       
-      <div className="flex-1 min-w-[140px]">
+      <div className="w-28">
         <Select
           value={filters.status}
           onValueChange={(value) => handleSelectChange('status', value)}
@@ -270,7 +271,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
         </Select>
       </div>
       
-      <div className="flex-1 min-w-[120px]">
+      <div className="w-24">
         <Select
           value={filters.sort}
           onValueChange={(value) => handleSelectChange('sort', value)}
@@ -301,38 +302,41 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
           관심 도서만
         </label>
       </div>
+      
+      <Button onClick={handleSearch} size="sm">검색</Button>
     </div>
   );
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <div className="flex-1 relative">
-          <Input
-            type="text"
-            name="query"
-            placeholder="도서명, 저자, 출판사 검색..."
-            value={isMobile ? tempFilters.query : filters.query}
-            onChange={handleInputChange}
-            className="pr-10"
-          />
-          <button
-            onClick={isMobile ? () => {} : handleSearch}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-          >
-            <Search size={18} />
-          </button>
-        </div>
-        
-        {isMobile && <MobileSearchModal />}
-        {isMobile && <MobileFilters />}
-      </div>
-      
       {!isMobile && (
-        <>
-          <DesktopFilters />
-          <Button onClick={handleSearch} className="mt-2">검색</Button>
-        </>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 relative">
+            <Input
+              type="text"
+              name="query"
+              placeholder="도서명, 저자, 출판사 검색..."
+              value={filters.query}
+              onChange={handleInputChange}
+              className="pr-10"
+            />
+            <button
+              onClick={handleSearch}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+            >
+              <Search size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {isMobile ? (
+        <div className="flex justify-between items-center">
+          <MobileSearchModal />
+          <MobileFilters />
+        </div>
+      ) : (
+        <DesktopFilters />
       )}
     </div>
   );

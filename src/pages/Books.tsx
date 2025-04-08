@@ -94,9 +94,13 @@ const Books = () => {
         filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
       }
       
-      // Apply favorite filter (for demonstration, we'll just show fewer books)
+      // If favorite filter is on, mark all returned books as favorites
       if (filters.favorite) {
-        filteredBooks = filteredBooks.slice(0, 3);
+        // For demonstration, we'll just show fewer books but mark them as favorites
+        filteredBooks = filteredBooks.slice(0, 3).map(book => ({
+          ...book,
+          isFavorite: true
+        }));
       }
       
       setBooks(filteredBooks);

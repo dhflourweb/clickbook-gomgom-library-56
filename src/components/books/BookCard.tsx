@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
 import { BadgeDisplay } from '@/components/ui/badge-display';
@@ -18,8 +18,15 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   const { user } = useAuth();
   const isAvailable = book.status.available > 0;
   const isBorrowedByUser = user?.borrowedBooks === Number(book.id);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(book.isFavorite || false);
   const [isReserved, setIsReserved] = useState(false);
+  
+  // Ensure favorite state is updated when book prop changes
+  useEffect(() => {
+    if (book.isFavorite !== undefined) {
+      setIsFavorite(book.isFavorite);
+    }
+  }, [book.isFavorite]);
   
   // Assume user is the reserver if they've marked it as reserved (in real app, this would come from backend)
   const isUserReserver = isReserved;
