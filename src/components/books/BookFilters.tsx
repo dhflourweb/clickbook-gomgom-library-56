@@ -32,6 +32,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface BookFiltersProps {
   onSearch: (filters: FilterState) => void;
   initialFilter?: FilterState;
+  onItemsPerPageChange: (value: number) => void;
+  itemsPerPage: number;
 }
 
 interface FilterState {
@@ -54,8 +56,14 @@ const CATEGORIES = [
 
 const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약가능'];
 const SORT_OPTIONS = ['추천순', '평점순', '최신순', '제목순'];
+const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 100];
 
-export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
+export const BookFilters = ({ 
+  onSearch, 
+  initialFilter, 
+  onItemsPerPageChange,
+  itemsPerPage 
+}: BookFiltersProps) => {
   const isMobile = useIsMobile();
   const [filters, setFilters] = useState<FilterState>({
     query: '',
@@ -181,6 +189,25 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
             </Select>
           </div>
           
+          <div>
+            <label className="text-sm font-medium">표시 개수</label>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => onItemsPerPageChange(Number(value))}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="표시 개수 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {ITEMS_PER_PAGE_OPTIONS.map((count) => (
+                  <SelectItem key={count} value={count.toString()}>
+                    {count}개씩 보기
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -234,13 +261,13 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
   );
 
   const DesktopFilters = () => (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap gap-2 items-center">
       <div className="w-28">
         <Select
           value={filters.category}
           onValueChange={(value) => handleSelectChange('category', value)}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue placeholder="카테고리" />
           </SelectTrigger>
           <SelectContent>
@@ -258,7 +285,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
           value={filters.status}
           onValueChange={(value) => handleSelectChange('status', value)}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue placeholder="상태" />
           </SelectTrigger>
           <SelectContent>
@@ -276,7 +303,7 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
           value={filters.sort}
           onValueChange={(value) => handleSelectChange('sort', value)}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue placeholder="정렬" />
           </SelectTrigger>
           <SelectContent>
@@ -288,8 +315,26 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
           </SelectContent>
         </Select>
       </div>
+
+      <div className="w-28">
+        <Select
+          value={itemsPerPage.toString()}
+          onValueChange={(value) => onItemsPerPageChange(Number(value))}
+        >
+          <SelectTrigger className="h-10">
+            <SelectValue placeholder="표시 개수" />
+          </SelectTrigger>
+          <SelectContent>
+            {ITEMS_PER_PAGE_OPTIONS.map((count) => (
+              <SelectItem key={count} value={count.toString()}>
+                {count}개
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mr-2">
         <input
           type="checkbox"
           id="desktop-favorite"
@@ -298,27 +343,27 @@ export const BookFilters = ({ onSearch, initialFilter }: BookFiltersProps) => {
           onChange={handleInputChange}
           className="w-4 h-4 rounded border-gray-300"
         />
-        <label htmlFor="desktop-favorite" className="text-sm">
+        <label htmlFor="desktop-favorite" className="text-sm whitespace-nowrap">
           관심 도서만
         </label>
       </div>
       
-      <Button onClick={handleSearch} size="sm">검색</Button>
+      <Button onClick={handleSearch} size="sm" className="ml-auto">검색</Button>
     </div>
   );
 
   return (
     <div className="space-y-4">
       {!isMobile && (
-        <div className="flex items-center gap-3">
-          <div className="w-[200px] relative">
+        <div className="flex items-center gap-3 flex-wrap md:flex-nowrap">
+          <div className="w-full md:w-56 relative shrink-0">
             <Input
               type="text"
               name="query"
               placeholder="도서명, 저자, 출판사 검색..."
               value={filters.query}
               onChange={handleInputChange}
-              className="pr-10"
+              className="pr-10 h-10"
             />
             <button
               onClick={handleSearch}

@@ -7,8 +7,15 @@ import { BookGrid } from '@/components/books/BookGrid';
 import { getBooksByCategory, MOCK_BOOKS } from '@/data/mockData';
 import { Book } from '@/types';
 import { toast } from "sonner";
-import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -16,7 +23,9 @@ const Books = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(24); // Default changed to 24
+  const [totalBooks, setTotalBooks] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   
   const [filter, setFilter] = useState({
     query: '',
@@ -34,7 +43,7 @@ const Books = () => {
     const sortParam = searchParams.get('sort') || '추천순';
     const favoriteParam = searchParams.get('favorite') === 'true';
     const pageParam = parseInt(searchParams.get('page') || '1');
-    const perPageParam = parseInt(searchParams.get('perPage') || '12');
+    const perPageParam = parseInt(searchParams.get('perPage') || '24'); // Default changed to 24
     
     // Handle special case when coming from category links
     const filterParam = searchParams.get('filter');
@@ -111,7 +120,9 @@ const Books = () => {
         }));
       }
       
-      const totalBooks = filteredBooks.length;
+      const total = filteredBooks.length;
+      setTotalBooks(total);
+      setTotalPages(Math.ceil(total / perPage));
       
       // Apply pagination
       const startIndex = (page - 1) * perPage;
@@ -122,7 +133,7 @@ const Books = () => {
       setLoading(false);
       
       // Show toast notification with filter results
-      toast(`${totalBooks}권의 도서가 검색되었습니다. (${startIndex + 1}-${Math.min(endIndex, totalBooks)}권 표시)`);
+      toast(`${total}권의 도서가 검색되었습니다. (${startIndex + 1}-${Math.min(endIndex, total)}권 표시)`);
     }, 300);
   };
 
@@ -163,28 +174,38 @@ const Books = () => {
     applyFilters(filter, 1, newItemsPerPage);
   };
 
+  // Generate an array of page numbers to display (showing 5 pages at a time)
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    
+    // Logic to display 5 page numbers centered around current page when possible
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    // Adjust startPage if we're near the end to always show 5 pages when possible
+    if (totalPages > 5 && endPage === totalPages) {
+      startPage = Math.max(1, endPage - 4);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    
+    return pageNumbers;
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">전체 도서</h1>
         
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <BookFilters onSearch={handleSearch} initialFilter={filter} />
-        </div>
-        
-        <div className="flex justify-end items-center space-x-2">
-          <span className="text-sm text-gray-500">표시 개수:</span>
-          {[12, 24, 48, 100].map((count) => (
-            <Button
-              key={count}
-              size="sm"
-              variant={itemsPerPage === count ? "default" : "outline"}
-              onClick={() => handleItemsPerPageChange(count)}
-              className={itemsPerPage === count ? "bg-primary-deepblue" : ""}
-            >
-              {count}
-            </Button>
-          ))}
+          <BookFilters 
+            onSearch={handleSearch} 
+            initialFilter={filter}
+            onItemsPerPageChange={handleItemsPerPageChange}
+            itemsPerPage={itemsPerPage}
+          />
         </div>
         
         {loading ? (
@@ -202,30 +223,48 @@ const Books = () => {
             <BookGrid books={books} />
             
             {/* Pagination */}
-            <div className="flex justify-center mt-8">
-              <div className="flex items-center space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
+            <Pagination className="mt-8">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                    }}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    aria-disabled={currentPage === 1}
+                  />
+                </PaginationItem>
                 
-                <span className="text-sm px-4 py-2 bg-white rounded border">
-                  {currentPage}
-                </span>
+                {getPageNumbers().map(page => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page);
+                      }}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
                 
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                    }}
+                    className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                    aria-disabled={currentPage >= totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </>
         )}
       </div>
