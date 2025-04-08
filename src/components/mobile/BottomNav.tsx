@@ -28,6 +28,7 @@ export const BottomNav = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showFullMenu, setShowFullMenu] = useState(false);
 
   // Check scroll position to show/hide the scroll to top button
   useEffect(() => {
@@ -57,11 +58,7 @@ export const BottomNav = () => {
   if (!isMobile) return null;
 
   const handleMainMenuClick = () => {
-    // Trigger the header's menu by simulating a click on an element with ID 'header-menu-button'
-    const headerMenuButton = document.getElementById('header-menu-button');
-    if (headerMenuButton) {
-      headerMenuButton.click();
-    }
+    setShowFullMenu(true);
   };
 
   return (
@@ -69,7 +66,7 @@ export const BottomNav = () => {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t z-40">
         <div className="grid grid-cols-5 h-14">
-          {/* 전체메뉴 - Now triggers the header menu */}
+          {/* 전체메뉴 - Now triggers a full menu Drawer */}
           <button 
             className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full"
             onClick={handleMainMenuClick}
@@ -130,6 +127,117 @@ export const BottomNav = () => {
           </Link>
         </div>
       </nav>
+      
+      {/* Full Menu Drawer */}
+      <Drawer open={showFullMenu} onOpenChange={setShowFullMenu}>
+        <DrawerContent className="h-[85vh] rounded-t-xl">
+          <DrawerHeader>
+            <DrawerTitle className="text-center">전체메뉴</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4">
+            <div className="flex flex-col space-y-3">
+              {/* 도서 관리 */}
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">도서관리</h3>
+                <div className="space-y-2 ml-2">
+                  <button 
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      navigate('/books');
+                      setShowFullMenu(false);
+                    }}
+                  >
+                    도서목록
+                  </button>
+                  <button 
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      navigate('/books/details');
+                      setShowFullMenu(false);
+                    }}
+                  >
+                    도서대여현황
+                  </button>
+                </div>
+              </div>
+
+              {/* 카테고리 */}
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">카테고리</h3>
+                <div className="space-y-2 ml-2">
+                  {categories.map((category) => (
+                    <button 
+                      key={category}
+                      className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                      onClick={() => {
+                        navigate(`/books?filter=category=${category}`);
+                        setShowFullMenu(false);
+                      }}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 커뮤니티 */}
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">커뮤니티</h3>
+                <div className="space-y-2 ml-2">
+                  <button 
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      navigate('/announcements');
+                      setShowFullMenu(false);
+                    }}
+                  >
+                    공지사항
+                  </button>
+                  <button 
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      navigate('/inquiries');
+                      setShowFullMenu(false);
+                    }}
+                  >
+                    문의하기
+                  </button>
+                </div>
+              </div>
+
+              {/* 마이페이지 */}
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">마이페이지</h3>
+                <div className="space-y-2 ml-2">
+                  <button 
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      navigate('/mypage');
+                      setShowFullMenu(false);
+                    }}
+                  >
+                    내정보
+                  </button>
+                  <button 
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
+                    onClick={() => {
+                      navigate('/mypage/history');
+                      setShowFullMenu(false);
+                    }}
+                  >
+                    도서대여내역
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DrawerFooter>
+            <DrawerClose>
+              <button className="w-full py-2 bg-gray-100 rounded-md">닫기</button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
       
       {/* Floating Scroll to Top Button */}
       <button 

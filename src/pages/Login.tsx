@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Footer } from '@/components/layout/Footer';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -94,7 +93,6 @@ const Login = () => {
           </Card>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
