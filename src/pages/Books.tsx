@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -29,7 +30,7 @@ import { BadgeDisplay } from '@/components/ui/badge-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
 import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
-import { ExtendBookDialog } from '@/components/books/ExtendDialog';
+import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
