@@ -16,7 +16,8 @@ export const MOCK_BOOKS: Book[] = [
     status: { available: 2, total: 3, borrowed: 1 },
     rating: 4.8,
     registeredDate: '2023-05-15',
-    description: '프로그래머라면 꼭 읽어야 할 클린 코드에 대한 책입니다. 더 나은 코드를 작성하는 방법과 프로그래밍 원칙을 설명합니다.'
+    description: '프로그래머라면 꼭 읽어야 할 클린 코드에 대한 책입니다. 더 나은 코드를 작성하는 방법과 프로그래밍 원칙을 설명합니다.',
+    isFavorite: true
   },
   {
     id: 'book2',
@@ -84,7 +85,8 @@ export const MOCK_BOOKS: Book[] = [
     status: { available: 0, total: 5, borrowed: 5 },
     rating: 4.8,
     registeredDate: '2023-03-17',
-    description: '인간의 역사와 미래에 대한 통찰을 담은 세계적인 베스트셀러입니다.'
+    description: '인간의 역사와 미래에 대한 통찰을 담은 세계적인 베스트셀러입니다.',
+    isFavorite: true
   },
   {
     id: 'book6',
@@ -101,7 +103,8 @@ export const MOCK_BOOKS: Book[] = [
     status: { available: 1, total: 2, borrowed: 1 },
     rating: 4.5,
     registeredDate: '2023-09-05',
-    description: '성공의 핵심 요소인 그릿(끈기)에 대해 설명하는 책입니다.'
+    description: '성공의 핵심 요소인 그릿(끈기)에 대해 설명하는 책입니다.',
+    isFavorite: true
   },
   {
     id: 'book7',
@@ -383,6 +386,10 @@ export const getBestBooks = (): Book[] => {
 
 export const getPopularBooks = (): Book[] => {
   return MOCK_BOOKS.filter(book => book.badges.includes('popular'));
+};
+
+export const getFavoriteBooks = (): Book[] => {
+  return MOCK_BOOKS.filter(book => book.isFavorite);
 };
 
 export const getBooksByCategory = (category: string): Book[] => {

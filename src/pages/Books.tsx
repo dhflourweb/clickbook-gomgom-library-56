@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { BadgeDisplay } from '@/components/ui/badge-display';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -328,20 +329,68 @@ const Books = () => {
     </TableHead>
   );
 
+  // Loading skeleton for list view
+  const ListViewLoadingSkeleton = () => (
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-24">상태</TableHead>
+            <TableHead className="w-12">즐겨찾기</TableHead>
+            <TableHead className="w-[300px]">도서정보</TableHead>
+            <TableHead className="w-28">저자</TableHead>
+            <TableHead className="w-24">카테고리</TableHead>
+            <TableHead className="w-24">위치</TableHead>
+            <TableHead className="w-24">추천수</TableHead>
+            <TableHead className="w-24">대여횟수</TableHead>
+            <TableHead className="w-24">평점</TableHead>
+            <TableHead className="w-32">기능</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: itemsPerPage }).map((_, i) => (
+            <TableRow key={i}>
+              <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-16 w-12 rounded" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+              <TableCell><Skeleton className="h-4 w-10" /></TableCell>
+              <TableCell><Skeleton className="h-8 w-24" /></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
   const BookListView = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <SortableColumnHeader field="status" width="w-16">상태</SortableColumnHeader>
+            <SortableColumnHeader field="status" width="w-24">상태</SortableColumnHeader>
+            <TableHead className="w-12">즐겨찾기</TableHead>
             <SortableColumnHeader field="title" width="w-[300px]">도서정보</SortableColumnHeader>
-            <SortableColumnHeader field="author" width="w-24">저자</SortableColumnHeader>
-            <SortableColumnHeader field="category" width="w-20">카테고리</SortableColumnHeader>
-            <SortableColumnHeader field="location" width="w-20">위치</SortableColumnHeader>
-            <SortableColumnHeader field="recommendations" width="w-20">추천수</SortableColumnHeader>
-            <SortableColumnHeader field="borrowed" width="w-20">대여횟수</SortableColumnHeader>
-            <SortableColumnHeader field="rating" width="w-20">평점</SortableColumnHeader>
-            <TableHead className="w-28">기능</TableHead>
+            <SortableColumnHeader field="author" width="w-28">저자</SortableColumnHeader>
+            <SortableColumnHeader field="category" width="w-24">카테고리</SortableColumnHeader>
+            <SortableColumnHeader field="location" width="w-24">위치</SortableColumnHeader>
+            <SortableColumnHeader field="recommendations" width="w-24">추천수</SortableColumnHeader>
+            <SortableColumnHeader field="borrowed" width="w-24">대여횟수</SortableColumnHeader>
+            <SortableColumnHeader field="rating" width="w-24">평점</SortableColumnHeader>
+            <TableHead className="w-32">기능</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -364,6 +413,23 @@ const Books = () => {
                   }`}>
                     {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
                   </span>
+                </TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className={`p-1.5 rounded-full transition-colors ${
+                      isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
+                    }`}
+                    onClick={(e) => handleFavoriteToggle(e, book.id)}
+                    aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
+                  >
+                    <Heart 
+                      size={16} 
+                      fill={isFavorite ? "currentColor" : "none"} 
+                      stroke={isFavorite ? "currentColor" : "#000000"}
+                      strokeWidth={1.5}
+                      className="transition-all"
+                    />
+                  </button>
                 </TableCell>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
@@ -395,25 +461,11 @@ const Books = () => {
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1 items-center">
-                    <button
-                      className={`p-1 rounded-full ${
-                        isFavorite ? 'bg-red-100 text-red-500' : 'bg-white border border-gray-200'
-                      }`}
-                      onClick={(e) => handleFavoriteToggle(e, book.id)}
-                      aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
-                    >
-                      <Heart 
-                        size={16} 
-                        fill={isFavorite ? "currentColor" : "none"} 
-                        stroke={isFavorite ? "currentColor" : "#000000"}
-                        strokeWidth={1.5}
-                      />
-                    </button>
                     {isAvailable ? (
                       <Button 
                         variant="default" 
                         size="sm" 
-                        className="ml-1 bg-primary-skyblue hover:bg-primary-skyblue/90"
+                        className="bg-primary hover:bg-primary/90"
                         disabled={user?.borrowedCount >= 2}
                       >
                         대여하기
@@ -430,7 +482,7 @@ const Books = () => {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
+                          className="border-primary text-primary hover:bg-primary/10"
                         >
                           연장
                         </Button>
@@ -439,7 +491,7 @@ const Books = () => {
                       <Button 
                         variant="secondary"
                         size="sm" 
-                        className="ml-1 bg-secondary-green hover:bg-secondary-green/90"
+                        className="bg-secondary-green hover:bg-secondary-green/90"
                       >
                         예약하기
                       </Button>
@@ -484,14 +536,20 @@ const Books = () => {
         </div>
         
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {Array.from({ length: itemsPerPage }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 aspect-[3/4] rounded-md mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+          <div>
+            {viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {Array.from({ length: itemsPerPage }).map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-gray-200 aspect-[3/4] rounded-md mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <ListViewLoadingSkeleton />
+            )}
           </div>
         ) : (
           <>
