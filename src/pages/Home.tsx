@@ -10,7 +10,6 @@ import {
   getBestBooks,
   getPopularBooks 
 } from '@/data/mockData';
-import { ScrollToTopButton } from '@/components/ui/scroll-to-top-button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -94,9 +93,6 @@ const Home = () => {
           )}
         </div>
       </div>
-      
-      {/* Floating scroll to top button (for both mobile and desktop) */}
-      <ScrollToTopButton />
     </MainLayout>
   );
 };

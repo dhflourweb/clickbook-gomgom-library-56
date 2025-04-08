@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Grid, Bell, User, Menu, ArrowUp } from 'lucide-react';
+import { Home, BookOpen, Grid, Bell, User, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Drawer,
@@ -27,32 +27,7 @@ const categories = [
 export const BottomNav = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [showFullMenu, setShowFullMenu] = useState(false);
-
-  // Check scroll position to show/hide the scroll to top button
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 200) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  // Handle scroll to top
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
 
   // Don't render on desktop
   if (!isMobile) return null;
@@ -238,17 +213,6 @@ export const BottomNav = () => {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-      
-      {/* Floating Scroll to Top Button */}
-      <button 
-        onClick={scrollToTop} 
-        className={cn(
-          "fixed right-4 bottom-20 bg-primary-deepblue text-white p-2 rounded-full shadow-lg transition-opacity z-50",
-          showScrollTop ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-      >
-        <ArrowUp size={24} />
-      </button>
     </>
   );
 };

@@ -14,21 +14,12 @@ export const ScrollToTopButton = ({
   className 
 }: ScrollToTopButtonProps) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isAboveFooter, setIsAboveFooter] = useState(false);
   
   const checkScrollPosition = () => {
     if (window.scrollY > threshold) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
-    }
-    
-    // Check if button is above footer
-    const footer = document.querySelector('footer');
-    if (footer) {
-      const footerTop = footer.getBoundingClientRect().top;
-      const viewportHeight = window.innerHeight;
-      setIsAboveFooter(footerTop < viewportHeight - 100);
     }
   };
   
@@ -52,8 +43,8 @@ export const ScrollToTopButton = ({
     <Button
       onClick={scrollToTop}
       className={cn(
-        "fixed right-4 z-50 rounded-full p-3 shadow-lg bg-primary-realblue hover:bg-primary-realblue/90",
-        isAboveFooter ? "bottom-32 md:bottom-24" : "bottom-20",
+        "fixed right-4 z-50 rounded-full p-3 shadow-lg bg-[#1F4788] hover:bg-[#1F4788]/90",
+        "bottom-20 md:bottom-24",
         className
       )}
       size="icon"
