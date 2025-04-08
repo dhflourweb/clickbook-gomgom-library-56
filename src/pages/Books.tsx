@@ -209,7 +209,7 @@ const Books = () => {
           <div className="mt-2">
             <Separator />
             <p className="text-sm text-muted-foreground mt-2">
-              다양한 카테고리의 도서를 검색하고 찾아보세요. 총 {totalBooks}권의 도서가 있습니다.
+              다양한 카테고리의 도서를 검색하고 찾아보세요.
             </p>
           </div>
         </div>
