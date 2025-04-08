@@ -48,19 +48,35 @@ const navigationMenuTriggerStyle = cva(
 const NavigationMenuTrigger = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <NavigationMenuPrimitive.Trigger
-    ref={ref}
-    className={cn(navigationMenuTriggerStyle(), "group", className)}
-    {...props}
-  >
-    {children}{" "}
-    <ChevronDown
-      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
-      aria-hidden="true"
-    />
-  </NavigationMenuPrimitive.Trigger>
-))
+>(({ className, children, ...props }, ref) => {
+  const [open, setOpen] = React.useState(false);
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(!open);
+  };
+  
+  // This custom attribute will be used to control open state from click
+  const customProps = {
+    ...props,
+    onClick: handleClick,
+    "data-state": open ? "open" : "closed"
+  };
+  
+  return (
+    <NavigationMenuPrimitive.Trigger
+      ref={ref}
+      className={cn(navigationMenuTriggerStyle(), "group", className)}
+      {...customProps}
+    >
+      {children}{" "}
+      <ChevronDown
+        className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
+        aria-hidden="true"
+      />
+    </NavigationMenuPrimitive.Trigger>
+  );
+})
 NavigationMenuTrigger.displayName = NavigationMenuPrimitive.Trigger.displayName
 
 const NavigationMenuContent = React.forwardRef<
@@ -70,7 +86,7 @@ const NavigationMenuContent = React.forwardRef<
   <NavigationMenuPrimitive.Content
     ref={ref}
     className={cn(
-      "absolute left-0 top-0 data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52",
+      "absolute left-0 top-0 w-auto data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52",
       className
     )}
     {...props}

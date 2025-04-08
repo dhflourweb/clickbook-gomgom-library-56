@@ -70,57 +70,57 @@ export const Header = () => {
             {/* Desktop Navigation Menu */}
             {!isMobile && <div className="flex items-center">
                   <NavigationMenu>
-                    <NavigationMenuList className="gap-1">
+                    <NavigationMenuList className="gap-2">
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">전체메뉴</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-md p-0 mt-1 shadow-lg border border-gray-100">
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">전체메뉴</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-lg p-0 mt-1 shadow-lg border border-gray-100">
                           <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
-                            <div className="space-y-2">
-                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">도서관리</h3>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books')}>도서목록</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=추천순')}>추천도서</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(사내)</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(국내)</p>
+                            <div className="space-y-1">
+                              <h3 className="text-primary-deepblue font-medium mb-2 border-b pb-1">도서관리</h3>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/books')}>도서목록</p>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/books?sort=추천순')}>추천도서</p>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm whitespace-nowrap transition-colors" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(사내)</p>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm whitespace-nowrap transition-colors" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(국내)</p>
                             </div>
-                            <div className="space-y-2">
-                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">카테고리</h3>
-                              {categories.map(category => <p key={category} className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate(`/books?filter=category=${category}`)}>
+                            <div className="space-y-1">
+                              <h3 className="text-primary-deepblue font-medium mb-2 border-b pb-1">카테고리</h3>
+                              {categories.map(category => <p key={category} className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate(`/books?filter=category=${category}`)}>
                                     {category}
                                   </p>)}
                             </div>
-                            <div className="space-y-2">
-                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">커뮤니티</h3>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/announcements')}>공지사항</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/inquiries')}>문의하기</p>
+                            <div className="space-y-1">
+                              <h3 className="text-primary-deepblue font-medium mb-2 border-b pb-1">커뮤니티</h3>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/announcements')}>공지사항</p>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/inquiries')}>문의하기</p>
                             </div>
-                            <div className="space-y-2">
-                              <h3 className="text-primary-deepblue font-medium mb-3 border-b pb-1">마이페이지</h3>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/mypage')}>내정보</p>
-                              <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/mypage/history')}>도서대여내역</p>
+                            <div className="space-y-1">
+                              <h3 className="text-primary-deepblue font-medium mb-2 border-b pb-1">마이페이지</h3>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/mypage')}>내정보</p>
+                              <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/mypage/history')}>도서대여내역</p>
                             </div>
                           </div>
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">도서관리</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-md p-2 w-auto mt-1 shadow-lg border border-gray-100">
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">도서관리</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-lg p-2 w-auto mt-1 shadow-lg border border-gray-100">
                           <div className="grid grid-cols-1 min-w-[200px]">
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books')}>도서목록</p>
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=추천순')}>추천도서</p>
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(사내)</p>
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(국내)</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/books')}>도서목록</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/books?sort=추천순')}>추천도서</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm whitespace-nowrap transition-colors" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(사내)</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm whitespace-nowrap transition-colors" onClick={() => navigate('/books?sort=베스트도서순')}>베스트도서(국내)</p>
                           </div>
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">카테고리</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-md p-2 w-auto mt-1 shadow-lg border border-gray-100">
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">카테고리</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-lg p-2 w-auto mt-1 shadow-lg border border-gray-100">
                           <div className="grid grid-cols-1 min-w-[200px]">
-                            {categories.map(category => <p key={category} className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate(`/books?filter=category=${category}`)}>
+                            {categories.map(category => <p key={category} className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate(`/books?filter=category=${category}`)}>
                                   {category}
                                 </p>)}
                           </div>
@@ -128,11 +128,11 @@ export const Header = () => {
                       </NavigationMenuItem>
 
                       <NavigationMenuItem>
-                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-sm font-medium">커뮤니티</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-md p-2 mt-1 shadow-lg border border-gray-100">
+                        <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">커뮤니티</NavigationMenuTrigger>
+                        <NavigationMenuContent className="bg-white rounded-lg p-2 mt-1 shadow-lg border border-gray-100">
                           <div className="w-[200px]">
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/announcements')}>공지사항</p>
-                            <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md" onClick={() => navigate('/inquiries')}>문의하기</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/announcements')}>공지사항</p>
+                            <p className="text-gray-700 py-1.5 cursor-pointer hover:bg-gray-50 px-2 rounded-md text-sm transition-colors" onClick={() => navigate('/inquiries')}>문의하기</p>
                           </div>
                         </NavigationMenuContent>
                       </NavigationMenuItem>
