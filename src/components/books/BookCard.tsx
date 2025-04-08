@@ -30,9 +30,18 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   
   // Assume user is the reserver if they've marked it as reserved (in real app, this would come from backend)
   const isUserReserver = isReserved;
+  
+  // Check if user has reached borrowing limit (2 books max)
+  const hasReachedBorrowLimit = user?.borrowedCount >= 2;
 
   const handleBorrow = (e: React.MouseEvent) => {
     e.preventDefault();
+    
+    if (hasReachedBorrowLimit) {
+      toast.error('최대 2권까지 대여 가능합니다.');
+      return;
+    }
+    
     toast.success(`'${book.title}' 도서를 대여했습니다.`);
     // In a real app, this would navigate to the borrowing page
     window.location.href = '/mypage';
@@ -72,6 +81,13 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     }
   };
 
+  // Get appropriate status badge
+  const getStatusBadge = () => {
+    if (isAvailable) return "대여가능";
+    if (isReserved) return "예약중";
+    return "대여중";
+  };
+
   // Determine which button to show based on book status and user
   const renderActionButton = () => {
     // Case 1: User is the reserver and book is available - Show borrow button
@@ -82,6 +98,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           size="sm" 
           className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
           onClick={handleBorrow}
+          disabled={hasReachedBorrowLimit}
         >
           대여하기
         </Button>
@@ -96,6 +113,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           size="sm" 
           className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
           onClick={handleBorrow}
+          disabled={hasReachedBorrowLimit}
         >
           대여하기
         </Button>
@@ -169,6 +187,15 @@ export const BookCard = ({ book, className }: BookCardProps) => {
             className="transition-all"
           />
         </button>
+        <div className="absolute bottom-2 right-2">
+          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+            isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
+            isReserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+            'bg-gray-200 text-gray-600'
+          }`}>
+            {getStatusBadge()}
+          </span>
+        </div>
       </div>
       <div className="p-3 flex flex-col flex-1">
         <h3 className="font-medium text-sm line-clamp-2">{book.title}</h3>
@@ -176,13 +203,14 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
         <div className="mt-auto pt-2 flex items-center justify-between">
           <span className="text-xs text-gray-500">{book.category}</span>
-          {book.rating && (
-            <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">대여 {book.status.borrowed || 0}회</span>
+            {book.rating && (
               <span className="text-secondary-orange text-xs font-semibold">
                 ★ {book.rating.toFixed(1)}
               </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <div className="mt-2 pt-2 border-t border-gray-100">
           {renderActionButton()}

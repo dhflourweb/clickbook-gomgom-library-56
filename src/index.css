@@ -207,14 +207,6 @@
     @apply text-sm font-medium text-gray-600 mb-2;
   }
   
-  .navigation-dropdown {
-    @apply py-3 px-4 shadow-md border border-gray-100 bg-white rounded-lg;
-  }
-  
-  .navigation-dropdown-item {
-    @apply py-1.5 px-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer transition-colors whitespace-nowrap;
-  }
-  
   .elegant-dropdown {
     @apply bg-white rounded-lg shadow-lg border border-gray-100 p-4 transition-all duration-200;
   }

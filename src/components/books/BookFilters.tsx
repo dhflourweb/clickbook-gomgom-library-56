@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Grid, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +34,8 @@ interface BookFiltersProps {
   initialFilter?: FilterState;
   onItemsPerPageChange: (value: number) => void;
   itemsPerPage: number;
+  onViewModeChange?: (mode: 'grid' | 'list') => void;
+  viewMode?: 'grid' | 'list';
 }
 
 interface FilterState {
@@ -46,7 +49,7 @@ interface FilterState {
 // Using the same categories as in Header.tsx
 const CATEGORIES = ["전체", "문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
 
-const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약가능'];
+const STATUS_OPTIONS = ['전체', '대여가능', '대여중', '예약중'];
 const SORT_OPTIONS = ['인기도순', '최신등록순', '평점순', '이름순', '추천순', '베스트도서순'];
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 100];
 
@@ -54,7 +57,9 @@ export const BookFilters = ({
   onSearch, 
   initialFilter, 
   onItemsPerPageChange,
-  itemsPerPage 
+  itemsPerPage,
+  onViewModeChange,
+  viewMode = 'grid'
 }: BookFiltersProps) => {
   const isMobile = useIsMobile();
   const [filters, setFilters] = useState<FilterState>({
@@ -126,6 +131,12 @@ export const BookFilters = ({
       
       // Auto-submit when select changes
       onSearch(updatedFilters);
+    }
+  };
+
+  const handleViewModeToggle = (mode: 'grid' | 'list') => {
+    if (onViewModeChange) {
+      onViewModeChange(mode);
     }
   };
 
@@ -231,6 +242,30 @@ export const BookFilters = ({
               관심 도서만 보기
             </label>
           </div>
+          
+          {onViewModeChange && (
+            <div>
+              <label className="text-sm font-medium block mb-2">보기 방식</label>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant={viewMode === 'grid' ? 'default' : 'outline'} 
+                  onClick={() => handleViewModeToggle('grid')}
+                  className="flex-1"
+                >
+                  <Grid size={16} className="mr-1" /> 그리드
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant={viewMode === 'list' ? 'default' : 'outline'} 
+                  onClick={() => handleViewModeToggle('list')} 
+                  className="flex-1"
+                >
+                  <List size={16} className="mr-1" /> 목록
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         <SheetFooter>
           <SheetClose asChild>
@@ -360,6 +395,27 @@ export const BookFilters = ({
           관심 도서만
         </label>
       </div>
+      
+      {onViewModeChange && (
+        <div className="flex gap-1 ml-auto">
+          <Button 
+            size="sm" 
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            onClick={() => handleViewModeToggle('grid')}
+            className="px-2"
+          >
+            <Grid size={16} />
+          </Button>
+          <Button 
+            size="sm" 
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            onClick={() => handleViewModeToggle('list')}
+            className="px-2"
+          >
+            <List size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 

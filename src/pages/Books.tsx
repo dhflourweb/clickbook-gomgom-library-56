@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -16,6 +17,17 @@ import {
   PaginationPrevious 
 } from '@/components/ui/pagination';
 import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/context/AuthContext';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from '@/components/ui/button';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -26,6 +38,8 @@ const Books = () => {
   const [itemsPerPage, setItemsPerPage] = useState(24); // Default is 24
   const [totalBooks, setTotalBooks] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { user } = useAuth();
   
   const [filter, setFilter] = useState({
     query: '',
@@ -43,6 +57,7 @@ const Books = () => {
     const favoriteParam = searchParams.get('favorite') === 'true';
     const pageParam = parseInt(searchParams.get('page') || '1');
     const perPageParam = parseInt(searchParams.get('perPage') || '24');
+    const viewParam = searchParams.get('view') as 'grid' | 'list' || 'grid';
     
     const filterParam = searchParams.get('filter');
     let finalCategory = categoryParam;
@@ -62,6 +77,7 @@ const Books = () => {
     setFilter(newFilter);
     setCurrentPage(pageParam);
     setItemsPerPage(perPageParam);
+    setViewMode(viewParam);
     applyFilters(newFilter, pageParam, perPageParam);
   }, [location.search]);
 
@@ -71,18 +87,23 @@ const Books = () => {
     setTimeout(() => {
       let filteredBooks = [...MOCK_BOOKS];
       
+      // Apply category filter
       if (filters.category !== '전체') {
         filteredBooks = filteredBooks.filter(book => book.category === filters.category);
       }
       
+      // Apply status filter
       if (filters.status !== '전체') {
         if (filters.status === '대여가능') {
           filteredBooks = filteredBooks.filter(book => book.status.available > 0);
         } else if (filters.status === '대여중') {
           filteredBooks = filteredBooks.filter(book => book.status.available === 0);
+        } else if (filters.status === '예약중') {
+          filteredBooks = filteredBooks.filter(book => book.status.available === 0 && book.status.reserved);
         }
       }
       
+      // Apply search filter
       if (filters.query) {
         const query = filters.query.toLowerCase();
         filteredBooks = filteredBooks.filter(book => 
@@ -92,6 +113,7 @@ const Books = () => {
         );
       }
       
+      // Apply sorting
       if (filters.sort === '인기도순') {
         filteredBooks.sort((a, b) => (b.status.borrowed || 0) - (a.status.borrowed || 0));
       } else if (filters.sort === '최신등록순') {
@@ -102,6 +124,9 @@ const Books = () => {
         filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
       } else if (filters.sort === '추천순') {
         filteredBooks.sort((a, b) => {
+          if (b.recommendations && a.recommendations) {
+            return b.recommendations - a.recommendations;
+          }
           const aHasRecommended = a.badges.includes('recommended');
           const bHasRecommended = b.badges.includes('recommended');
           return bHasRecommended ? 1 : aHasRecommended ? -1 : 0;
@@ -114,11 +139,9 @@ const Books = () => {
         });
       }
       
+      // Apply favorite filter
       if (filters.favorite) {
-        filteredBooks = filteredBooks.map(book => ({
-          ...book,
-          isFavorite: true
-        }));
+        filteredBooks = filteredBooks.filter(book => book.isFavorite);
       }
       
       const total = filteredBooks.length;
@@ -145,6 +168,7 @@ const Books = () => {
     if (newFilter.favorite) params.set('favorite', 'true');
     params.set('page', '1');
     params.set('perPage', itemsPerPage.toString());
+    params.set('view', viewMode);
     
     setSearchParams(params);
     setFilter(newFilter);
@@ -172,6 +196,14 @@ const Books = () => {
     applyFilters(filter, 1, newItemsPerPage);
   };
 
+  const handleViewModeChange = (mode: 'grid' | 'list') => {
+    const params = new URLSearchParams(searchParams);
+    params.set('view', mode);
+    
+    setSearchParams(params);
+    setViewMode(mode);
+  };
+
   const getPageNumbers = () => {
     const pageNumbers = [];
     
@@ -188,6 +220,110 @@ const Books = () => {
     
     return pageNumbers;
   };
+
+  const BookListView = () => (
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-12">상태</TableHead>
+            <TableHead className="w-[300px]">도서정보</TableHead>
+            <TableHead className="w-24">저자</TableHead>
+            <TableHead className="w-20">카테고리</TableHead>
+            <TableHead className="w-20">위치</TableHead>
+            <TableHead className="w-20">추천수</TableHead>
+            <TableHead className="w-20">대여횟수</TableHead>
+            <TableHead className="w-20">평점</TableHead>
+            <TableHead className="w-28">기능</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {books.map((book) => {
+            const isAvailable = book.status.available > 0;
+            const isBorrowedByUser = user?.borrowedBooks === Number(book.id);
+            return (
+              <TableRow key={book.id}>
+                <TableCell>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
+                    book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+                    'bg-gray-200 text-gray-600'
+                  }`}>
+                    {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
+                  </span>
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={book.coverImage} 
+                      alt={book.title} 
+                      className="h-16 w-12 object-cover rounded"
+                    />
+                    <div>
+                      <div className="font-medium mb-1">{book.title}</div>
+                      <div className="text-xs text-gray-500">{book.publisher}</div>
+                      <div className="flex gap-1 mt-1">
+                        <BadgeDisplay badges={book.badges} size="xs" />
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>{book.author}</TableCell>
+                <TableCell>{book.category}</TableCell>
+                <TableCell>{book.location || 'A-1-2'}</TableCell>
+                <TableCell>{book.recommendations || 0}</TableCell>
+                <TableCell>{book.status.borrowed || 0}</TableCell>
+                <TableCell>
+                  {book.rating && (
+                    <span className="text-secondary-orange font-semibold">
+                      ★ {book.rating.toFixed(1)}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {isAvailable ? (
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
+                      disabled={user?.borrowedCount >= 2}
+                    >
+                      대여하기
+                    </Button>
+                  ) : isBorrowedByUser ? (
+                    <div className="flex gap-1">
+                      <Button 
+                        variant="outline" 
+                        size="xs" 
+                        className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                      >
+                        반납
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="xs" 
+                        className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
+                      >
+                        연장
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant="secondary"
+                      size="sm" 
+                      className="w-full bg-secondary-green hover:bg-secondary-green/90"
+                    >
+                      예약하기
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
 
   return (
     <MainLayout>
@@ -213,6 +349,8 @@ const Books = () => {
             initialFilter={filter}
             onItemsPerPageChange={handleItemsPerPageChange}
             itemsPerPage={itemsPerPage}
+            onViewModeChange={handleViewModeChange}
+            viewMode={viewMode}
           />
         </div>
         
@@ -228,7 +366,11 @@ const Books = () => {
           </div>
         ) : (
           <>
-            <BookGrid books={books} />
+            {viewMode === 'grid' ? (
+              <BookGrid books={books} />
+            ) : (
+              <BookListView />
+            )}
             
             <Pagination className="mt-8">
               <PaginationContent>
