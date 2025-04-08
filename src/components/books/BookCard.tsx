@@ -96,7 +96,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         <Button 
           variant="default" 
           size="sm" 
-          className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
+          className="w-full bg-primary hover:bg-primary/90"
           onClick={handleBorrow}
           disabled={hasReachedBorrowLimit}
         >
@@ -111,7 +111,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         <Button 
           variant="default" 
           size="sm" 
-          className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
+          className="w-full bg-primary hover:bg-primary/90"
           onClick={handleBorrow}
           disabled={hasReachedBorrowLimit}
         >
@@ -135,7 +135,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           <Button 
             variant="outline" 
             size="sm" 
-            className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
+            className="border-primary text-primary hover:bg-primary/10"
             onClick={handleExtend}
           >
             연장하기
@@ -152,7 +152,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         className={cn("w-full", 
           isReserved 
             ? "border-secondary-green text-secondary-green hover:bg-secondary-green/10" 
-            : "bg-secondary-green hover:bg-secondary-green/90"
+            : "bg-secondary hover:bg-secondary/90"
         )}
         onClick={handleReserve}
       >
@@ -162,7 +162,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   };
 
   return (
-    <Link to={`/books/${book.id}`} className={cn("book-card hover:border-gray-300", className)}>
+    <Link to={`/books/${book.id}`} className={cn("book-card transition-all hover:shadow-md hover:scale-[1.02] hover:border-primary/30", className)}>
       <div className="relative">
         <img
           src={book.coverImage}
@@ -173,8 +173,8 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           <BadgeDisplay badges={book.badges} size="sm" />
         </div>
         <button
-          className={`absolute top-2 right-2 p-1 rounded-full ${
-            isFavorite ? 'bg-red-100 text-red-500' : 'bg-white'
+          className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
+            isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
           }`}
           onClick={handleFavoriteToggle}
           aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
@@ -189,8 +189,8 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         </button>
         <div className="absolute bottom-2 right-2">
           <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-            isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
-            isReserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+            isAvailable ? 'bg-primary/15 text-primary' : 
+            isReserved ? 'bg-secondary-orange/15 text-secondary-orange' : 
             'bg-gray-200 text-gray-600'
           }`}>
             {getStatusBadge()}

@@ -1,13 +1,13 @@
 
 import { useState, useEffect } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { BookFilters } from '@/components/books/BookFilters';
 import { BookGrid } from '@/components/books/BookGrid';
 import { getBooksByCategory, MOCK_BOOKS } from '@/data/mockData';
 import { Book } from '@/types';
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, Heart, ArrowUpDown } from 'lucide-react';
 import { 
   Pagination, 
   PaginationContent, 
@@ -35,6 +35,7 @@ const Books = () => {
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(24); // Default is 24
   const [totalBooks, setTotalBooks] = useState(0);
@@ -49,6 +50,10 @@ const Books = () => {
     sort: '인기도순',
     favorite: false,
   });
+
+  // Add state for sorting column
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     const queryParam = searchParams.get('query') || '';
@@ -140,6 +145,11 @@ const Books = () => {
         });
       }
       
+      // Apply custom column sorting if selected
+      if (sortField) {
+        filteredBooks = applySortByField(filteredBooks, sortField, sortDirection);
+      }
+      
       // Apply favorite filter
       if (filters.favorite) {
         filteredBooks = filteredBooks.filter(book => book.isFavorite);
@@ -158,6 +168,68 @@ const Books = () => {
       
       toast(`${total}권의 도서가 검색되었습니다. (${startIndex + 1}-${Math.min(endIndex, total)}권 표시)`);
     }, 300);
+  };
+
+  // New function to handle column sorting
+  const applySortByField = (books: Book[], field: string, direction: 'asc' | 'desc') => {
+    return [...books].sort((a, b) => {
+      let valueA, valueB;
+      
+      switch (field) {
+        case 'status':
+          valueA = a.status.available > 0 ? 0 : a.status.reserved ? 1 : 2;
+          valueB = b.status.available > 0 ? 0 : b.status.reserved ? 1 : 2;
+          break;
+        case 'title':
+          valueA = a.title;
+          valueB = b.title;
+          break;
+        case 'author':
+          valueA = a.author;
+          valueB = b.author;
+          break;
+        case 'category':
+          valueA = a.category;
+          valueB = b.category;
+          break;
+        case 'location':
+          valueA = a.location;
+          valueB = b.location;
+          break;
+        case 'recommendations':
+          valueA = a.recommendations || 0;
+          valueB = b.recommendations || 0;
+          break;
+        case 'borrowed':
+          valueA = a.status.borrowed || 0;
+          valueB = b.status.borrowed || 0;
+          break;
+        case 'rating':
+          valueA = a.rating || 0;
+          valueB = b.rating || 0;
+          break;
+        default:
+          return 0;
+      }
+      
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        return direction === 'asc'
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return direction === 'asc'
+          ? (valueA as number) - (valueB as number)
+          : (valueB as number) - (valueA as number);
+      }
+    });
+  };
+
+  // Function to handle column header click for sorting
+  const handleColumnSort = (field: string) => {
+    const newDirection = sortField === field && sortDirection === 'desc' ? 'asc' : 'desc';
+    setSortField(field);
+    setSortDirection(newDirection);
+    applyFilters(filter, currentPage, itemsPerPage);
   };
 
   const handleSearch = (newFilter: any) => {
@@ -222,19 +294,53 @@ const Books = () => {
     return pageNumbers;
   };
 
+  const handleFavoriteToggle = (e: React.MouseEvent, bookId: string) => {
+    e.stopPropagation();
+    const updatedBooks = books.map(book => {
+      if (book.id === bookId) {
+        const newFavorite = !book.isFavorite;
+        if (newFavorite) {
+          toast.success(`'${book.title}' 도서를 관심 도서에 추가했습니다.`);
+        } else {
+          toast.info(`'${book.title}' 도서를 관심 도서에서 제거했습니다.`);
+        }
+        return { ...book, isFavorite: newFavorite };
+      }
+      return book;
+    });
+    setBooks(updatedBooks);
+  };
+
+  const navigateToBookDetail = (bookId: string) => {
+    navigate(`/books/${bookId}`);
+  };
+
+  // Render a sortable column header
+  const SortableColumnHeader = ({ field, width, children }: { field: string, width?: string, children: React.ReactNode }) => (
+    <TableHead 
+      className={`cursor-pointer hover:bg-gray-100 ${width || ''}`}
+      onClick={() => handleColumnSort(field)}
+    >
+      <div className="flex items-center justify-between">
+        <span>{children}</span>
+        <ArrowUpDown size={14} className="ml-1 text-gray-400" />
+      </div>
+    </TableHead>
+  );
+
   const BookListView = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">상태</TableHead>
-            <TableHead className="w-[300px]">도서정보</TableHead>
-            <TableHead className="w-24">저자</TableHead>
-            <TableHead className="w-20">카테고리</TableHead>
-            <TableHead className="w-20">위치</TableHead>
-            <TableHead className="w-20">추천수</TableHead>
-            <TableHead className="w-20">대여횟수</TableHead>
-            <TableHead className="w-20">평점</TableHead>
+            <SortableColumnHeader field="status" width="w-16">상태</SortableColumnHeader>
+            <SortableColumnHeader field="title" width="w-[300px]">도서정보</SortableColumnHeader>
+            <SortableColumnHeader field="author" width="w-24">저자</SortableColumnHeader>
+            <SortableColumnHeader field="category" width="w-20">카테고리</SortableColumnHeader>
+            <SortableColumnHeader field="location" width="w-20">위치</SortableColumnHeader>
+            <SortableColumnHeader field="recommendations" width="w-20">추천수</SortableColumnHeader>
+            <SortableColumnHeader field="borrowed" width="w-20">대여횟수</SortableColumnHeader>
+            <SortableColumnHeader field="rating" width="w-20">평점</SortableColumnHeader>
             <TableHead className="w-28">기능</TableHead>
           </TableRow>
         </TableHeader>
@@ -242,10 +348,16 @@ const Books = () => {
           {books.map((book) => {
             const isAvailable = book.status.available > 0;
             const isBorrowedByUser = user?.borrowedBooks === Number(book.id);
+            const isFavorite = book.isFavorite || false;
+            
             return (
-              <TableRow key={book.id}>
-                <TableCell>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+              <TableRow 
+                key={book.id} 
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => navigateToBookDetail(book.id)}
+              >
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${
                     isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
                     book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
                     'bg-gray-200 text-gray-600'
@@ -281,42 +393,58 @@ const Books = () => {
                     </span>
                   )}
                 </TableCell>
-                <TableCell>
-                  {isAvailable ? (
-                    <Button 
-                      variant="default" 
-                      size="sm" 
-                      className="w-full bg-primary-skyblue hover:bg-primary-skyblue/90"
-                      disabled={user?.borrowedCount >= 2}
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <div className="flex gap-1 items-center">
+                    <button
+                      className={`p-1 rounded-full ${
+                        isFavorite ? 'bg-red-100 text-red-500' : 'bg-white border border-gray-200'
+                      }`}
+                      onClick={(e) => handleFavoriteToggle(e, book.id)}
+                      aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
                     >
-                      대여하기
-                    </Button>
-                  ) : isBorrowedByUser ? (
-                    <div className="flex gap-1">
+                      <Heart 
+                        size={16} 
+                        fill={isFavorite ? "currentColor" : "none"} 
+                        stroke={isFavorite ? "currentColor" : "#000000"}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                    {isAvailable ? (
                       <Button 
-                        variant="outline" 
+                        variant="default" 
                         size="sm" 
-                        className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                        className="ml-1 bg-primary-skyblue hover:bg-primary-skyblue/90"
+                        disabled={user?.borrowedCount >= 2}
                       >
-                        반납
+                        대여하기
                       </Button>
+                    ) : isBorrowedByUser ? (
+                      <div className="flex gap-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                        >
+                          반납
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
+                        >
+                          연장
+                        </Button>
+                      </div>
+                    ) : (
                       <Button 
-                        variant="outline" 
+                        variant="secondary"
                         size="sm" 
-                        className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
+                        className="ml-1 bg-secondary-green hover:bg-secondary-green/90"
                       >
-                        연장
+                        예약하기
                       </Button>
-                    </div>
-                  ) : (
-                    <Button 
-                      variant="secondary"
-                      size="sm" 
-                      className="w-full bg-secondary-green hover:bg-secondary-green/90"
-                    >
-                      예약하기
-                    </Button>
-                  )}
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             );

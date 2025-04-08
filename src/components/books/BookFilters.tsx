@@ -346,7 +346,7 @@ export const BookFilters = ({
         </Select>
       </div>
       
-      <div className="w-28">
+      <div className="w-36">
         <Select
           value={filters.sort}
           onValueChange={(value) => handleSelectChange('sort', value)}
