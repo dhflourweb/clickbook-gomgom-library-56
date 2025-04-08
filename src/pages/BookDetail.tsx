@@ -24,7 +24,7 @@ import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
 import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
 import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { cn } from '@/lib/utils';
-import { Bookmark } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +40,7 @@ const BookDetail = () => {
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
   const [activeTab, setActiveTab] = useState<'info' | 'reviews'>('info');
+  const [isFavorite, setIsFavorite] = useState(false);
   
   if (!id) {
     navigate('/books');
@@ -85,6 +86,19 @@ const BookDetail = () => {
     e.stopPropagation();
     e.preventDefault();
     setExtendDialogOpen(true);
+  };
+  
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsFavorite(!isFavorite);
+    
+    toast({
+      title: isFavorite ? "관심 도서 제거" : "관심 도서 등록",
+      description: isFavorite 
+        ? `'${book.title}' 도서가 관심 목록에서 제거되었습니다.` 
+        : `'${book.title}' 도서가 관심 목록에 추가되었습니다.`,
+    });
   };
   
   const handleSubmitReview = () => {
@@ -192,32 +206,34 @@ const BookDetail = () => {
         {/* Main content area with left sidebar and right content */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="flex flex-col md:flex-row">
-            {/* Left sidebar - Book cover and action buttons */}
-            <div className="md:w-1/3 p-6 flex flex-col items-center border-r border-gray-100">
-              {/* Badge for new books or special status */}
-              {book.badges?.some(badge => badge === 'new') && (
-                <div className="self-start bg-blue-600 text-white text-xs px-2 py-1 rounded-sm mb-4">
-                  New
-                </div>
-              )}
-              
-              <img
-                src={book.coverImage}
-                alt={`${book.title} 표지`}
-                className="w-full max-w-[250px] aspect-[3/4] object-cover rounded-md shadow-md mb-6"
-              />
+            {/* Left sidebar - Book cover and action buttons - Fixed height */}
+            <div className="md:w-1/3 p-6 flex flex-col items-center border-r border-gray-100 md:min-h-[600px]">
+              <div className="relative w-full max-w-[250px]">
+                <img
+                  src={book.coverImage}
+                  alt={`${book.title} 표지`}
+                  className="w-full aspect-[3/4] object-cover rounded-md shadow-md mb-6"
+                />
+                <button
+                  className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
+                    isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
+                  }`}
+                  onClick={handleFavoriteToggle}
+                  aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
+                >
+                  <Heart 
+                    size={18} 
+                    fill={isFavorite ? "currentColor" : "none"} 
+                    stroke={isFavorite ? "currentColor" : "#000000"}
+                    strokeWidth={1.5}
+                    className="transition-all"
+                  />
+                </button>
+              </div>
               
               {/* Action buttons */}
               <div className="w-full space-y-3 mt-2">
                 {renderActionButtons()}
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Bookmark className="h-4 w-4" />
-                  관심 등록
-                </Button>
               </div>
             </div>
             

@@ -29,7 +29,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   const { user } = useAuth();
   const [rating, setRating] = useState<number>(0);
   const [review, setReview] = useState<string>('');
-  const [returnLocation, setReturnLocation] = useState<string>('본관 1층 반납함');
+  const [returnLocation, setReturnLocation] = useState<string>('');
   const [isRecommended, setIsRecommended] = useState<boolean>(false);
   
   const today = new Date();
@@ -81,8 +81,9 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
                 id="returnLocation"
                 value={returnLocation}
                 onChange={(e) => setReturnLocation(e.target.value)}
-                placeholder="반납 위치를 입력하세요"
+                placeholder="반납함 번호를 입력하세요 (예: 101, 102)"
                 className="w-full"
+                type="number"
               />
             </div>
           </div>

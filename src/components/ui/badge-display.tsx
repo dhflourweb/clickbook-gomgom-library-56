@@ -30,23 +30,29 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
     <div className="flex flex-wrap gap-1.5">
       {badges
         .filter((badge): badge is NonNullable<BookBadge> => badge !== null)
-        .map(badge => (
-          <span
-            key={badge}
-            className={cn(
-              "font-medium rounded-md",
-              sizeClasses[size],
-              {
-                'badge-new': badge === 'new',
-                'badge-recommended': badge === 'recommended',
-                'badge-popular': badge === 'popular',
-                'badge-best': badge === 'best'
-              }
-            )}
-          >
-            {badgeLabels[badge]}
-          </span>
-        ))}
+        .map(badge => {
+          let badgeClassName = "font-medium rounded-md";
+          
+          // Apply specific styles based on badge type
+          if (badge === 'new') {
+            badgeClassName += " bg-secondary-orange text-white";
+          } else if (badge === 'recommended') {
+            badgeClassName += " bg-secondary-green text-white";
+          } else if (badge === 'best') {
+            badgeClassName += " bg-[#9b87f5] text-white";
+          } else {
+            badgeClassName += " badge-" + badge;
+          }
+          
+          return (
+            <span
+              key={badge}
+              className={cn(badgeClassName, sizeClasses[size])}
+            >
+              {badgeLabels[badge]}
+            </span>
+          );
+        })}
     </div>
   );
 };
