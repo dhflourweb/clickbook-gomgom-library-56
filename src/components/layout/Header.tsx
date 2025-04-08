@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, ChevronDown, X } from 'lucide-react';
@@ -14,6 +15,7 @@ import logo from '@/assets/images/icon_logo.svg';
 
 // Define categories - these will be consistent across the app
 export const categories = ["문학", "경제/경영", "자기개발", "인문/역사", "사회", "취미/생활", "기타"];
+
 export const Header = () => {
   const {
     user,
@@ -25,6 +27,7 @@ export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -33,6 +36,7 @@ export const Header = () => {
       setShowSearchModal(false);
     }
   };
+  
   const toggleSearchBar = () => {
     if (isMobile) {
       setShowSearchModal(true);
@@ -47,6 +51,7 @@ export const Header = () => {
       }
     }
   };
+  
   return <>
         <div className="t-banner text-sm md:text-base">
           <p className="text-white">
@@ -54,7 +59,7 @@ export const Header = () => {
           </p>
         </div>
         <header className="bg-white text-black py-3 px-4 sticky top-0 z-50 shadow-sm">
-          <div className="container mx-auto flex items-center justify-between px-0">
+          <div className="container mx-auto flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
               <Link to="/" className="text-xl font-bold flex items-center">
@@ -137,16 +142,26 @@ export const Header = () => {
 
             {/* User controls */}
             <div className="flex items-center">
-              {showSearchBar ? <div className="relative flex items-center animated-search">
+              {showSearchBar ? (
+                <div className="relative flex items-center animated-search">
                   <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
-                    <Input id="searchInput" placeholder="도서명, 저자, 출판사 검색..." className="border-0 focus-visible:ring-0 h-10 w-[280px] md:w-[320px] sm:w-[240px]" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                    <Input 
+                      id="searchInput" 
+                      placeholder="도서명, 저자, 출판사 검색..." 
+                      className="border-0 focus-visible:ring-0 h-10 w-[280px] md:w-[320px] sm:w-[240px]"
+                      value={searchQuery} 
+                      onChange={e => setSearchQuery(e.target.value)}
+                    />
                     <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={toggleSearchBar}>
                       <X size={16} className="text-gray-500" />
                     </Button>
                   </form>
-                </div> : <Button variant="ghost" size="icon" className="text-black" onClick={toggleSearchBar}>
+                </div>
+              ) : (
+                <Button variant="ghost" size="icon" className="text-black" onClick={toggleSearchBar}>
                   <Search size={20} />
-                </Button>}
+                </Button>
+              )}
 
               <Link to="/mypage">
                 <Button variant="ghost" size="icon" className="text-black">
@@ -154,19 +169,27 @@ export const Header = () => {
                 </Button>
               </Link>
 
-              {isMobile ? <div className="flex ml-1">
-                  {hasRole(["admin", "system_admin"]) && <Link to="/admin" className="ml-1">
+              {isMobile ? (
+                <div className="flex ml-1">
+                  {hasRole(["admin", "system_admin"]) && (
+                    <Link to="/admin" className="ml-1">
                       <Button variant="outline" size="sm" className="text-xs bg-transparent border-gray-300 text-black hover:bg-gray-100 px-2 py-1 h-auto">
                         관리자
                       </Button>
-                    </Link>}
-                </div> : <>
-                  {hasRole(["admin", "system_admin"]) && <Link to="/admin">
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {hasRole(["admin", "system_admin"]) && (
+                    <Link to="/admin">
                       <Button variant="outline" size="sm" className="ml-2 text-xs bg-transparent border-gray-300 text-black hover:bg-gray-100">
                         관리자
                       </Button>
-                    </Link>}
-                </>}
+                    </Link>
+                  )}
+                </>
+              )}
 
               <Button variant="ghost" size="icon" onClick={logout} className="text-black">
                 <LogOut size={20} />
@@ -175,13 +198,20 @@ export const Header = () => {
           </div>
 
           {/* Mobile Search Modal */}
-          {isMobile && <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
+          {isMobile && (
+            <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>도서 검색</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSearch} className="flex items-center gap-2">
-                  <Input placeholder="도서명, 저자, 출판사 검색..." className="flex-1" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} autoFocus />
+                  <Input 
+                    placeholder="도서명, 저자, 출판사 검색..." 
+                    className="flex-1" 
+                    value={searchQuery} 
+                    onChange={e => setSearchQuery(e.target.value)} 
+                    autoFocus 
+                  />
                   <Button type="submit">검색</Button>
                 </form>
                 <DialogFooter className="sm:justify-start">
@@ -190,7 +220,8 @@ export const Header = () => {
                   </Button>
                 </DialogFooter>
               </DialogContent>
-            </Dialog>}
+            </Dialog>
+          )}
         </header>
       </>;
 };
