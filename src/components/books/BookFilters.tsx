@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -138,6 +138,9 @@ export const BookFilters = ({
   };
 
   const handleViewModeToggle = (mode: 'grid' | 'list') => {
+    // Don't change view mode on mobile - always stay in list mode
+    if (isMobile) return;
+    
     if (onViewModeChange) {
       onViewModeChange(mode);
     }
@@ -259,7 +262,7 @@ export const BookFilters = ({
           onCheckedChange={handleFavoriteToggle}
         />
       </div>
-
+      
       {/* View mode toggle removed for mobile */}
     </div>
   );
@@ -354,7 +357,7 @@ export const BookFilters = ({
         </label>
       </div>
       
-      {onViewModeChange && (
+      {onViewModeChange && !isMobile && (
         <div className="flex gap-1 ml-auto">
           <Button 
             size="sm" 
@@ -407,7 +410,7 @@ export const BookFilters = ({
                 type="text"
                 name="query"
                 placeholder="도서 검색..."
-                value={tempFilters.query}
+                value={filters.query}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleMobileSearch();

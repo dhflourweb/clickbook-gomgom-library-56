@@ -54,15 +54,21 @@ const BookDetail = () => {
   const reviews = getReviewsForBook(id);
   const isAvailable = book.status.available > 0;
   
-  const handleBorrow = () => {
+  const handleBorrow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setBorrowDialogOpen(true);
   };
 
-  const handleReturn = () => {
+  const handleReturn = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setReturnDialogOpen(true);
   };
 
-  const handleReserve = () => {
+  const handleReserve = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setIsReserved(!isReserved);
     
     toast({
@@ -73,7 +79,9 @@ const BookDetail = () => {
     });
   };
   
-  const handleExtend = () => {
+  const handleExtend = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setExtendDialogOpen(true);
   };
   
@@ -149,6 +157,10 @@ const BookDetail = () => {
           variant="secondary"
           className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
           disabled={true}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           예약불가
         </Button>
