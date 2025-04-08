@@ -86,12 +86,12 @@ export const Header = () => {
 
   return (
       <>
-        <div className="t-banner">
+        <div className="t-banner text-sm md:text-base">
           <p>
             지식을 넓히는 첫걸음! 사내문고 서비스에서 다양한 도서를 만나보세요.
           </p>
         </div>
-        <header className="bg-primary-deepblue text-white py-3 px-4 sticky top-0 z-50">
+        <header className="bg-white text-black py-3 px-4 sticky top-0 z-50 shadow-sm">
           <div className="container mx-auto flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
@@ -110,7 +110,7 @@ export const Header = () => {
                     <NavigationMenuList>
                       <NavigationMenuItem>
                         <NavigationMenuTrigger
-                            className="bg-transparent text-white hover:bg-primary-deepblue/50">전체메뉴</NavigationMenuTrigger>
+                            className="bg-transparent text-black hover:bg-gray-100">전체메뉴</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-0 mt-0">
                           <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
                             <div className="space-y-2">
@@ -150,7 +150,7 @@ export const Header = () => {
 
                       <NavigationMenuItem>
                         <NavigationMenuTrigger
-                            className="bg-transparent text-white hover:bg-primary-deepblue/50">카테고리</NavigationMenuTrigger>
+                            className="bg-transparent text-black hover:bg-gray-100">카테고리</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2 w-auto">
                           <div className="grid grid-cols-1 min-w-[200px]">
                             {categories.map((category) => (
@@ -168,7 +168,7 @@ export const Header = () => {
 
                       <NavigationMenuItem>
                         <NavigationMenuTrigger
-                            className="bg-transparent text-white hover:bg-primary-deepblue/50">커뮤니티</NavigationMenuTrigger>
+                            className="bg-transparent text-black hover:bg-gray-100">커뮤니티</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2">
                           <div className="w-[200px]">
                             <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
@@ -181,7 +181,7 @@ export const Header = () => {
 
                       <NavigationMenuItem>
                         <NavigationMenuTrigger
-                            className="bg-transparent text-white hover:bg-primary-deepblue/50">마이페이지</NavigationMenuTrigger>
+                            className="bg-transparent text-black hover:bg-gray-100">마이페이지</NavigationMenuTrigger>
                         <NavigationMenuContent className="bg-white rounded-md p-2">
                           <div className="w-[200px]">
                             <p className="text-gray-700 py-2 cursor-pointer hover:bg-gray-100 px-2 rounded-md"
@@ -220,13 +220,13 @@ export const Header = () => {
                     </form>
                   </div>
               ) : (
-                  <Button variant="ghost" size="icon" className="text-white" onClick={toggleSearchBar}>
+                  <Button variant="ghost" size="icon" className="text-black" onClick={toggleSearchBar}>
                     <Search size={20}/>
                   </Button>
               )}
 
               <Link to="/mypage">
-                <Button variant="ghost" size="icon" className="text-white">
+                <Button variant="ghost" size="icon" className="text-black">
                   <User size={20}/>
                 </Button>
               </Link>
@@ -236,7 +236,7 @@ export const Header = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        className="ml-2 text-xs bg-transparent border-white text-white hover:bg-white/20"
+                        className="ml-2 text-xs bg-transparent border-gray-300 text-black hover:bg-gray-100"
                     >
                       관리자
                     </Button>
@@ -247,7 +247,7 @@ export const Header = () => {
                   variant="ghost"
                   size="icon"
                   onClick={logout}
-                  className="text-white"
+                  className="text-black"
               >
                 <LogOut size={20}/>
               </Button>

@@ -7,6 +7,7 @@ import { Footer } from './Footer';
 import { Toaster } from '@/components/ui/sonner';
 import { BottomNav } from '@/components/mobile/BottomNav';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollToTopButton } from '@/components/ui/scroll-to-top-button';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -43,6 +44,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <main className="flex-1 container mx-auto px-4 py-8 pb-24">
         {children}
       </main>
+      <ScrollToTopButton />
       <Footer />
       {isMobile && <BottomNav />}
       <Toaster />
