@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: Pretendard;
   font-weight: 400;
@@ -192,7 +191,6 @@
     @apply animate-fade-in;
   }
   
-  /* Admin dashboard styled components */
   .dashboard-card {
     @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4;
   }
@@ -209,13 +207,24 @@
     @apply text-sm font-medium text-gray-600 mb-2;
   }
   
-  /* Custom navigation menu styles */
   .navigation-dropdown {
-    @apply py-2 px-3 shadow-lg border border-gray-100 bg-white rounded-lg;
+    @apply py-3 px-4 shadow-md border border-gray-100 bg-white rounded-lg;
   }
   
   .navigation-dropdown-item {
     @apply py-1.5 px-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer transition-colors whitespace-nowrap;
+  }
+  
+  .elegant-dropdown {
+    @apply bg-white rounded-lg shadow-lg border border-gray-100 p-4 transition-all duration-200;
+  }
+  
+  .elegant-dropdown-header {
+    @apply text-primary-deepblue font-medium mb-2 border-b pb-1 text-sm;
+  }
+  
+  .elegant-dropdown-item {
+    @apply text-gray-700 py-1.5 px-2.5 rounded-md text-sm transition-colors hover:bg-gray-50 cursor-pointer;
   }
 }
 
