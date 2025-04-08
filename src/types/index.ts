@@ -1,3 +1,4 @@
+
 export interface Book {
   id: string;
   title: string;
@@ -21,6 +22,11 @@ export interface Book {
   source: string;
   registeredDate: string;
   recommendations?: number;
+  borrowedByCurrentUser?: boolean;
+  borrowDate?: string;
+  returnDueDate?: string;
+  isExtendable?: boolean;
+  hasBeenExtended?: boolean;
 }
 
 export type BookBadge = 'new' | 'recommended' | 'popular' | 'best' | null;
