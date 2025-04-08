@@ -103,9 +103,9 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
             <Label htmlFor="rating" className="text-sm font-medium">만족도</Label>
             <div className="col-span-3">
               <StarRating 
-                rating={rating} 
-                onRatingChange={setRating} 
-                size="medium" 
+                value={rating} 
+                onChange={setRating} 
+                size={20} 
               />
             </div>
           </div>
