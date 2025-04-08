@@ -19,6 +19,14 @@ interface BookCarouselProps {
 export const BookCarousel = ({ books, className }: BookCarouselProps) => {
   const isMobile = useIsMobile();
   
+  // Determine how many cards to show based on viewport
+  const getItemsPerView = () => {
+    if (isMobile) return 1.2; // Show 1.2 items on mobile (peek at next card)
+    if (window.innerWidth < 1024) return 2.5;
+    if (window.innerWidth < 1280) return 3.5;
+    return 4.5; // Default for large screens
+  };
+
   return (
     <Carousel
       opts={{
@@ -32,7 +40,7 @@ export const BookCarousel = ({ books, className }: BookCarouselProps) => {
           <CarouselItem 
             key={book.id} 
             className={cn(
-              isMobile ? "pl-2 basis-[80%] sm:basis-[85%]" : "pl-4 md:basis-1/3 lg:basis-1/4 xl:basis-[22%]"
+              isMobile ? "pl-2 basis-[80%] sm:basis-[85%]" : "pl-4 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
             )}
           >
             <BookCard book={book} />

@@ -13,7 +13,16 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useIsMobile } from '@/hooks/use-mobile';
-import { categories } from '@/components/layout/Header';
+
+const categories = [
+  "문학",
+  "경제/경영",
+  "자기개발",
+  "인문/역사",
+  "사회",
+  "취미/생활",
+  "기타"
+];
 
 export const BottomNav = () => {
   const navigate = useNavigate();
@@ -94,7 +103,7 @@ export const BottomNav = () => {
         </div>
       </nav>
       
-      {/* Full Menu Drawer - Updated to match Header's menu structure */}
+      {/* Full Menu Drawer - Updated to have proper scrolling */}
       <Drawer open={showFullMenu} onOpenChange={setShowFullMenu}>
         <DrawerContent className="max-h-[85vh] rounded-t-xl overflow-hidden">
           <DrawerHeader>
@@ -118,38 +127,11 @@ export const BottomNav = () => {
                   <button 
                     className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
-                      navigate('/books?sort=최신등록순');
+                      navigate('/books/rentals');
                       setShowFullMenu(false);
                     }}
                   >
-                    신규도서
-                  </button>
-                  <button 
-                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
-                    onClick={() => {
-                      navigate('/books?sort=추천순');
-                      setShowFullMenu(false);
-                    }}
-                  >
-                    추천도서
-                  </button>
-                  <button 
-                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
-                    onClick={() => {
-                      navigate('/books?sort=베스트도서순');
-                      setShowFullMenu(false);
-                    }}
-                  >
-                    베스트도서(사내)
-                  </button>
-                  <button 
-                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
-                    onClick={() => {
-                      navigate('/books?sort=베스트도서순');
-                      setShowFullMenu(false);
-                    }}
-                  >
-                    베스트도서(국내)
+                    도서대여현황
                   </button>
                 </div>
               </div>
