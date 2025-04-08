@@ -195,7 +195,7 @@ const BookDetail = () => {
             {/* Left sidebar - Book cover and action buttons */}
             <div className="md:w-1/3 p-6 flex flex-col items-center border-r border-gray-100">
               {/* Badge for new books or special status */}
-              {book.badges?.some(badge => badge.type === 'new') && (
+              {book.badges?.some(badge => badge === 'new') && (
                 <div className="self-start bg-blue-600 text-white text-xs px-2 py-1 rounded-sm mb-4">
                   New
                 </div>
@@ -283,7 +283,7 @@ const BookDetail = () => {
                     <div className="col-span-2 md:col-span-1">
                       <p className="flex items-baseline gap-2">
                         <span className="text-gray-500 text-sm">출판일:</span>
-                        <span className="font-medium">{book.publishedDate}</span>
+                        <span className="font-medium">{book.publishDate}</span>
                       </p>
                     </div>
                     <div className="col-span-2 md:col-span-1">
@@ -298,13 +298,7 @@ const BookDetail = () => {
                         <span className="font-medium">{book.isbn}</span>
                       </p>
                     </div>
-                    <div className="col-span-2 md:col-span-1">
-                      <p className="flex items-baseline gap-2">
-                        <span className="text-gray-500 text-sm">페이지:</span>
-                        <span className="font-medium">{book.pageCount} 페이지</span>
-                      </p>
-                    </div>
-                    <div className="col-span-2 md:col-span-1">
+                    <div className="col-span-2">
                       <p className="flex items-baseline gap-2">
                         <span className="text-gray-500 text-sm">위치:</span>
                         <span className="font-medium">{book.location}</span>
