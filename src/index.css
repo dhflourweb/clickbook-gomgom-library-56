@@ -221,12 +221,6 @@
   .navigation-dropdown-item {
     @apply text-xs py-1.5 px-2 hover:bg-gray-50 cursor-pointer transition-colors;
   }
-  
-  /* Navigation menu specific styles */
-  [data-radix-navigation-menu-content] {
-    transform: translateX(-50%) !important;
-    left: 50% !important;
-  }
 }
 
 @keyframes fadeIn {

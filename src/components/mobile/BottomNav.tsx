@@ -54,11 +54,11 @@ export const BottomNav = () => {
                 <DrawerTitle className="text-center">카테고리</DrawerTitle>
               </DrawerHeader>
               <div className="px-4">
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-3">
                   {categories.map((category) => (
                     <button 
                       key={category}
-                      className="w-full py-2.5 px-3 text-left border-b text-sm"
+                      className="w-full py-3 px-4 text-left border-b"
                       onClick={() => navigate(`/books?filter=category=${category}`)}
                     >
                       {category}
@@ -103,11 +103,11 @@ export const BottomNav = () => {
           <div className="overflow-y-auto px-4 pb-4" style={{ maxHeight: "calc(85vh - 120px)" }}>
             <div className="flex flex-col space-y-3">
               {/* 도서 관리 */}
-              <div className="mb-3">
-                <h3 className="font-medium text-sm border-b pb-1.5 mb-1.5">도서관리</h3>
-                <div className="space-y-1.5">
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">도서관리</h3>
+                <div className="space-y-2 ml-2">
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/books');
                       setShowFullMenu(false);
@@ -116,7 +116,7 @@ export const BottomNav = () => {
                     도서목록
                   </button>
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/books?sort=최신등록순');
                       setShowFullMenu(false);
@@ -125,7 +125,7 @@ export const BottomNav = () => {
                     신규도서
                   </button>
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/books?sort=추천순');
                       setShowFullMenu(false);
@@ -134,7 +134,7 @@ export const BottomNav = () => {
                     추천도서
                   </button>
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/books?sort=베스트도서순');
                       setShowFullMenu(false);
@@ -143,7 +143,7 @@ export const BottomNav = () => {
                     베스트도서(사내)
                   </button>
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/books?sort=베스트도서순');
                       setShowFullMenu(false);
@@ -155,13 +155,13 @@ export const BottomNav = () => {
               </div>
 
               {/* 카테고리 */}
-              <div className="mb-3">
-                <h3 className="font-medium text-sm border-b pb-1.5 mb-1.5">카테고리</h3>
-                <div className="space-y-1.5">
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">카테고리</h3>
+                <div className="space-y-2 ml-2">
                   {categories.map((category) => (
                     <button 
                       key={category}
-                      className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                      className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                       onClick={() => {
                         navigate(`/books?filter=category=${category}`);
                         setShowFullMenu(false);
@@ -174,11 +174,11 @@ export const BottomNav = () => {
               </div>
 
               {/* 커뮤니티 */}
-              <div className="mb-3">
-                <h3 className="font-medium text-sm border-b pb-1.5 mb-1.5">커뮤니티</h3>
-                <div className="space-y-1.5">
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">커뮤니티</h3>
+                <div className="space-y-2 ml-2">
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/announcements');
                       setShowFullMenu(false);
@@ -187,7 +187,7 @@ export const BottomNav = () => {
                     공지사항
                   </button>
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/inquiries');
                       setShowFullMenu(false);
@@ -199,11 +199,11 @@ export const BottomNav = () => {
               </div>
 
               {/* 마이페이지 */}
-              <div className="mb-3">
-                <h3 className="font-medium text-sm border-b pb-1.5 mb-1.5">마이페이지</h3>
-                <div className="space-y-1.5">
+              <div className="mb-4">
+                <h3 className="font-medium text-lg border-b pb-2 mb-2">마이페이지</h3>
+                <div className="space-y-2 ml-2">
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/mypage');
                       setShowFullMenu(false);
@@ -212,7 +212,7 @@ export const BottomNav = () => {
                     내정보
                   </button>
                   <button 
-                    className="w-full py-1.5 px-2 text-left text-sm hover:bg-gray-100 rounded"
+                    className="w-full py-2 px-2 text-left hover:bg-gray-100 rounded"
                     onClick={() => {
                       navigate('/mypage/history');
                       setShowFullMenu(false);
