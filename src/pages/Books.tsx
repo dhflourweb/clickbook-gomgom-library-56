@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -5,8 +6,7 @@ import { BookFilters } from '@/components/books/BookFilters';
 import { BookGrid } from '@/components/books/BookGrid';
 import { getBooksByCategory, MOCK_BOOKS, getFavoriteBooks } from '@/data/mockData';
 import { Book } from '@/types';
-import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, BookOpen, Heart, ArrowUpDown } from 'lucide-react';
+import { BookOpen, Heart, ArrowUpDown } from 'lucide-react';
 import { 
   Pagination, 
   PaginationContent, 
@@ -20,7 +20,6 @@ import { useAuth } from '@/context/AuthContext';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -32,6 +31,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
 import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
 import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -45,6 +45,7 @@ const Books = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   // Dialog states for the list view
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -304,11 +305,6 @@ const Books = () => {
     const updatedBooks = books.map(book => {
       if (book.id === bookId) {
         const newFavorite = !book.isFavorite;
-        if (newFavorite) {
-          toast.success(`'${book.title}' 도서를 관심 도서에 추가했습니다.`);
-        } else {
-          toast.info(`'${book.title}' 도서를 관심 도서에서 제거했습니다.`);
-        }
         return { ...book, isFavorite: newFavorite };
       }
       return book;
@@ -334,11 +330,6 @@ const Books = () => {
       const updatedBooks = books.map(b => {
         if (b.id === book.id) {
           const isCurrentlyReserved = b.status.reserved;
-          if (!isCurrentlyReserved) {
-            toast.success(`'${b.title}' 도서를 예약했습니다.`);
-          } else {
-            toast.info(`'${b.title}' 도서 예약을 취소했습니다.`);
-          }
           return { 
             ...b, 
             status: { 
@@ -367,197 +358,355 @@ const Books = () => {
 
   const ListViewLoadingSkeleton = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-28">상태</TableHead>
-            <TableHead className="w-12">즐겨찾기</TableHead>
-            <TableHead className="w-[300px]">도서정보</TableHead>
-            <TableHead className="w-32">저자</TableHead>
-            <TableHead className="w-28">카테고리</TableHead>
-            <TableHead className="w-28">위치</TableHead>
-            <TableHead className="w-24">추천수</TableHead>
-            <TableHead className="w-24">대여횟수</TableHead>
-            <TableHead className="w-24">평점</TableHead>
-            <TableHead className="w-40">기능</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      {isMobile ? (
+        <div className="p-4 space-y-6">
           {Array.from({ length: itemsPerPage }).map((_, i) => (
-            <TableRow key={i}>
-              <TableCell><Skeleton className="h-6 w-24" /></TableCell>
-              <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-16 w-12 rounded" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-40" />
-                    <Skeleton className="h-3 w-24" />
-                    <Skeleton className="h-3 w-32" />
-                  </div>
+            <div key={i} className="border rounded-lg p-3 space-y-3">
+              <div className="flex gap-3">
+                <Skeleton className="h-20 w-16 rounded" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-3 w-2/3" />
                 </div>
-              </TableCell>
-              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-8" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-8" /></TableCell>
-              <TableCell><Skeleton className="h-4 w-10" /></TableCell>
-              <TableCell><Skeleton className="h-8 w-36" /></TableCell>
-            </TableRow>
+              </div>
+              <div className="flex justify-between">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+              <Skeleton className="h-8 w-full" />
+            </div>
           ))}
-        </TableBody>
-      </Table>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-28">상태</TableHead>
+              <TableHead className="w-12">즐겨찾기</TableHead>
+              <TableHead className="w-[300px]">도서정보</TableHead>
+              <TableHead className="w-32">저자</TableHead>
+              <TableHead className="w-28">카테고리</TableHead>
+              <TableHead className="w-28">위치</TableHead>
+              <TableHead className="w-24">추천수</TableHead>
+              <TableHead className="w-24">대여횟수</TableHead>
+              <TableHead className="w-24">평점</TableHead>
+              <TableHead className="w-40">기능</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: itemsPerPage }).map((_, i) => (
+              <TableRow key={i}>
+                <TableCell><Skeleton className="h-6 w-24" /></TableCell>
+                <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-16 w-12 rounded" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-3 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-10" /></TableCell>
+                <TableCell><Skeleton className="h-8 w-36" /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 
-  const BookListView = () => (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <SortableColumnHeader field="status" width="w-28">상태</SortableColumnHeader>
-            <TableHead className="w-12">즐겨찾기</TableHead>
-            <SortableColumnHeader field="title" width="w-[300px]">도서정보</SortableColumnHeader>
-            <SortableColumnHeader field="author" width="w-32">저자</SortableColumnHeader>
-            <SortableColumnHeader field="category" width="w-28">카테고리</SortableColumnHeader>
-            <SortableColumnHeader field="location" width="w-28">위치</SortableColumnHeader>
-            <SortableColumnHeader field="recommendations" width="w-24">추천수</SortableColumnHeader>
-            <SortableColumnHeader field="borrowed" width="w-24">대여횟수</SortableColumnHeader>
-            <SortableColumnHeader field="rating" width="w-24">평점</SortableColumnHeader>
-            <TableHead className="w-40">기능</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+  const BookListView = () => {
+    // For mobile devices, render a simplified list view
+    if (isMobile) {
+      return (
+        <div className="space-y-4">
           {books.map((book) => {
             const isAvailable = book.status.available > 0;
             const isBorrowedByUser = book.borrowedByCurrentUser || false;
             const isFavorite = book.isFavorite || false;
             
             return (
-              <TableRow 
-                key={book.id} 
-                className="cursor-pointer hover:bg-gray-50"
-                onClick={() => navigateToBookDetail(book.id)}
+              <div 
+                key={book.id}
+                className="border rounded-lg bg-white overflow-hidden"
               >
-                <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
-                    book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
-                    'bg-gray-200 text-gray-600'
-                  }`}>
-                    {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
-                  </span>
-                </TableCell>
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <button
-                    className={`p-1.5 rounded-full transition-colors ${
-                      isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
-                    }`}
-                    onClick={(e) => handleFavoriteToggle(e, book.id)}
-                    aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
-                  >
-                    <Heart 
-                      size={16} 
-                      fill={isFavorite ? "currentColor" : "none"} 
-                      stroke={isFavorite ? "currentColor" : "#000000"}
-                      strokeWidth={1.5}
-                      className="transition-all"
-                    />
-                  </button>
-                </TableCell>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-3">
+                <div 
+                  className="p-3 cursor-pointer"
+                  onClick={() => navigateToBookDetail(book.id)}
+                >
+                  <div className="flex gap-3">
                     <img 
-                      src={book.coverImage} 
-                      alt={book.title} 
-                      className="h-16 w-12 object-cover rounded"
+                      src={book.coverImage}
+                      alt={book.title}
+                      className="h-20 w-15 object-cover rounded"
                     />
-                    <div>
-                      <div className="font-medium mb-1">{book.title}</div>
-                      <div className="text-xs text-gray-500">{book.publisher}</div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <div>
+                          <h3 className="font-medium text-sm line-clamp-2">{book.title}</h3>
+                          <p className="text-xs text-gray-500 mt-1">{book.author}</p>
+                          <div className="flex gap-1 items-center mt-1">
+                            <span className="text-xs text-gray-500">{book.category}</span>
+                            {book.rating && (
+                              <span className="text-secondary-orange text-xs font-semibold ml-2">
+                                ★ {book.rating.toFixed(1)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          <button
+                            className={`p-1.5 rounded-full transition-colors ${
+                              isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
+                            }`}
+                            onClick={(e) => handleFavoriteToggle(e, book.id)}
+                            aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
+                          >
+                            <Heart 
+                              size={16}
+                              fill={isFavorite ? "currentColor" : "none"} 
+                              stroke={isFavorite ? "currentColor" : "#000000"}
+                              strokeWidth={1.5} 
+                              className="transition-all"
+                            />
+                          </button>
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                            isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
+                            book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+                            'bg-gray-200 text-gray-600'
+                          }`}>
+                            {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex gap-1 mt-1">
                         <BadgeDisplay badges={book.badges} size="xs" />
                       </div>
                     </div>
                   </div>
-                </TableCell>
-                <TableCell className="whitespace-nowrap">{book.author}</TableCell>
-                <TableCell>{book.category}</TableCell>
-                <TableCell>{book.location || 'A-1-2'}</TableCell>
-                <TableCell>{book.recommendations || 0}</TableCell>
-                <TableCell>{book.status.borrowed || 0}</TableCell>
-                <TableCell>
-                  {book.rating && (
-                    <span className="text-secondary-orange font-semibold">
-                      ★ {book.rating.toFixed(1)}
-                    </span>
+                </div>
+                
+                <div className="mt-2 p-3 pt-0" onClick={(e) => e.stopPropagation()}>
+                  {isAvailable ? (
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={(e) => handleBookAction(e, 'borrow', book)}
+                      disabled={user?.borrowedCount >= 2}
+                    >
+                      대여하기
+                    </Button>
+                  ) : isBorrowedByUser ? (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                        onClick={(e) => handleBookAction(e, 'return', book)}
+                      >
+                        반납
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 border-primary text-primary hover:bg-primary/10"
+                        onClick={(e) => handleBookAction(e, 'extend', book)}
+                        disabled={!book.isExtendable}
+                      >
+                        연장
+                      </Button>
+                    </div>
+                  ) : book.isReservable === false ? (
+                    <Button 
+                      variant="secondary"
+                      size="sm" 
+                      className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+                      disabled={true}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      예약불가
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant={book.status.reserved ? "outline" : "secondary"}
+                      size="sm" 
+                      className={`w-full ${book.status.reserved
+                        ? "border-primary text-primary hover:bg-primary/10"
+                        : "bg-secondary hover:bg-secondary/90"
+                      }`}
+                      onClick={(e) => handleBookAction(e, 'reserve', book)}
+                    >
+                      {book.status.reserved ? "예약 취소" : "예약하기"}
+                    </Button>
                   )}
-                </TableCell>
-                <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex gap-1 items-center">
-                    {isAvailable ? (
-                      <Button 
-                        variant="default" 
-                        size="sm" 
-                        className="bg-primary hover:bg-primary/90"
-                        onClick={(e) => handleBookAction(e, 'borrow', book)}
-                        disabled={user?.borrowedCount >= 2}
-                      >
-                        대여하기
-                      </Button>
-                    ) : isBorrowedByUser ? (
-                      <div className="flex gap-1">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
-                          onClick={(e) => handleBookAction(e, 'return', book)}
-                        >
-                          반납
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="border-primary text-primary hover:bg-primary/10"
-                          onClick={(e) => handleBookAction(e, 'extend', book)}
-                          disabled={!book.isExtendable}
-                        >
-                          연장
-                        </Button>
-                      </div>
-                    ) : book.isReservable === false ? (
-                      <Button 
-                        variant="secondary"
-                        size="sm" 
-                        className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
-                        disabled={true}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        예약불가
-                      </Button>
-                    ) : (
-                      <Button 
-                        variant={book.status.reserved ? "outline" : "secondary"}
-                        size="sm" 
-                        className={book.status.reserved
-                          ? "border-primary text-primary hover:bg-primary/10"
-                          : "bg-secondary hover:bg-secondary/90"
-                        }
-                        onClick={(e) => handleBookAction(e, 'reserve', book)}
-                      >
-                        {book.status.reserved ? "예약 취소" : "예약하기"}
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
+                </div>
+              </div>
             );
           })}
-        </TableBody>
-      </Table>
-    </div>
-  );
+        </div>
+      );
+    }
+
+    // Desktop list view
+    return (
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <SortableColumnHeader field="status" width="w-28">상태</SortableColumnHeader>
+              <TableHead className="w-12">즐겨찾기</TableHead>
+              <SortableColumnHeader field="title" width="w-[300px]">도서정보</SortableColumnHeader>
+              <SortableColumnHeader field="author" width="w-32">저자</SortableColumnHeader>
+              <SortableColumnHeader field="category" width="w-28">카테고리</SortableColumnHeader>
+              <SortableColumnHeader field="location" width="w-28">위치</SortableColumnHeader>
+              <SortableColumnHeader field="recommendations" width="w-24">추천수</SortableColumnHeader>
+              <SortableColumnHeader field="borrowed" width="w-24">대여횟수</SortableColumnHeader>
+              <SortableColumnHeader field="rating" width="w-24">평점</SortableColumnHeader>
+              <TableHead className="w-40">기능</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {books.map((book) => {
+              const isAvailable = book.status.available > 0;
+              const isBorrowedByUser = book.borrowedByCurrentUser || false;
+              const isFavorite = book.isFavorite || false;
+              
+              return (
+                <TableRow 
+                  key={book.id} 
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => navigateToBookDetail(book.id)}
+                >
+                  <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
+                      book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+                      'bg-gray-200 text-gray-600'
+                    }`}>
+                      {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
+                    </span>
+                  </TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <button
+                      className={`p-1.5 rounded-full transition-colors ${
+                        isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
+                      }`}
+                      onClick={(e) => handleFavoriteToggle(e, book.id)}
+                      aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
+                    >
+                      <Heart 
+                        size={16} 
+                        fill={isFavorite ? "currentColor" : "none"} 
+                        stroke={isFavorite ? "currentColor" : "#000000"}
+                        strokeWidth={1.5}
+                        className="transition-all"
+                      />
+                    </button>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={book.coverImage} 
+                        alt={book.title} 
+                        className="h-16 w-12 object-cover rounded"
+                      />
+                      <div>
+                        <div className="font-medium mb-1">{book.title}</div>
+                        <div className="text-xs text-gray-500">{book.publisher}</div>
+                        <div className="flex gap-1 mt-1">
+                          <BadgeDisplay badges={book.badges} size="xs" />
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">{book.author}</TableCell>
+                  <TableCell>{book.category}</TableCell>
+                  <TableCell>{book.location || 'A-1-2'}</TableCell>
+                  <TableCell>{book.recommendations || 0}</TableCell>
+                  <TableCell>{book.status.borrowed || 0}</TableCell>
+                  <TableCell>
+                    {book.rating && (
+                      <span className="text-secondary-orange font-semibold">
+                        ★ {book.rating.toFixed(1)}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-1 items-center">
+                      {isAvailable ? (
+                        <Button 
+                          variant="default" 
+                          size="sm" 
+                          className="bg-primary hover:bg-primary/90"
+                          onClick={(e) => handleBookAction(e, 'borrow', book)}
+                          disabled={user?.borrowedCount >= 2}
+                        >
+                          대여하기
+                        </Button>
+                      ) : isBorrowedByUser ? (
+                        <div className="flex gap-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                            onClick={(e) => handleBookAction(e, 'return', book)}
+                          >
+                            반납
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-primary text-primary hover:bg-primary/10"
+                            onClick={(e) => handleBookAction(e, 'extend', book)}
+                            disabled={!book.isExtendable}
+                          >
+                            연장
+                          </Button>
+                        </div>
+                      ) : book.isReservable === false ? (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Button 
+                            variant="secondary"
+                            size="sm" 
+                            className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+                            disabled={true}
+                          >
+                            예약불가
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          variant={book.status.reserved ? "outline" : "secondary"}
+                          size="sm" 
+                          className={book.status.reserved
+                            ? "border-primary text-primary hover:bg-primary/10"
+                            : "bg-secondary hover:bg-secondary/90"
+                          }
+                          onClick={(e) => handleBookAction(e, 'reserve', book)}
+                        >
+                          {book.status.reserved ? "예약 취소" : "예약하기"}
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
 
   return (
     <MainLayout>

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
 import { BorrowBookDialog } from './BorrowBookDialog';
 import { ReturnBookDialog } from './ReturnBookDialog';
 import { ExtendBookDialog } from './ExtendBookDialog';
@@ -64,24 +63,12 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     e.preventDefault();
     e.stopPropagation();
     setIsReserved(!isReserved);
-    
-    if (!isReserved) {
-      toast.success(`'${book.title}' 도서를 예약했습니다.`);
-    } else {
-      toast.info(`'${book.title}' 도서 예약을 취소했습니다.`);
-    }
   };
 
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsFavorite(!isFavorite);
-    
-    if (!isFavorite) {
-      toast.success(`'${book.title}' 도서를 관심 도서에 추가했습니다.`);
-    } else {
-      toast.info(`'${book.title}' 도서를 관심 도서에서 제거했습니다.`);
-    }
   };
 
   // Get appropriate status badge
@@ -89,6 +76,10 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     if (isAvailable) return "대여가능";
     if (isReserved) return "예약중";
     return "대여중";
+  };
+
+  const handleCardClick = (e: React.MouseEvent, to: string) => {
+    // Allow default navigation
   };
 
   // Determine which button to show based on book status and user
@@ -151,15 +142,21 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     // Case 4: Book is not reservable - Show disabled reservation button
     if (book.isReservable === false) {
       return (
-        <Button 
-          variant="secondary"
-          size="sm" 
-          className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
-          disabled={true}
-          onClick={(e) => e.stopPropagation()} // Stop propagation to prevent navigation
+        <div 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
-          예약불가
-        </Button>
+          <Button 
+            variant="secondary"
+            size="sm" 
+            className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+            disabled={true}
+          >
+            예약불가
+          </Button>
+        </div>
       );
     }
     
@@ -182,61 +179,75 @@ export const BookCard = ({ book, className }: BookCardProps) => {
 
   return (
     <>
-      <Link to={`/books/${book.id}`} className={cn("book-card transition-all hover:shadow-md hover:scale-[1.02] hover:border-primary/30", className)}>
-        <div className="relative">
-          <img
-            src={book.coverImage}
-            alt={`${book.title} cover`}
-            className="book-cover"
-          />
-          <div className="absolute top-2 left-2">
-            <BadgeDisplay badges={book.badges} size="sm" />
-          </div>
-          <button
-            className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
-              isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
-            }`}
-            onClick={handleFavoriteToggle}
-            aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
-          >
-            <Heart 
-              size={18} 
-              fill={isFavorite ? "currentColor" : "none"} 
-              stroke={isFavorite ? "currentColor" : "#000000"}
-              strokeWidth={1.5}
-              className="transition-all"
+      <div 
+        className={cn("book-card transition-all hover:shadow-md hover:scale-[1.02] hover:border-primary/30 cursor-pointer", className)}
+        onClick={(e) => handleCardClick(e, `/books/${book.id}`)}
+      >
+        <Link 
+          to={`/books/${book.id}`} 
+          className="block"
+          onClick={(e) => {
+            // Let the parent div handle the click
+            e.stopPropagation();
+          }}
+        >
+          <div className="relative">
+            <img
+              src={book.coverImage}
+              alt={`${book.title} cover`}
+              className="book-cover"
             />
-          </button>
-          <div className="absolute bottom-2 right-2">
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-              isAvailable ? 'bg-primary/15 text-primary' : 
-              isReserved ? 'bg-secondary-orange/15 text-secondary-orange' : 
-              'bg-gray-200 text-gray-600'
-            }`}>
-              {getStatusBadge()}
-            </span>
-          </div>
-        </div>
-        <div className="p-3 flex flex-col flex-1">
-          <h3 className="font-medium text-sm line-clamp-2">{book.title}</h3>
-          <p className="text-muted-foreground text-xs mt-1">{book.author}</p>
-          <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
-          <div className="mt-auto pt-2 flex items-center justify-between">
-            <span className="text-xs text-gray-500">{book.category}</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">대여 {book.status.borrowed || 0}회</span>
-              {book.rating && (
-                <span className="text-secondary-orange text-xs font-semibold">
-                  ★ {book.rating.toFixed(1)}
-                </span>
-              )}
+            <div className="absolute top-2 left-2">
+              <BadgeDisplay badges={book.badges} size="sm" />
+            </div>
+            <button
+              className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${
+                isFavorite ? 'bg-pink-100 text-pink-500' : 'bg-white/90 hover:bg-gray-100'
+              }`}
+              onClick={handleFavoriteToggle}
+              aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
+            >
+              <Heart 
+                size={18} 
+                fill={isFavorite ? "currentColor" : "none"} 
+                stroke={isFavorite ? "currentColor" : "#000000"}
+                strokeWidth={1.5}
+                className="transition-all"
+              />
+            </button>
+            <div className="absolute bottom-2 right-2">
+              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                isAvailable ? 'bg-primary/15 text-primary' : 
+                isReserved ? 'bg-secondary-orange/15 text-secondary-orange' : 
+                'bg-gray-200 text-gray-600'
+              }`}>
+                {getStatusBadge()}
+              </span>
             </div>
           </div>
+        </Link>
+        <div className="p-3 flex flex-col flex-1">
+          <Link to={`/books/${book.id}`} className="block">
+            <h3 className="font-medium text-sm line-clamp-2">{book.title}</h3>
+            <p className="text-muted-foreground text-xs mt-1">{book.author}</p>
+            <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
+            <div className="mt-auto pt-2 flex items-center justify-between">
+              <span className="text-xs text-gray-500">{book.category}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">대여 {book.status.borrowed || 0}회</span>
+                {book.rating && (
+                  <span className="text-secondary-orange text-xs font-semibold">
+                    ★ {book.rating.toFixed(1)}
+                  </span>
+                )}
+              </div>
+            </div>
+          </Link>
           <div className="mt-2 pt-2 border-t border-gray-100">
             {renderActionButton()}
           </div>
         </div>
-      </Link>
+      </div>
       
       <BorrowBookDialog 
         book={book}

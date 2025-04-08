@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Search, Filter, Grid, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -137,6 +139,14 @@ export const BookFilters = ({
   const handleViewModeToggle = (mode: 'grid' | 'list') => {
     if (onViewModeChange) {
       onViewModeChange(mode);
+    }
+  };
+
+  const handleFavoriteToggle = (checked: boolean) => {
+    if (isMobile) {
+      const updatedFilters = { ...filters, favorite: checked };
+      setFilters(updatedFilters);
+      onSearch(updatedFilters);
     }
   };
 
@@ -275,14 +285,11 @@ export const BookFilters = ({
       </div>
 
       <div className="flex justify-between items-center">
-        <label className="text-sm font-medium">관심 도서만</label>
-        <input
-          type="checkbox"
-          id="mobile-favorite"
-          name="favorite"
+        <label className="text-sm font-medium" htmlFor="mobile-favorite-toggle">관심 도서만</label>
+        <Switch 
+          id="mobile-favorite-toggle"
           checked={filters.favorite}
-          onChange={handleInputChange}
-          className="w-5 h-5 rounded border-gray-300"
+          onCheckedChange={handleFavoriteToggle}
         />
       </div>
 
@@ -387,13 +394,15 @@ export const BookFilters = ({
       </div>
       
       <div className="flex items-center space-x-2 mr-2">
-        <input
-          type="checkbox"
+        <Checkbox
           id="desktop-favorite"
-          name="favorite"
           checked={filters.favorite}
-          onChange={handleInputChange}
-          className="w-4 h-4 rounded border-gray-300"
+          onCheckedChange={(checked) => {
+            const isChecked = checked === true;
+            const updatedFilters = {...filters, favorite: isChecked};
+            setFilters(updatedFilters);
+            onSearch(updatedFilters);
+          }}
         />
         <label htmlFor="desktop-favorite" className="text-sm whitespace-nowrap">
           관심 도서만
