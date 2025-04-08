@@ -144,7 +144,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   };
 
   return (
-    <Link to={`/books/${book.id}`} className={cn("book-card", className)}>
+    <Link to={`/books/${book.id}`} className={cn("book-card hover:border-gray-300", className)}>
       <div className="relative">
         <img
           src={book.coverImage}

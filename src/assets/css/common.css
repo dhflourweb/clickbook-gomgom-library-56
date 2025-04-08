@@ -22,7 +22,7 @@
 
 /* Footer */
 .footer {
-    margin-top: 4rem; /* Reduced from 7.5rem */
+    margin-top: 3rem; /* Further reduced from 4rem */
     background: #1F4788;
     color: #fff;
     padding-bottom: calc(3.5rem + 1px); /* Adjust for mobile bottom nav */

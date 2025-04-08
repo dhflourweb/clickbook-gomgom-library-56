@@ -1,3 +1,4 @@
+
 @font-face {
   font-family: Pretendard;
   font-weight: 400;
@@ -134,7 +135,27 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gray-50 text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-800 font-semibold;
+  }
+  
+  h1 {
+    @apply text-2xl;
+  }
+  
+  h2 {
+    @apply text-xl;
+  }
+  
+  h3 {
+    @apply text-lg;
+  }
+  
+  p {
+    @apply text-gray-600;
   }
 }
 
@@ -160,7 +181,7 @@
   }
   
   .book-card {
-    @apply flex flex-col h-full border rounded-lg overflow-hidden bg-white shadow-sm transition-all hover:shadow-md;
+    @apply flex flex-col h-full border rounded-lg overflow-hidden bg-white shadow-sm transition-all;
   }
   
   .book-cover {
@@ -169,6 +190,23 @@
   
   .animated-search {
     @apply animate-fade-in;
+  }
+  
+  /* Admin dashboard styled components */
+  .dashboard-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4;
+  }
+  
+  .dashboard-section {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6;
+  }
+  
+  .dashboard-title {
+    @apply text-lg font-medium text-gray-800 mb-4;
+  }
+  
+  .dashboard-subtitle {
+    @apply text-sm font-medium text-gray-600 mb-2;
   }
 }
 
