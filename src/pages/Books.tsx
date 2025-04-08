@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
+import { BadgeDisplay } from '@/components/ui/badge-display';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -263,7 +264,7 @@ const Books = () => {
                       <div className="font-medium mb-1">{book.title}</div>
                       <div className="text-xs text-gray-500">{book.publisher}</div>
                       <div className="flex gap-1 mt-1">
-                        <BadgeDisplay badges={book.badges} size="xs" />
+                        <BadgeDisplay badges={book.badges} size="sm" />
                       </div>
                     </div>
                   </div>
@@ -294,14 +295,14 @@ const Books = () => {
                     <div className="flex gap-1">
                       <Button 
                         variant="outline" 
-                        size="xs" 
+                        size="sm" 
                         className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
                       >
                         반납
                       </Button>
                       <Button 
                         variant="outline" 
-                        size="xs" 
+                        size="sm" 
                         className="border-primary-skyblue text-primary-skyblue hover:bg-primary-skyblue/10"
                       >
                         연장

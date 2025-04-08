@@ -1,4 +1,3 @@
-
 export interface Book {
   id: string;
   title: string;
@@ -11,16 +10,17 @@ export interface Book {
   status: {
     total: number;
     available: number;
-    borrowed?: number;  // Add the borrowed property
+    borrowed?: number;
+    reserved?: boolean;
   };
   badges: BookBadge[];
   rating?: number;
   isFavorite?: boolean;
-  // Adding missing properties
   isbn: string;
   location: string;
   source: string;
-  registeredDate: string;  // Add registeredDate property
+  registeredDate: string;
+  recommendations?: number;
 }
 
 export type BookBadge = 'new' | 'recommended' | 'popular' | 'best' | null;
@@ -36,6 +36,7 @@ export interface User {
   borrowedBooks: number;
   reservedBooks: number;
   status: 'active' | 'inactive';
+  borrowedCount?: number;
 }
 
 export type UserRole = 'user' | 'admin' | 'system_admin';
