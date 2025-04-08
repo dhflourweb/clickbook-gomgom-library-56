@@ -44,7 +44,7 @@ const Home = () => {
             <section className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
                 <h2 className="text-lg font-semibold text-primary-deepblue">신규 도서</h2>
-                <Link to="/books?filter=new">
+                <Link to="/books?sort=최신등록순">
                   <Button variant="ghost" className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 hover:bg-transparent p-0 h-auto" size="sm">
                     더보기
                     <ChevronRight size={16} className="ml-1" />
@@ -59,7 +59,7 @@ const Home = () => {
             <section className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
                 <h2 className="text-lg font-semibold text-primary-deepblue">추천 도서</h2>
-                <Link to="/books?filter=recommended">
+                <Link to="/books?sort=추천순">
                   <Button variant="ghost" className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 hover:bg-transparent p-0 h-auto" size="sm">
                     더보기
                     <ChevronRight size={16} className="ml-1" />
@@ -74,7 +74,7 @@ const Home = () => {
             <section className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
                 <h2 className="text-lg font-semibold text-primary-deepblue">베스트 도서 (사내)</h2>
-                <Link to="/books?filter=best">
+                <Link to="/books?sort=베스트도서순">
                   <Button variant="ghost" className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 hover:bg-transparent p-0 h-auto" size="sm">
                     더보기
                     <ChevronRight size={16} className="ml-1" />
@@ -89,7 +89,7 @@ const Home = () => {
             <section className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
                 <h2 className="text-lg font-semibold text-primary-deepblue">베스트 도서 (국내)</h2>
-                <Link to="/books?filter=popular">
+                <Link to="/books?sort=베스트도서순">
                   <Button variant="ghost" className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 hover:bg-transparent p-0 h-auto" size="sm">
                     더보기
                     <ChevronRight size={16} className="ml-1" />
