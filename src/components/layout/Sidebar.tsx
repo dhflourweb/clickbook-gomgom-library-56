@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/accordion";
 import { useAuth } from '@/context/AuthContext';
 import { categories } from '@/components/layout/Header';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const Sidebar = () => {
   const { hasRole } = useAuth();
