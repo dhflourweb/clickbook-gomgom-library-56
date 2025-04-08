@@ -208,6 +208,19 @@
   .dashboard-subtitle {
     @apply text-sm font-medium text-gray-600 mb-2;
   }
+  
+  /* Enhanced dropdown menu styling */
+  [data-radix-popper-content-wrapper] {
+    @apply !z-50;
+  }
+  
+  .navigation-dropdown {
+    @apply text-xs bg-white shadow-md border border-gray-100 rounded-md overflow-hidden;
+  }
+  
+  .navigation-dropdown-item {
+    @apply text-xs py-1.5 px-2 hover:bg-gray-50 cursor-pointer transition-colors;
+  }
 }
 
 @keyframes fadeIn {
