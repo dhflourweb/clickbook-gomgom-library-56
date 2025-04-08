@@ -13,17 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,15 +20,24 @@ import { useToast } from '@/components/ui/use-toast';
 import { getBookById, getReviewsForBook } from '@/data/mockData';
 import { useAuth } from '@/context/AuthContext';
 import { StarRating } from '@/components/books/StarRating';
+import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
+import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
+import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
+import { cn } from '@/lib/utils';
 
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [locationInput, setLocationInput] = useState('');
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(5);
+  
+  // Dialog states
+  const [borrowDialogOpen, setBorrowDialogOpen] = useState(false);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [extendDialogOpen, setExtendDialogOpen] = useState(false);
+  const [isReserved, setIsReserved] = useState(false);
   
   if (!id) {
     navigate('/books');
@@ -57,44 +55,26 @@ const BookDetail = () => {
   const isAvailable = book.status.available > 0;
   
   const handleBorrow = () => {
-    // In a real app, this would call an API to borrow the book
-    toast({
-      title: "도서 대여 신청 완료",
-      description: `'${book.title}' 도서를 대여했습니다. 지정된 위치에서 수령해주세요.`,
-    });
+    setBorrowDialogOpen(true);
   };
 
   const handleReturn = () => {
-    if (!locationInput.trim()) {
-      toast({
-        title: "오류",
-        description: "도서 위치를 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // In a real app, this would call an API to return the book
-    toast({
-      title: "도서 반납 완료",
-      description: `'${book.title}' 도서가 성공적으로 반납되었습니다.`,
-    });
+    setReturnDialogOpen(true);
   };
 
   const handleReserve = () => {
-    // In a real app, this would call an API to reserve the book
+    setIsReserved(!isReserved);
+    
     toast({
-      title: "도서 예약 신청 완료",
-      description: `'${book.title}' 도서 예약이 완료되었습니다. 대여 가능 시 알림을 드립니다.`,
+      title: isReserved ? "도서 예약 취소 완료" : "도서 예약 신청 완료",
+      description: isReserved 
+        ? `'${book.title}' 도서 예약이 취소되었습니다.` 
+        : `'${book.title}' 도서 예약이 완료되었습니다. 대여 가능 시 알림을 드립니다.`,
     });
   };
   
   const handleExtend = () => {
-    // In a real app, this would call an API to extend the book
-    toast({
-      title: "대여 기간 연장 완료",
-      description: `'${book.title}' 도서의 대여 기간이 7일 연장되었습니다.`,
-    });
+    setExtendDialogOpen(true);
   };
   
   const handleSubmitReview = () => {
@@ -118,10 +98,78 @@ const BookDetail = () => {
   };
 
   // Mock functions to simulate user permissions
-  const canBorrow = isAvailable && user?.borrowedBooks !== undefined && user.borrowedBooks < 2;
-  const canReserve = !isAvailable && user?.reservedBooks !== undefined && user.reservedBooks < 1;
-  const canReturn = true; // Mock: In real app, check if user has borrowed this book
-  const canExtend = true; // Mock: In real app, check if book is borrowed and hasn't been extended
+  const canBorrow = isAvailable && user?.borrowedCount < 2;
+  const canReserve = !isAvailable && book.isReservable !== false;
+  const isBorrowedByUser = book.borrowedByCurrentUser || false;
+  const hasReachedBorrowLimit = user?.borrowedCount >= 2;
+
+  // Render action buttons based on book status and user
+  const renderActionButtons = () => {
+    // Case 1: Book is available - Show borrow button
+    if (isAvailable) {
+      return (
+        <Button 
+          variant="default" 
+          onClick={handleBorrow} 
+          className="bg-primary hover:bg-primary/90"
+          disabled={hasReachedBorrowLimit}
+        >
+          대여하기
+        </Button>
+      );
+    }
+    
+    // Case 2: Book is borrowed by current user - Show return and extend buttons
+    if (isBorrowedByUser) {
+      return (
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleReturn} 
+            className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+          >
+            반납하기
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleExtend} 
+            className="border-primary text-primary hover:bg-primary/10"
+            disabled={!book.isExtendable}
+          >
+            연장하기
+          </Button>
+        </div>
+      );
+    }
+    
+    // Case 3: Book is not reservable - Show disabled reservation button
+    if (book.isReservable === false) {
+      return (
+        <Button 
+          variant="secondary"
+          className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+          disabled={true}
+        >
+          예약불가
+        </Button>
+      );
+    }
+    
+    // Case 4: Book is borrowed by someone else - Show reserve button
+    return (
+      <Button 
+        variant={isReserved ? "outline" : "secondary"}
+        onClick={handleReserve}
+        className={cn(
+          isReserved 
+            ? "border-primary text-primary hover:bg-primary/10" 
+            : "bg-secondary hover:bg-secondary/90"
+        )}
+      >
+        {isReserved ? "예약 취소" : "예약하기"}
+      </Button>
+    );
+  };
 
   return (
     <MainLayout>
@@ -167,76 +215,7 @@ const BookDetail = () => {
               
               {/* Action buttons */}
               <div className="flex flex-wrap gap-2 mt-6">
-                {canBorrow && (
-                  <Button onClick={handleBorrow} className="bg-secondary-green hover:bg-secondary-green/90">
-                    대여하기
-                  </Button>
-                )}
-                
-                {canReserve && (
-                  <Button onClick={handleReserve} className="bg-secondary-blue hover:bg-secondary-blue/90">
-                    예약하기
-                  </Button>
-                )}
-                
-                {canReturn && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="border-point-red text-point-red hover:bg-point-red/10">
-                        반납하기
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>도서 반납</DialogTitle>
-                        <DialogDescription>
-                          반납 위치를 명확히 입력해 주세요. 다른 사용자가 쉽게 찾을 수 있도록 상세하게 작성해주세요.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="location">반납 위치</Label>
-                          <Input
-                            id="location"
-                            placeholder="예: 3층 개발서적 책장 A-5"
-                            value={locationInput}
-                            onChange={(e) => setLocationInput(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button variant="outline" className="mr-2">
-                          취소
-                        </Button>
-                        <Button onClick={handleReturn} className="bg-point-red hover:bg-point-red/90">
-                          반납 완료
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
-                
-                {canExtend && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline">연장하기</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>대여 기간 연장</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          도서 대여 기간을 7일 연장합니다. 연장은 1회만 가능합니다.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>취소</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleExtend}>
-                          연장하기
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+                {renderActionButtons()}
               </div>
             </div>
           </div>
@@ -296,6 +275,25 @@ const BookDetail = () => {
           </div>
         </div>
       </div>
+      
+      {/* Reusable Dialogs */}
+      <BorrowBookDialog 
+        book={book}
+        isOpen={borrowDialogOpen}
+        onOpenChange={setBorrowDialogOpen}
+      />
+      
+      <ReturnBookDialog 
+        book={book}
+        isOpen={returnDialogOpen}
+        onOpenChange={setReturnDialogOpen}
+      />
+      
+      <ExtendBookDialog 
+        book={book}
+        isOpen={extendDialogOpen}
+        onOpenChange={setExtendDialogOpen}
+      />
     </MainLayout>
   );
 };

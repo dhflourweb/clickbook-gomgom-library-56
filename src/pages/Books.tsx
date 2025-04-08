@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -30,8 +29,9 @@ import { BadgeDisplay } from '@/components/ui/badge-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
 import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
-import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
+import { ExtendBookDialog } from '@/components/books/ExtendDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const Books = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -43,9 +43,9 @@ const Books = () => {
   const [itemsPerPage, setItemsPerPage] = useState(24); // Default is 24
   const [totalBooks, setTotalBooks] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const { user } = useAuth();
   const isMobile = useIsMobile();
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(isMobile ? 'list' : 'grid');
+  const { user } = useAuth();
   
   // Dialog states for the list view
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -66,6 +66,11 @@ const Books = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
+    // Force list view on mobile
+    if (isMobile) {
+      setViewMode('list');
+    }
+    
     const queryParam = searchParams.get('query') || '';
     const categoryParam = searchParams.get('category') || '전체';
     const statusParam = searchParams.get('status') || '전체';
@@ -73,7 +78,7 @@ const Books = () => {
     const favoriteParam = searchParams.get('favorite') === 'true';
     const pageParam = parseInt(searchParams.get('page') || '1');
     const perPageParam = parseInt(searchParams.get('perPage') || '24');
-    const viewParam = searchParams.get('view') as 'grid' | 'list' || 'grid';
+    const viewParam = searchParams.get('view') as 'grid' | 'list';
     
     const filterParam = searchParams.get('filter');
     let finalCategory = categoryParam;
@@ -93,9 +98,14 @@ const Books = () => {
     setFilter(newFilter);
     setCurrentPage(pageParam);
     setItemsPerPage(perPageParam);
-    setViewMode(viewParam);
+    
+    // Only set viewMode from URL if not on mobile
+    if (!isMobile && viewParam) {
+      setViewMode(viewParam);
+    }
+    
     applyFilters(newFilter, pageParam, perPageParam);
-  }, [location.search]);
+  }, [location.search, isMobile]);
 
   const applyFilters = (filters: any, page = 1, perPage = itemsPerPage) => {
     setLoading(true);
@@ -276,6 +286,9 @@ const Books = () => {
   };
 
   const handleViewModeChange = (mode: 'grid' | 'list') => {
+    // Don't change view mode on mobile - always stay in list mode
+    if (isMobile) return;
+    
     const params = new URLSearchParams(searchParams);
     params.set('view', mode);
     
@@ -447,7 +460,7 @@ const Books = () => {
                     <img 
                       src={book.coverImage}
                       alt={book.title}
-                      className="h-20 w-15 object-cover rounded"
+                      className="h-20 w-16 object-cover rounded"
                     />
                     <div className="flex-1">
                       <div className="flex justify-between">
@@ -480,8 +493,8 @@ const Books = () => {
                             />
                           </button>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                            isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
-                            book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+                            isAvailable ? 'bg-primary/15 text-primary' : 
+                            book.status.reserved ? 'bg-secondary-orange/15 text-secondary-orange' : 
                             'bg-gray-200 text-gray-600'
                           }`}>
                             {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
@@ -495,13 +508,17 @@ const Books = () => {
                   </div>
                 </div>
                 
-                <div className="mt-2 p-3 pt-0" onClick={(e) => e.stopPropagation()}>
+                <div className="mt-2 p-3 pt-0">
                   {isAvailable ? (
                     <Button 
                       variant="default" 
                       size="sm" 
                       className="w-full bg-primary hover:bg-primary/90"
-                      onClick={(e) => handleBookAction(e, 'borrow', book)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleBookAction(e, 'borrow', book);
+                      }}
                       disabled={user?.borrowedCount >= 2}
                     >
                       대여하기
@@ -512,7 +529,11 @@ const Books = () => {
                         variant="outline" 
                         size="sm" 
                         className="flex-1 border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
-                        onClick={(e) => handleBookAction(e, 'return', book)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleBookAction(e, 'return', book);
+                        }}
                       >
                         반납
                       </Button>
@@ -520,31 +541,45 @@ const Books = () => {
                         variant="outline" 
                         size="sm" 
                         className="flex-1 border-primary text-primary hover:bg-primary/10"
-                        onClick={(e) => handleBookAction(e, 'extend', book)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleBookAction(e, 'extend', book);
+                        }}
                         disabled={!book.isExtendable}
                       >
                         연장
                       </Button>
                     </div>
                   ) : book.isReservable === false ? (
-                    <Button 
-                      variant="secondary"
-                      size="sm" 
-                      className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
-                      disabled={true}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      예약불가
-                    </Button>
+                    <div>
+                      <Button 
+                        variant="secondary"
+                        size="sm" 
+                        className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+                        disabled={true}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        예약불가
+                      </Button>
+                    </div>
                   ) : (
                     <Button 
                       variant={book.status.reserved ? "outline" : "secondary"}
                       size="sm" 
-                      className={`w-full ${book.status.reserved
-                        ? "border-primary text-primary hover:bg-primary/10"
-                        : "bg-secondary hover:bg-secondary/90"
-                      }`}
-                      onClick={(e) => handleBookAction(e, 'reserve', book)}
+                      className={cn("w-full", 
+                        book.status.reserved 
+                          ? "border-primary text-primary hover:bg-primary/10"
+                          : "bg-secondary hover:bg-secondary/90"
+                      )}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleBookAction(e, 'reserve', book);
+                      }}
                     >
                       {book.status.reserved ? "예약 취소" : "예약하기"}
                     </Button>
@@ -589,8 +624,8 @@ const Books = () => {
                 >
                   <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      isAvailable ? 'bg-primary-skyblue/20 text-primary-skyblue' : 
-                      book.status.reserved ? 'bg-secondary-orange/20 text-secondary-orange' : 
+                      isAvailable ? 'bg-primary/15 text-primary' : 
+                      book.status.reserved ? 'bg-secondary-orange/15 text-secondary-orange' : 
                       'bg-gray-200 text-gray-600'
                     }`}>
                       {isAvailable ? '대여가능' : book.status.reserved ? '예약중' : '대여중'}
@@ -648,7 +683,11 @@ const Books = () => {
                           variant="default" 
                           size="sm" 
                           className="bg-primary hover:bg-primary/90"
-                          onClick={(e) => handleBookAction(e, 'borrow', book)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleBookAction(e, 'borrow', book);
+                          }}
                           disabled={user?.borrowedCount >= 2}
                         >
                           대여하기
@@ -659,7 +698,11 @@ const Books = () => {
                             variant="outline" 
                             size="sm" 
                             className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
-                            onClick={(e) => handleBookAction(e, 'return', book)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleBookAction(e, 'return', book);
+                            }}
                           >
                             반납
                           </Button>
@@ -667,19 +710,27 @@ const Books = () => {
                             variant="outline" 
                             size="sm" 
                             className="border-primary text-primary hover:bg-primary/10"
-                            onClick={(e) => handleBookAction(e, 'extend', book)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleBookAction(e, 'extend', book);
+                            }}
                             disabled={!book.isExtendable}
                           >
                             연장
                           </Button>
                         </div>
                       ) : book.isReservable === false ? (
-                        <div onClick={(e) => e.stopPropagation()}>
+                        <div>
                           <Button 
                             variant="secondary"
                             size="sm" 
                             className="bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
                             disabled={true}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
                           >
                             예약불가
                           </Button>
@@ -692,7 +743,11 @@ const Books = () => {
                             ? "border-primary text-primary hover:bg-primary/10"
                             : "bg-secondary hover:bg-secondary/90"
                           }
-                          onClick={(e) => handleBookAction(e, 'reserve', book)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleBookAction(e, 'reserve', book);
+                          }}
                         >
                           {book.status.reserved ? "예약 취소" : "예약하기"}
                         </Button>
@@ -732,7 +787,7 @@ const Books = () => {
             initialFilter={filter}
             onItemsPerPageChange={handleItemsPerPageChange}
             itemsPerPage={itemsPerPage}
-            onViewModeChange={handleViewModeChange}
+            onViewModeChange={!isMobile ? handleViewModeChange : undefined}
             viewMode={viewMode}
           />
         </div>
