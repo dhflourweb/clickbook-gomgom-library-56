@@ -156,7 +156,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         </div>
         <button
           className={`absolute top-2 right-2 p-1 rounded-full ${
-            isFavorite ? 'bg-red-100 text-red-500' : 'bg-white/60 text-gray-400'
+            isFavorite ? 'bg-red-100 text-red-500' : 'bg-white text-[#000000e6]'
           }`}
           onClick={handleFavoriteToggle}
           aria-label={isFavorite ? '관심 도서 제거' : '관심 도서 추가'}
