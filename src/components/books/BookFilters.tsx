@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, LayoutGrid, LayoutList } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -365,7 +365,7 @@ export const BookFilters = ({
             onClick={() => handleViewModeToggle('grid')}
             className="px-2"
           >
-            <Grid size={16} />
+            <LayoutGrid size={16} />
           </Button>
           <Button 
             size="sm" 
@@ -373,7 +373,7 @@ export const BookFilters = ({
             onClick={() => handleViewModeToggle('list')}
             className="px-2"
           >
-            <List size={16} />
+            <LayoutList size={16} />
           </Button>
         </div>
       )}
