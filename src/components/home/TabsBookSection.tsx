@@ -82,15 +82,14 @@ export const TabsBookSection = ({
   return (
     <div className={cn("bg-white rounded-lg p-6 shadow-sm", className)}>
       <Tabs defaultValue="new" onValueChange={setActiveTab}>
-        <TabsList className={cn(
-          "justify-start mb-6 w-full", 
-          isMobile ? "grid grid-cols-2 gap-2" : "inline-flex"
-        )}>
-          <TabsTrigger value="new" className="text-sm">신규 도서</TabsTrigger>
-          <TabsTrigger value="recommended" className="text-sm">추천 도서</TabsTrigger>
-          <TabsTrigger value="best" className="text-sm">베스트 도서(사내)</TabsTrigger>
-          <TabsTrigger value="nationalBest" className="text-sm">베스트 도서(국내)</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-2 px-2">
+          <TabsList className="inline-flex w-auto mb-6">
+            <TabsTrigger value="new" className="whitespace-nowrap">신규 도서</TabsTrigger>
+            <TabsTrigger value="recommended" className="whitespace-nowrap">추천 도서</TabsTrigger>
+            <TabsTrigger value="best" className="whitespace-nowrap">베스트 도서(사내)</TabsTrigger>
+            <TabsTrigger value="nationalBest" className="whitespace-nowrap">베스트 도서(국내)</TabsTrigger>
+          </TabsList>
+        </div>
         
         <div className="flex items-center justify-between mt-6 mb-4">
           <div>
