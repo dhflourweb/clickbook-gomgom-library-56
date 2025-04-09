@@ -7,7 +7,7 @@ interface BadgeDisplayProps {
   size?: "xs" | "sm" | "md" | "lg";
 }
 
-const badgeLabels: Record<NonNullable<BookBadge>, string> = {
+const badgeLabels: Record<Exclude<NonNullable<BookBadge>, 'popular'>, string> = {
   'new': '신규',
   'recommended': '추천',
   'best': '베스트'
@@ -48,7 +48,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
               key={badge}
               className={cn(badgeClassName, sizeClasses[size])}
             >
-              {badgeLabels[badge]}
+              {badgeLabels[badge as keyof typeof badgeLabels]}
             </span>
           );
         })}
