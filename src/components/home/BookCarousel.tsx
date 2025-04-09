@@ -32,7 +32,7 @@ export const BookCarousel = ({ books, className }: BookCarouselProps) => {
           <CarouselItem 
             key={book.id} 
             className={cn(
-              "overflow-visible",
+              "overflow-visible pb-4 pt-2 px-2", // Added padding to ensure card doesn't get clipped when hovered
               isMobile ? "pl-2 basis-[80%] sm:basis-[85%]" : "pl-4 md:basis-1/3 lg:basis-[22%]"
             )}
           >

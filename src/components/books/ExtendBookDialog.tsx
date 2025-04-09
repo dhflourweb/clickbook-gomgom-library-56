@@ -48,7 +48,7 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
       return;
     }
     
-    // Show confirmation dialog instead of immediately processing
+    // Show confirmation dialog immediately when the button is clicked
     setShowExtensionConfirm(true);
   };
   

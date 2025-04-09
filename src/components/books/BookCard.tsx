@@ -127,10 +127,11 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           >
             반납하기
           </Button>
+          {/* Swapped [연장하기] button design to match the previous [예약하기] design */}
           <Button 
-            variant="outline" 
+            variant="secondary"
             size="sm" 
-            className="border-primary text-primary hover:bg-primary/10"
+            className="bg-secondary hover:bg-secondary/90"
             onClick={handleExtend}
             disabled={!book.isExtendable}
           >
@@ -164,18 +165,25 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     // Case 5: Book is borrowed by someone else - Show reserve/cancel button
     return (
       <Button 
-        variant={isReserved ? "outline" : "secondary"}
+        variant={isReserved ? "outline" : "outline"}
         size="sm" 
         className={cn("w-full", 
           isReserved 
             ? "border-primary text-primary hover:bg-primary/10" 
-            : "bg-secondary hover:bg-secondary/90"
+            : "border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
         )}
         onClick={handleReserve}
       >
         {isReserved ? "예약 취소" : "예약하기"}
       </Button>
     );
+  };
+
+  // Get the status class for the badge
+  const getStatusClass = () => {
+    if (isAvailable) return "bg-primary-deepblue";
+    if (isReserved || book.isReservable === false) return "bg-secondary-orange";
+    return "bg-point-red";
   };
 
   return (
@@ -220,20 +228,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
                 className="transition-all"
               />
             </button>
-            
-            {/* Make status badge more prominent */}
-            <div className="absolute bottom-0 left-0 right-0 py-1.5 px-2 flex justify-center items-center">
-              <span className={cn(
-                "text-xs px-3 py-1.5 rounded-full font-medium text-white",
-                {
-                  "bg-primary-deepblue": isAvailable,
-                  "bg-secondary-orange": isReserved || book.isReservable === false,
-                  "bg-point-red": !isAvailable && !isReserved && book.isReservable !== false
-                }
-              )}>
-                {getStatusBadge()}
-              </span>
-            </div>
           </div>
         </Link>
         <div className="p-3 flex flex-col flex-grow">
@@ -241,6 +235,17 @@ export const BookCard = ({ book, className }: BookCardProps) => {
             <h3 className="font-medium text-sm line-clamp-2 h-10">{book.title}</h3>
             <p className="text-muted-foreground text-xs mt-1">{book.author}</p>
             <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
+            
+            {/* Moved the status badge here, above the rating */}
+            <div className="mt-3 mb-1">
+              <span className={cn(
+                "text-xs px-3 py-1 rounded-full font-medium text-white inline-block",
+                getStatusClass()
+              )}>
+                {getStatusBadge()}
+              </span>
+            </div>
+            
             <div className="mt-auto pt-2 flex items-center justify-between">
               <span className="text-xs text-gray-500">{book.category}</span>
               <div className="flex items-center gap-2">

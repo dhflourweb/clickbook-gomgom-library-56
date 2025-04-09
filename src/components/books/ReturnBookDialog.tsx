@@ -81,9 +81,9 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
                 id="returnLocation"
                 value={returnLocation}
                 onChange={(e) => setReturnLocation(e.target.value)}
-                placeholder="반납함 번호를 입력하세요 (예: 101, 102)"
+                placeholder="반납 위치 번호를 입력해주세요."
                 className="w-full"
-                type="number"
+                type="text"
               />
             </div>
           </div>
