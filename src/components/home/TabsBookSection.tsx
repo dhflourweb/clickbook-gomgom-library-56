@@ -72,7 +72,7 @@ export const TabsBookSection = ({
         )}
       </div>
       
-      <Tabs defaultValue="new" onValueChange={setActiveTab} className="w-full">
+      <Tabs defaultValue="new" onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-4 mb-6">
           <TabsTrigger value="new">신규 도서</TabsTrigger>
           <TabsTrigger value="recommended">추천 도서</TabsTrigger>
@@ -99,3 +99,4 @@ export const TabsBookSection = ({
     </div>
   );
 };
+
