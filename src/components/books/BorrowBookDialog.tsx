@@ -56,7 +56,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>도서 대여</DialogTitle>
             <DialogDescription>
@@ -64,7 +64,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-3 py-3">
             <div className="flex items-center gap-4 border-b pb-3">
               <img 
                 src={book.coverImage} 
@@ -77,25 +77,25 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
+            <div className="grid grid-cols-4 gap-2 py-1">
               <div className="text-sm font-medium">대여자</div>
               <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
+            <div className="grid grid-cols-4 gap-2 py-1">
               <div className="text-sm font-medium">대여일자</div>
               <div className="col-span-3 text-sm">{format(borrowDate, 'yyyy-MM-dd')}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
-              <div className="text-sm font-medium self-start">반납예정일</div>
+            <div className="grid grid-cols-4 gap-2 py-1">
+              <div className="text-sm font-medium whitespace-nowrap">반납예정일</div>
               <div className="col-span-3">
                 <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
                 <Calendar
                   mode="single"
                   selected={returnDueDate}
                   disabled
-                  className="rounded border pointer-events-auto"
+                  className="rounded border pointer-events-none scale-90 origin-top-left"
                 />
               </div>
             </div>

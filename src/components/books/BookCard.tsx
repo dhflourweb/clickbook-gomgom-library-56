@@ -41,6 +41,10 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   // Check if user has reached borrowing limit (2 books max)
   const hasReachedBorrowLimit = user?.borrowedCount >= 2;
 
+  // Randomly determine if a book can be extended based on book id
+  // This is just for demonstration - in a real app this would come from the backend
+  const isExtendable = book.id % 3 !== 0; // Books with ID not divisible by 3 can be extended
+
   const handleBorrow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -127,13 +131,16 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           >
             반납하기
           </Button>
-          {/* Swapped [연장하기] button design to match the previous [예약하기] design */}
+          {/* Now the extend button is conditionally enabled based on isExtendable */}
           <Button 
             variant="secondary"
             size="sm" 
-            className="bg-secondary hover:bg-secondary/90"
+            className={cn(
+              "bg-secondary hover:bg-secondary/90",
+              !isExtendable && "bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+            )}
             onClick={handleExtend}
-            disabled={!book.isExtendable}
+            disabled={!isExtendable}
           >
             연장하기
           </Button>
@@ -277,7 +284,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       />
       
       <ExtendBookDialog 
-        book={book}
+        book={{...book, isExtendable, hasBeenExtended: !isExtendable}}
         isOpen={extendDialogOpen}
         onOpenChange={setExtendDialogOpen}
       />

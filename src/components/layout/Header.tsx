@@ -71,9 +71,9 @@ export const Header = () => {
             {!isMobile && <div className="flex items-center">
                   <NavigationMenu>
                     <NavigationMenuList className="gap-2">
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">전체메뉴</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
                             <div className="space-y-1">
                               <h3 className="elegant-dropdown-header">도서관리</h3>

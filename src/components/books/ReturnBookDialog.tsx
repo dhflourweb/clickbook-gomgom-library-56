@@ -43,7 +43,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>도서 반납</DialogTitle>
           <DialogDescription>
@@ -51,7 +51,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-3 py-3">
           <div className="flex items-center gap-4 border-b pb-3">
             <img 
               src={book.coverImage} 
@@ -64,17 +64,17 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 py-2">
+          <div className="grid grid-cols-4 gap-2 py-1">
             <div className="text-sm font-medium">반납자</div>
             <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 py-2">
+          <div className="grid grid-cols-4 gap-2 py-1">
             <div className="text-sm font-medium">반납일자</div>
             <div className="col-span-3 text-sm">{returnDate}</div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 py-2">
+          <div className="grid grid-cols-4 gap-2 py-1">
             <Label htmlFor="returnLocation" className="text-sm font-medium">반납 위치</Label>
             <div className="col-span-3">
               <Input
@@ -84,11 +84,12 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
                 placeholder="반납 위치 번호를 입력해주세요."
                 className="w-full"
                 type="text"
+                autoFocus={false}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 py-2">
+          <div className="grid grid-cols-4 gap-2 py-1">
             <Label htmlFor="rating" className="text-sm font-medium">만족도</Label>
             <div className="col-span-3">
               <StarRating 
@@ -99,7 +100,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 py-2">
+          <div className="grid grid-cols-4 gap-2 py-1">
             <Label htmlFor="review" className="text-sm font-medium self-start">후기</Label>
             <div className="col-span-3">
               <Textarea
@@ -107,12 +108,12 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
                 placeholder="이 책에 대한 후기를 남겨주세요."
-                className="h-24"
+                className="h-20"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 py-2">
+          <div className="grid grid-cols-4 gap-2 py-1">
             <div className="text-sm font-medium">추천</div>
             <div className="col-span-3">
               <Button
