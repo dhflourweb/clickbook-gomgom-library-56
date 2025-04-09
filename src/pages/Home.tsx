@@ -49,7 +49,9 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-              <BookCarousel books={newBooks} />
+              <div className="overflow-visible">
+                <BookCarousel books={newBooks} />
+              </div>
             </section>
           )}
           
@@ -64,7 +66,9 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-              <BookCarousel books={recommendedBooks} />
+              <div className="overflow-visible">
+                <BookCarousel books={recommendedBooks} />
+              </div>
             </section>
           )}
           
@@ -79,7 +83,9 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-              <BookCarousel books={bestBooks} />
+              <div className="overflow-visible">
+                <BookCarousel books={bestBooks} />
+              </div>
             </section>
           )}
         </div>

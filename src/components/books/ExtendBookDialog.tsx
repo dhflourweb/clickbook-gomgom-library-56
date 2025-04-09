@@ -16,6 +16,7 @@ import {
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -34,6 +35,7 @@ interface ExtendBookDialogProps {
 export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialogProps) {
   const { user } = useAuth();
   const [showExtensionWarning, setShowExtensionWarning] = useState(false);
+  const [showExtensionConfirm, setShowExtensionConfirm] = useState(false);
   
   // Calculate current return date and extended return date
   const currentReturnDate = book.returnDueDate ? new Date(book.returnDueDate) : new Date();
@@ -46,8 +48,14 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
       return;
     }
     
+    // Show confirmation dialog instead of immediately processing
+    setShowExtensionConfirm(true);
+  };
+  
+  const processExtension = () => {
     // Process the extension
     toast.success(`'${book.title}' 도서 대여를 연장했습니다.`);
+    setShowExtensionConfirm(false);
     onOpenChange(false);
   };
   
@@ -122,6 +130,7 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
         </DialogContent>
       </Dialog>
 
+      {/* Extension warning dialog - shown when extension limit reached */}
       <AlertDialog open={showExtensionWarning} onOpenChange={setShowExtensionWarning}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -132,6 +141,26 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setShowExtensionWarning(false)}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Extension confirmation dialog - shown before processing extension */}
+      <AlertDialog open={showExtensionConfirm} onOpenChange={setShowExtensionConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>도서 연장 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              도서 반납일 연장은 최대 {SYSTEM_SETTINGS.maxExtensionCount}회이며, {SYSTEM_SETTINGS.extensionDays}일을 연장할 수 있습니다. 연장하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowExtensionConfirm(false)}>
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={processExtension}>
               확인
             </AlertDialogAction>
           </AlertDialogFooter>

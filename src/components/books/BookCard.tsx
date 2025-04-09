@@ -74,7 +74,8 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   // Get appropriate status badge
   const getStatusBadge = () => {
     if (isAvailable) return "대여가능";
-    if (isReserved) return "예약중";
+    // Update: Show books with isReservable=false as "예약중" instead of "대여중"
+    if (isReserved || book.isReservable === false) return "예약중";
     return "대여중";
   };
 
@@ -180,7 +181,11 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   return (
     <>
       <div 
-        className={cn("book-card transition-all hover:shadow-md hover:scale-[1.02] hover:border-primary/30 cursor-pointer", className)}
+        className={cn(
+          "book-card overflow-visible transition-all hover:shadow-md hover:scale-[1.02] hover:z-10 cursor-pointer",
+          "flex flex-col min-h-[420px]", // Fixed height to ensure uniformity
+          className
+        )}
         onClick={(e) => handleCardClick(e, `/books/${book.id}`)}
       >
         <Link 
@@ -215,20 +220,25 @@ export const BookCard = ({ book, className }: BookCardProps) => {
                 className="transition-all"
               />
             </button>
-            <div className="absolute bottom-2 right-2">
-              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                isAvailable ? 'bg-primary/15 text-primary' : 
-                isReserved ? 'bg-secondary-orange/15 text-secondary-orange' : 
-                'bg-gray-200 text-gray-600'
-              }`}>
+            
+            {/* Make status badge more prominent */}
+            <div className="absolute bottom-0 left-0 right-0 py-1.5 px-2 flex justify-center items-center">
+              <span className={cn(
+                "text-xs px-3 py-1.5 rounded-full font-medium text-white",
+                {
+                  "bg-primary-deepblue": isAvailable,
+                  "bg-secondary-orange": isReserved || book.isReservable === false,
+                  "bg-point-red": !isAvailable && !isReserved && book.isReservable !== false
+                }
+              )}>
                 {getStatusBadge()}
               </span>
             </div>
           </div>
         </Link>
-        <div className="p-3 flex flex-col flex-1">
-          <Link to={`/books/${book.id}`} className="block">
-            <h3 className="font-medium text-sm line-clamp-2">{book.title}</h3>
+        <div className="p-3 flex flex-col flex-grow">
+          <Link to={`/books/${book.id}`} className="block flex-grow">
+            <h3 className="font-medium text-sm line-clamp-2 h-10">{book.title}</h3>
             <p className="text-muted-foreground text-xs mt-1">{book.author}</p>
             <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
             <div className="mt-auto pt-2 flex items-center justify-between">

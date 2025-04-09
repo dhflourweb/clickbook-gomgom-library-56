@@ -25,13 +25,14 @@ export const BookCarousel = ({ books, className }: BookCarouselProps) => {
         align: "start",
         loop: books.length > 4,
       }}
-      className={cn("w-full", className)}
+      className={cn("w-full overflow-visible", className)}
     >
-      <CarouselContent className="-ml-2 md:-ml-4">
+      <CarouselContent className="-ml-2 md:-ml-4 overflow-visible">
         {books.map((book) => (
           <CarouselItem 
             key={book.id} 
             className={cn(
+              "overflow-visible",
               isMobile ? "pl-2 basis-[80%] sm:basis-[85%]" : "pl-4 md:basis-1/3 lg:basis-[22%]"
             )}
           >

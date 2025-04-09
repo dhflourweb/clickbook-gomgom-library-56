@@ -176,7 +176,7 @@
   }
   
   .book-card {
-    @apply flex flex-col h-full border rounded-lg overflow-hidden bg-white shadow-sm transition-all;
+    @apply flex flex-col border rounded-lg overflow-hidden bg-white shadow-sm transition-all;
   }
   
   .book-cover {
