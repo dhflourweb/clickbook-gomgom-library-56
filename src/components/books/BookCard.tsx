@@ -42,8 +42,8 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   const hasReachedBorrowLimit = user?.borrowedCount >= 2;
 
   // Randomly determine if a book can be extended based on book id
-  // This is just for demonstration - in a real app this would come from the backend
-  const isExtendable = book.id % 3 !== 0; // Books with ID not divisible by 3 can be extended
+  // Convert string ID to number before using modulo operator
+  const isExtendable = parseInt(book.id.replace('book', '')) % 3 !== 0; // Books with ID not divisible by 3 can be extended
 
   const handleBorrow = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -291,3 +291,4 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     </>
   );
 };
+
