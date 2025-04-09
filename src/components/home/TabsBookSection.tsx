@@ -86,54 +86,54 @@ export const TabsBookSection = ({
           <TabsList className="grid grid-cols-2 gap-2 w-full mb-6">
             <TabsTrigger 
               value="new" 
-              className="text-sm whitespace-nowrap py-2 px-3 data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
             >
               신규 도서
             </TabsTrigger>
             <TabsTrigger 
               value="recommended" 
-              className="text-sm whitespace-nowrap py-2 px-3 data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
             >
               추천 도서
             </TabsTrigger>
             <TabsTrigger 
               value="best" 
-              className="text-sm whitespace-nowrap py-2 px-3 data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
             >
-              베스트도서(사내)
+              베스트 도서(사내)
             </TabsTrigger>
             <TabsTrigger 
               value="nationalBest" 
-              className="text-sm whitespace-nowrap py-2 px-3 data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
             >
-              베스트도서(국내)
+              베스트 도서(국내)
             </TabsTrigger>
           </TabsList>
         ) : (
-          <TabsList className="flex w-auto mb-6 bg-gray-100 p-1 rounded-md">
+          <TabsList className="inline-flex w-auto mb-6 bg-gray-100 p-1 rounded-md">
             <TabsTrigger 
               value="new" 
-              className="text-sm whitespace-nowrap font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
               신규 도서
             </TabsTrigger>
             <TabsTrigger 
               value="recommended" 
-              className="text-sm whitespace-nowrap font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
               추천 도서
             </TabsTrigger>
             <TabsTrigger 
               value="best" 
-              className="text-sm whitespace-nowrap font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
-              베스트도서(사내)
+              베스트 도서(사내)
             </TabsTrigger>
             <TabsTrigger 
               value="nationalBest" 
-              className="text-sm whitespace-nowrap font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
-              베스트도서(국내)
+              베스트 도서(국내)
             </TabsTrigger>
           </TabsList>
         )}

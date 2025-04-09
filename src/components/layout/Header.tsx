@@ -28,9 +28,6 @@ export const Header = () => {
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   
-  // Check if user is admin and redirect if needed
-  const isAdmin = hasRole(["admin", "system_admin"]);
-  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -76,7 +73,7 @@ export const Header = () => {
                     <NavigationMenuList className="gap-2">
                       <NavigationMenuItem>
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">전체메뉴</NavigationMenuTrigger>
-                        <NavigationMenuContent className="mt-1 bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="grid grid-cols-4 gap-4 w-[600px] p-4">
                             <div className="space-y-1">
                               <h3 className="elegant-dropdown-header">도서관리</h3>
@@ -112,9 +109,9 @@ export const Header = () => {
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">도서관리</NavigationMenuTrigger>
-                        <NavigationMenuContent className="relative mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="min-w-[200px] p-2">
                             <p className="elegant-dropdown-item" onClick={() => navigate('/books')}>도서목록</p>
                             <p className="elegant-dropdown-item" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
@@ -125,9 +122,9 @@ export const Header = () => {
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">카테고리</NavigationMenuTrigger>
-                        <NavigationMenuContent className="relative mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="min-w-[200px] p-2">
                             {categories.map(category => (
                               <p 
@@ -142,9 +139,9 @@ export const Header = () => {
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">커뮤니티</NavigationMenuTrigger>
-                        <NavigationMenuContent className="relative mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="min-w-[200px] p-2">
                             <p className="elegant-dropdown-item" onClick={() => navigate('/announcements')}>공지사항</p>
                             <p className="elegant-dropdown-item" onClick={() => navigate('/inquiries')}>문의하기</p>
@@ -183,6 +180,12 @@ export const Header = () => {
                   <User size={20} />
                 </Button>
               </Link>
+
+              {hasRole(["admin", "system_admin"]) && <Link to="/admin">
+                    <Button variant="outline" size="sm" className="ml-2 text-xs bg-transparent border-gray-300 text-black hover:bg-gray-100">
+                      관리자
+                    </Button>
+                  </Link>}
 
               <Button variant="ghost" size="icon" onClick={logout} className="text-black">
                 <LogOut size={20} />

@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BorrowBookDialogProps {
   book: Book;
@@ -35,7 +34,6 @@ interface BorrowBookDialogProps {
 export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialogProps) {
   const { user } = useAuth();
   const [showLimitWarning, setShowLimitWarning] = useState(false);
-  const isMobile = useIsMobile();
   
   const today = new Date();
   const borrowDate = today;
@@ -58,7 +56,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className={isMobile ? "w-[90%] max-h-[90vh] overflow-y-auto p-4 sm:max-w-[400px]" : "sm:max-w-[425px]"}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>도서 대여</DialogTitle>
             <DialogDescription>
@@ -66,12 +64,12 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-3 py-3">
-            <div className="flex items-center gap-3 border-b pb-3">
+          <div className="grid gap-4 py-4">
+            <div className="flex items-center gap-4 border-b pb-3">
               <img 
                 src={book.coverImage} 
                 alt={book.title} 
-                className="w-14 h-18 object-cover rounded-sm"
+                className="w-16 h-20 object-cover rounded-sm"
               />
               <div>
                 <h3 className="font-medium text-sm">{book.title}</h3>
@@ -90,22 +88,20 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </div>
 
             <div className="grid grid-cols-4 gap-2 py-2">
-              <div className="text-sm font-medium whitespace-nowrap self-start">반납예정일</div>
+              <div className="text-sm font-medium self-start">반납예정일</div>
               <div className="col-span-3">
-                <div className="text-sm mb-2 whitespace-nowrap">{format(returnDueDate, 'yyyy-MM-dd')}</div>
-                <div className={isMobile ? "scale-90 origin-top-left" : ""}>
-                  <Calendar
-                    mode="single"
-                    selected={returnDueDate}
-                    disabled
-                    className="rounded border"
-                  />
-                </div>
+                <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+                <Calendar
+                  mode="single"
+                  selected={returnDueDate}
+                  disabled
+                  className="rounded border pointer-events-auto"
+                />
               </div>
             </div>
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
             <Button onClick={handleBorrow}>대여하기</Button>
           </DialogFooter>
@@ -113,7 +109,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
       </Dialog>
 
       <AlertDialog open={showLimitWarning} onOpenChange={setShowLimitWarning}>
-        <AlertDialogContent className={isMobile ? "max-w-[90%]" : ""}>
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>대여 한도 초과</AlertDialogTitle>
             <AlertDialogDescription>
