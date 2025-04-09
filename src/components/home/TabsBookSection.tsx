@@ -51,13 +51,31 @@ export const TabsBookSection = ({
   return (
     <div className={cn("bg-white rounded-lg p-6 shadow-sm", className)}>
       <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-5">
-        <Tabs defaultValue="new" onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-4">
             <TabsTrigger value="new">신규 도서</TabsTrigger>
             <TabsTrigger value="recommended">추천 도서</TabsTrigger>
             <TabsTrigger value="best">베스트 도서(사내)</TabsTrigger>
             <TabsTrigger value="nationalBest">베스트 도서(국내)</TabsTrigger>
           </TabsList>
+          
+          <div className="mt-6">
+            <TabsContent value="new" className="overflow-visible mt-0">
+              <BookCarousel books={newBooks} />
+            </TabsContent>
+            
+            <TabsContent value="recommended" className="overflow-visible mt-0">
+              <BookCarousel books={recommendedBooks} />
+            </TabsContent>
+            
+            <TabsContent value="best" className="overflow-visible mt-0">
+              <BookCarousel books={bestBooks} />
+            </TabsContent>
+            
+            <TabsContent value="nationalBest" className="overflow-visible mt-0">
+              <BookCarousel books={nationalBestBooks} />
+            </TabsContent>
+          </div>
         </Tabs>
         
         {isExternalLink ? (
@@ -78,24 +96,6 @@ export const TabsBookSection = ({
             </Button>
           </Link>
         )}
-      </div>
-      
-      <div className="mt-6">
-        <TabsContent value="new" className="overflow-visible mt-0">
-          <BookCarousel books={newBooks} />
-        </TabsContent>
-        
-        <TabsContent value="recommended" className="overflow-visible mt-0">
-          <BookCarousel books={recommendedBooks} />
-        </TabsContent>
-        
-        <TabsContent value="best" className="overflow-visible mt-0">
-          <BookCarousel books={bestBooks} />
-        </TabsContent>
-        
-        <TabsContent value="nationalBest" className="overflow-visible mt-0">
-          <BookCarousel books={nationalBestBooks} />
-        </TabsContent>
       </div>
     </div>
   );
