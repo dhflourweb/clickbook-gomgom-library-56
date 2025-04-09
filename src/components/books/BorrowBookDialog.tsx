@@ -6,6 +6,7 @@ import { SYSTEM_SETTINGS, hasReachedBorrowLimit } from '@/data/mockData';
 import { useAuth } from '@/context/AuthContext';
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from 'sonner';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -64,42 +65,44 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-3 py-3">
-            <div className="flex items-center gap-4 border-b pb-3">
-              <img 
-                src={book.coverImage} 
-                alt={book.title} 
-                className="w-16 h-20 object-cover rounded-sm"
-              />
-              <div>
-                <h3 className="font-medium text-sm">{book.title}</h3>
-                <p className="text-muted-foreground text-xs">{book.author}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">대여자</div>
-              <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">대여일자</div>
-              <div className="col-span-3 text-sm">{format(borrowDate, 'yyyy-MM-dd')}</div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium whitespace-nowrap">반납예정일</div>
-              <div className="col-span-3">
-                <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
-                <Calendar
-                  mode="single"
-                  selected={returnDueDate}
-                  disabled
-                  className="rounded border pointer-events-none scale-90 origin-top-left"
+          <ScrollArea className="md:pr-4 max-h-[calc(85vh-140px)] md:max-h-none">
+            <div className="grid gap-3 py-3">
+              <div className="flex items-center gap-4 border-b pb-3">
+                <img 
+                  src={book.coverImage} 
+                  alt={book.title} 
+                  className="w-16 h-20 object-cover rounded-sm"
                 />
+                <div>
+                  <h3 className="font-medium text-sm">{book.title}</h3>
+                  <p className="text-muted-foreground text-xs">{book.author}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 py-1">
+                <div className="text-sm font-medium">대여자</div>
+                <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 py-1">
+                <div className="text-sm font-medium">대여일자</div>
+                <div className="col-span-3 text-sm">{format(borrowDate, 'yyyy-MM-dd')}</div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 py-1">
+                <div className="text-sm font-medium whitespace-nowrap">반납예정일</div>
+                <div className="col-span-3">
+                  <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+                  <Calendar
+                    mode="single"
+                    selected={returnDueDate}
+                    disabled
+                    className="mx-auto border rounded pointer-events-none w-[280px] md:w-full"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          </ScrollArea>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>

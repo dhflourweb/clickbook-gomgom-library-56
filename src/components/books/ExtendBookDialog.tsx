@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ExtendBookDialogProps {
   book: Book;
@@ -70,57 +71,56 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-3">
-            <div className="flex items-center gap-4 border-b pb-3">
-              <img 
-                src={book.coverImage} 
-                alt={book.title} 
-                className="w-16 h-20 object-cover rounded-sm"
-              />
-              <div>
-                <h3 className="font-medium text-sm">{book.title}</h3>
-                <p className="text-muted-foreground text-xs">{book.author}</p>
+          <ScrollArea className="md:pr-4 max-h-[calc(85vh-140px)] md:max-h-none">
+            <div className="grid gap-3 py-3">
+              <div className="flex items-center gap-4 border-b pb-3">
+                <img 
+                  src={book.coverImage} 
+                  alt={book.title} 
+                  className="w-16 h-20 object-cover rounded-sm"
+                />
+                <div>
+                  <h3 className="font-medium text-sm">{book.title}</h3>
+                  <p className="text-muted-foreground text-xs">{book.author}</p>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">대여자</div>
-              <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
-            </div>
+              <div className="grid grid-cols-4 gap-2 py-1">
+                <div className="text-sm font-medium">대여자</div>
+                <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
+              </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">현재 반납예정일</div>
-              <div className="col-span-3 text-sm">{format(currentReturnDate, 'yyyy-MM-dd')}</div>
-            </div>
+              <div className="grid grid-cols-4 gap-2 py-1">
+                <div className="text-sm font-medium whitespace-nowrap">현재 반납예정일</div>
+                <div className="col-span-3 text-sm">{format(currentReturnDate, 'yyyy-MM-dd')}</div>
+              </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium whitespace-nowrap">연장 후 반납예정일</div>
-              <div className="col-span-3 text-sm">{format(extendedReturnDate, 'yyyy-MM-dd')}</div>
-            </div>
+              <div className="grid grid-cols-4 gap-2 py-1">
+                <div className="text-sm font-medium whitespace-nowrap">연장 후 반납예정일</div>
+                <div className="col-span-3 text-sm">{format(extendedReturnDate, 'yyyy-MM-dd')}</div>
+              </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium self-start whitespace-nowrap">반납일 변경</div>
-              <div className="col-span-3">
+              <div className="pt-2 pb-3">
                 <Calendar
                   mode="single"
                   selected={extendedReturnDate}
                   disabled
-                  className="rounded border pointer-events-none scale-90 origin-top-left"
+                  className="mx-auto border rounded pointer-events-none w-[280px] md:w-full"
                 />
               </div>
-            </div>
 
-            <div className="text-center text-point-red font-medium text-sm pt-1">
-              도서 반납일 연장은 최대 1회 가능합니다.
-            </div>
-
-            {book.hasBeenExtended && (
-              <div className="rounded-md bg-yellow-50 p-3 text-sm text-yellow-800 border border-yellow-200">
-                <p className="font-medium">이 도서는 이미 연장되었습니다</p>
-                <p className="mt-1">도서 연장은 최대 {SYSTEM_SETTINGS.maxExtensionCount}회만 가능합니다.</p>
+              <div className="text-center text-point-red font-medium text-sm pt-1">
+                도서 반납일 연장은 최대 1회 가능합니다.
               </div>
-            )}
-          </div>
+
+              {book.hasBeenExtended && (
+                <div className="rounded-md bg-yellow-50 p-3 text-sm text-yellow-800 border border-yellow-200">
+                  <p className="font-medium">이 도서는 이미 연장되었습니다</p>
+                  <p className="mt-1">도서 연장은 최대 {SYSTEM_SETTINGS.maxExtensionCount}회만 가능합니다.</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
