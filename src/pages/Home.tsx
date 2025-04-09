@@ -25,7 +25,7 @@ const Home = () => {
           <Banner items={MOCK_BANNER_ITEMS} />
         </div>
         
-        {/* Tabbed book section */}
+        {/* Combined tabbed book section */}
         <TabsBookSection 
           newBooks={newBooks}
           recommendedBooks={recommendedBooks}
