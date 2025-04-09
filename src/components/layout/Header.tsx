@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, ChevronDown, X } from 'lucide-react';
@@ -108,9 +109,9 @@ export const Header = () => {
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">도서관리</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="min-w-[200px] p-2">
                             <p className="elegant-dropdown-item" onClick={() => navigate('/books')}>도서목록</p>
                             <p className="elegant-dropdown-item" onClick={() => navigate('/books?sort=최신등록순')}>신규도서</p>
@@ -121,9 +122,9 @@ export const Header = () => {
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">카테고리</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="min-w-[200px] p-2">
                             {categories.map(category => (
                               <p 
@@ -138,9 +139,9 @@ export const Header = () => {
                         </NavigationMenuContent>
                       </NavigationMenuItem>
 
-                      <NavigationMenuItem>
+                      <NavigationMenuItem className="relative">
                         <NavigationMenuTrigger className="bg-transparent text-black hover:bg-gray-100 text-base font-medium">커뮤니티</NavigationMenuTrigger>
-                        <NavigationMenuContent className="bg-white rounded-lg shadow-lg border border-gray-100">
+                        <NavigationMenuContent className="absolute left-0 top-full mt-1 w-[200px] bg-white rounded-lg shadow-lg border border-gray-100">
                           <div className="min-w-[200px] p-2">
                             <p className="elegant-dropdown-item" onClick={() => navigate('/announcements')}>공지사항</p>
                             <p className="elegant-dropdown-item" onClick={() => navigate('/inquiries')}>문의하기</p>
