@@ -62,7 +62,7 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>도서 대여 연장</DialogTitle>
             <DialogDescription>
@@ -70,7 +70,7 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-3">
             <div className="flex items-center gap-4 border-b pb-3">
               <img 
                 src={book.coverImage} 
@@ -83,31 +83,35 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
+            <div className="grid grid-cols-4 gap-2 py-1">
               <div className="text-sm font-medium">대여자</div>
               <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
+            <div className="grid grid-cols-4 gap-2 py-1">
               <div className="text-sm font-medium">현재 반납예정일</div>
               <div className="col-span-3 text-sm">{format(currentReturnDate, 'yyyy-MM-dd')}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
-              <div className="text-sm font-medium">연장 후 반납예정일</div>
+            <div className="grid grid-cols-4 gap-2 py-1">
+              <div className="text-sm font-medium whitespace-nowrap">연장 후 반납예정일</div>
               <div className="col-span-3 text-sm">{format(extendedReturnDate, 'yyyy-MM-dd')}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-2">
-              <div className="text-sm font-medium self-start">반납일 변경</div>
+            <div className="grid grid-cols-4 gap-2 py-1">
+              <div className="text-sm font-medium self-start whitespace-nowrap">반납일 변경</div>
               <div className="col-span-3">
                 <Calendar
                   mode="single"
                   selected={extendedReturnDate}
                   disabled
-                  className="rounded border pointer-events-auto"
+                  className="rounded border pointer-events-none scale-90 origin-top-left"
                 />
               </div>
+            </div>
+
+            <div className="text-center text-point-red font-medium text-sm pt-1">
+              도서 반납일 연장은 최대 1회 가능합니다.
             </div>
 
             {book.hasBeenExtended && (

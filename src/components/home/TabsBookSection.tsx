@@ -83,28 +83,28 @@ export const TabsBookSection = ({
     <div className={cn("bg-white rounded-lg p-6 shadow-sm", className)}>
       <Tabs defaultValue="new" onValueChange={setActiveTab}>
         {isMobile ? (
-          <TabsList className="grid grid-cols-2 gap-2 w-full mb-6">
+          <TabsList className="grid grid-cols-2 gap-2 w-full mb-6 bg-gray-100 p-1 rounded-md">
             <TabsTrigger 
               value="new" 
-              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
               신규 도서
             </TabsTrigger>
             <TabsTrigger 
               value="recommended" 
-              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
               추천 도서
             </TabsTrigger>
             <TabsTrigger 
               value="best" 
-              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
               베스트 도서(사내)
             </TabsTrigger>
             <TabsTrigger 
               value="nationalBest" 
-              className="text-sm font-medium py-2 border-b-2 border-transparent data-[state=active]:border-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
             >
               베스트 도서(국내)
             </TabsTrigger>

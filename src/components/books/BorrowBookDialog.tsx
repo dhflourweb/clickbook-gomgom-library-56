@@ -56,7 +56,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>도서 대여</DialogTitle>
             <DialogDescription>

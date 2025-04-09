@@ -43,7 +43,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>도서 반납</DialogTitle>
           <DialogDescription>
