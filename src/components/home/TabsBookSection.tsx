@@ -8,7 +8,6 @@ import {
   TabsContent 
 } from "@/components/ui/tabs";
 import { BookCarousel } from '@/components/home/BookCarousel';
-import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Book } from '@/types';
@@ -55,30 +54,42 @@ export const TabsBookSection = ({
       case "new":
         return "새로 들어온 도서";
       case "recommended":
-        return "추천 도서";
+        return "이 달의 추천 도서";
       case "best":
-        return "베스트 도서";
+        return "사내 인기 도서";
       case "nationalBest":
-        return "베스트 도서";
+        return "국내 인기 도서";
       default:
         return "";
     }
   };
   
   const getTabDescription = () => {
-    if (activeTab === "new") {
-      return "이번 주 새로 입고된 도서입니다.";
+    switch(activeTab) {
+      case "new":
+        return "이번 달 새로 입고된 도서입니다!";
+      case "recommended":
+        return "꼭 읽어봐야 할 도서를 추천합니다!";
+      case "best":
+        return "임직원이 가장 많이 읽은 도서입니다!";
+      case "nationalBest":
+        return "베스트셀러를 사내문고에서 만나보세요!";
+      default:
+        return "";
     }
-    return "";
   };
   
   return (
     <div className={cn("bg-white rounded-lg p-6 shadow-sm", className)}>
       <Tabs defaultValue="new" onValueChange={setActiveTab}>
-        <TabsList className={cn("w-full", isMobile ? "grid grid-cols-3" : "inline-flex")}>
+        <TabsList className={cn(
+          "justify-start mb-6 w-full", 
+          isMobile ? "grid grid-cols-2 gap-2" : "inline-flex"
+        )}>
           <TabsTrigger value="new" className="text-sm">신규 도서</TabsTrigger>
           <TabsTrigger value="recommended" className="text-sm">추천 도서</TabsTrigger>
-          <TabsTrigger value="best" className="text-sm">베스트 도서</TabsTrigger>
+          <TabsTrigger value="best" className="text-sm">베스트 도서(사내)</TabsTrigger>
+          <TabsTrigger value="nationalBest" className="text-sm">베스트 도서(국내)</TabsTrigger>
         </TabsList>
         
         <div className="flex items-center justify-between mt-6 mb-4">
@@ -117,6 +128,10 @@ export const TabsBookSection = ({
         
         <TabsContent value="best" className="overflow-visible pt-2">
           <BookCarousel books={bestBooks} />
+        </TabsContent>
+        
+        <TabsContent value="nationalBest" className="overflow-visible pt-2">
+          <BookCarousel books={nationalBestBooks} />
         </TabsContent>
       </Tabs>
     </div>
