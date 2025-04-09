@@ -90,22 +90,22 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
               </div>
 
               <div className="grid grid-cols-4 gap-2 py-1">
-                <div className="text-sm font-medium whitespace-nowrap">반납예정일</div>
+                <div className="text-sm font-medium whitespace-nowrap">반납<br />예정일</div>
                 <div className="col-span-3">
                   <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
                   <Calendar
                     mode="single"
                     selected={returnDueDate}
                     disabled
-                    className="mx-auto border rounded pointer-events-none w-[280px] md:w-full"
+                    className="mx-auto border rounded pointer-events-none w-full"
                   />
                 </div>
               </div>
             </div>
           </ScrollArea>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
+          <DialogFooter className="sm:justify-end gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="sm:mt-0">취소</Button>
             <Button onClick={handleBorrow}>대여하기</Button>
           </DialogFooter>
         </DialogContent>
@@ -119,8 +119,8 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
               최대 {SYSTEM_SETTINGS.maxBorrowLimit}권까지 대여할 수 있습니다!
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setShowLimitWarning(false)}>
+          <AlertDialogFooter className="sm:justify-end gap-2">
+            <AlertDialogAction onClick={() => setShowLimitWarning(false)} className="w-full sm:w-auto">
               확인
             </AlertDialogAction>
           </AlertDialogFooter>

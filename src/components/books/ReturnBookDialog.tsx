@@ -129,8 +129,8 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
+        <DialogFooter className="sm:justify-end gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="sm:mt-0">취소</Button>
           <Button onClick={handleReturn}>반납하기</Button>
         </DialogFooter>
       </DialogContent>

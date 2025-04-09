@@ -5,6 +5,7 @@ import { Book } from '@/types';
 import { SYSTEM_SETTINGS } from '@/data/mockData';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ExtendBookDialogProps {
   book: Book;
@@ -91,12 +91,12 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
               </div>
 
               <div className="grid grid-cols-4 gap-2 py-1">
-                <div className="text-sm font-medium whitespace-nowrap">현재 반납예정일</div>
+                <div className="text-sm font-medium whitespace-nowrap">현재<br />반납예정일</div>
                 <div className="col-span-3 text-sm">{format(currentReturnDate, 'yyyy-MM-dd')}</div>
               </div>
 
               <div className="grid grid-cols-4 gap-2 py-1">
-                <div className="text-sm font-medium whitespace-nowrap">연장 후 반납예정일</div>
+                <div className="text-sm font-medium whitespace-nowrap">연장 후<br />반납예정일</div>
                 <div className="col-span-3 text-sm">{format(extendedReturnDate, 'yyyy-MM-dd')}</div>
               </div>
 
@@ -105,7 +105,7 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
                   mode="single"
                   selected={extendedReturnDate}
                   disabled
-                  className="mx-auto border rounded pointer-events-none w-[280px] md:w-full"
+                  className="mx-auto border rounded pointer-events-none w-full"
                 />
               </div>
 
@@ -122,8 +122,8 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
             </div>
           </ScrollArea>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
+          <DialogFooter className="sm:justify-end gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="sm:mt-0">취소</Button>
             <Button 
               onClick={handleExtend}
               disabled={book.hasBeenExtended}
@@ -160,8 +160,8 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
               도서 반납일 연장은 최대 {SYSTEM_SETTINGS.maxExtensionCount}회이며, {SYSTEM_SETTINGS.extensionDays}일을 연장할 수 있습니다. 연장하시겠습니까?
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExtensionConfirm(false)}>
+          <AlertDialogFooter className="sm:justify-end gap-2">
+            <AlertDialogCancel onClick={() => setShowExtensionConfirm(false)} className="sm:mt-0">
               취소
             </AlertDialogCancel>
             <AlertDialogAction onClick={processExtension}>
