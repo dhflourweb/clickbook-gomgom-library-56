@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { StarRating } from '@/components/books/StarRating';
 import { Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ReturnBookDialogProps {
   book: Book;
@@ -31,6 +32,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   const [review, setReview] = useState<string>('');
   const [returnLocation, setReturnLocation] = useState<string>('');
   const [isRecommended, setIsRecommended] = useState<boolean>(false);
+  const isMobile = useIsMobile();
   
   const today = new Date();
   const returnDate = format(today, 'yyyy-MM-dd');
@@ -43,7 +45,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className={isMobile ? "w-[90%] max-h-[90vh] overflow-y-auto p-4 sm:max-w-[500px]" : "sm:max-w-[500px]"}>
         <DialogHeader>
           <DialogTitle>도서 반납</DialogTitle>
           <DialogDescription>
@@ -51,12 +53,12 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
-          <div className="flex items-center gap-4 border-b pb-3">
+        <div className={`grid gap-3 py-3 ${isMobile ? "max-h-[70vh] overflow-y-auto" : ""}`}>
+          <div className="flex items-center gap-3 border-b pb-3">
             <img 
               src={book.coverImage} 
               alt={book.title} 
-              className="w-16 h-20 object-cover rounded-sm"
+              className="w-14 h-18 object-cover rounded-sm"
             />
             <div>
               <h3 className="font-medium text-sm">{book.title}</h3>
@@ -84,6 +86,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
                 placeholder="반납 위치 번호를 입력해주세요."
                 className="w-full"
                 type="text"
+                autoFocus={false}
               />
             </div>
           </div>
@@ -107,7 +110,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
                 placeholder="이 책에 대한 후기를 남겨주세요."
-                className="h-24"
+                className={isMobile ? "h-16" : "h-24"}
               />
             </div>
           </div>
@@ -128,7 +131,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
           <Button onClick={handleReturn}>반납하기</Button>
         </DialogFooter>

@@ -90,15 +90,17 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </div>
 
             <div className="grid grid-cols-4 gap-2 py-2">
-              <div className="text-sm font-medium self-start">반납예정일</div>
+              <div className="text-sm font-medium whitespace-nowrap self-start">반납예정일</div>
               <div className="col-span-3">
-                <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
-                <Calendar
-                  mode="single"
-                  selected={returnDueDate}
-                  disabled
-                  className={isMobile ? "rounded border scale-90 origin-top-left" : "rounded border"}
-                />
+                <div className="text-sm mb-2 whitespace-nowrap">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+                <div className={isMobile ? "scale-90 origin-top-left" : ""}>
+                  <Calendar
+                    mode="single"
+                    selected={returnDueDate}
+                    disabled
+                    className="rounded border"
+                  />
+                </div>
               </div>
             </div>
           </div>

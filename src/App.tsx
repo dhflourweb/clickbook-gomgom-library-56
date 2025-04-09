@@ -30,6 +30,17 @@ const HomeRoute = () => {
   return <Home />;
 };
 
+// Component to handle admin dashboard access
+const AdminRoute = () => {
+  const { hasRole } = useAuth();
+  
+  if (!hasRole(['admin', 'system_admin'])) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <AdminDashboard />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
@@ -44,7 +55,7 @@ const App = () => (
             <Route path="/books/:id" element={<BookDetail />} />
             <Route path="/books/rentals" element={<BookRentals />} />
             <Route path="/mypage" element={<MyPage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminRoute />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>
