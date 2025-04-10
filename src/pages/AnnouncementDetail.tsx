@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -73,12 +72,12 @@ const AnnouncementDetail = () => {
                   {announcement.category}
                 </Badge>
                 {announcement.isPinned && (
-                  <Badge variant="secondary" className="bg-primary-deepblue text-white">
+                  <Badge variant="secondary" className="bg-primary-deepblue text-white pointer-events-none">
                     상단 고정
                   </Badge>
                 )}
                 {announcement.isPopup && (
-                  <Badge variant="secondary" className="bg-secondary-orange text-white">
+                  <Badge variant="secondary" className="bg-secondary-orange text-white pointer-events-none">
                     팝업 공지
                   </Badge>
                 )}
@@ -125,7 +124,6 @@ const AnnouncementDetail = () => {
           </div>
           
           <div className="prose max-w-none">
-            {/* If there's an image, display it */}
             {announcement.imageUrl && (
               <img 
                 src={announcement.imageUrl} 

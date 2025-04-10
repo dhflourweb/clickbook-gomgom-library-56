@@ -103,8 +103,8 @@ const InquiryDetail = () => {
                   <Badge 
                     variant={inquiry.status === 'pending' ? 'outline' : 'secondary'}
                     className={inquiry.status === 'pending' ? 
-                      'border-secondary-orange text-secondary-orange' : 
-                      'bg-primary text-white'
+                      'border-secondary-orange text-secondary-orange pointer-events-none' : 
+                      'bg-primary text-white pointer-events-none'
                     }
                   >
                     {inquiry.status === 'pending' ? (
@@ -120,7 +120,7 @@ const InquiryDetail = () => {
                     )}
                   </Badge>
                   {!inquiry.isPublic && (
-                    <Badge variant="secondary" className="bg-gray-700 text-white">
+                    <Badge variant="secondary" className="bg-gray-700 text-white pointer-events-none">
                       <div className="flex items-center">
                         <Lock size={12} className="mr-1" />
                         비공개
@@ -175,7 +175,7 @@ const InquiryDetail = () => {
             {inquiry.answer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">
-                  <Badge variant="secondary" className="bg-primary text-white">
+                  <Badge variant="secondary" className="bg-primary text-white pointer-events-none">
                     답변
                   </Badge>
                   <span className="text-sm text-gray-500">
@@ -190,8 +190,8 @@ const InquiryDetail = () => {
               </div>
             )}
             
-            {/* Admin answer form */}
-            {canAnswer && (
+            {/* Admin answer form - now visible anytime admin is viewing and there's no answer */}
+            {isAdmin && !inquiry.answer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageSquare size={18} className="text-primary" />

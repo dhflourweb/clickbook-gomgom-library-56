@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -46,7 +45,6 @@ const AnnouncementForm = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  // Load announcement data if in edit mode
   useEffect(() => {
     if (isEditMode && id) {
       const announcement = getAnnouncementById(id);
@@ -69,7 +67,6 @@ const AnnouncementForm = () => {
     }
   }, [id, isEditMode, navigate]);
 
-  // Validate form
   const validateForm = () => {
     if (!title.trim()) {
       toast.error('제목을 입력해주세요.');
@@ -111,7 +108,6 @@ const AnnouncementForm = () => {
 
     setIsSaving(true);
     
-    // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
       
@@ -124,7 +120,6 @@ const AnnouncementForm = () => {
   };
   
   const handleCancel = () => {
-    // If the form has been modified, show confirm dialog
     if (title || content || category || isPinned || isPopup || popupEndDate || imageUrl) {
       setShowConfirmDialog(true);
     } else {
@@ -135,10 +130,8 @@ const AnnouncementForm = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      // Create a preview URL
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
-      // In a real app, this would upload the file and set the returned URL
       setImageUrl("mock-image-url.jpg");
     }
   };
@@ -154,7 +147,7 @@ const AnnouncementForm = () => {
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-  
+
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto px-4 py-6">
@@ -337,6 +330,42 @@ const AnnouncementForm = () => {
                         </Popover>
                       </div>
                     )}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <Label htmlFor="image">이미지 업로드 (선택사항)</Label>
+                <div className="border rounded-md p-4 bg-gray-50">
+                  <div className="flex flex-col gap-2 mb-3">
+                    <p className="text-sm text-muted-foreground">권장 사항:</p>
+                    <ul className="text-xs text-muted-foreground list-disc ml-5 space-y-1">
+                      <li>최적 해상도: 1200 x 800px</li>
+                      <li>지원 형식: JPG, PNG, WebP</li>
+                      <li>최대 용량: 5MB</li>
+                      <li>고품질 이미지를 사용하면 가독성이 향상됩니다</li>
+                    </ul>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => document.getElementById('image-upload')?.click()}
+                      className="bg-white"
+                    >
+                      파일 선택
+                    </Button>
+                    <input
+                      id="image-upload"
+                      name="image"
+                      type="file"
+                      className="hidden"
+                      accept=".jpg,.jpeg,.png,.webp"
+                      onChange={handleFileChange}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {/* Display selected filename here */}
+                    </span>
                   </div>
                 </div>
               </div>
