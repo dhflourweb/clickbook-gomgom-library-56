@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
+import logo from '@/assets/images/icon_logo.svg';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -85,67 +87,64 @@ const Login = () => {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white flex items-center justify-center">
-              <span className="text-secondary-orange">곰클릭</span>
-              <span className="text-white">+</span>
-              <span className="text-primary-skyblue">책방</span>
+              <div className="bg-white p-2 rounded-md inline-block">
+                <img src={logo} alt="로고" className="h-15 w-auto object-contain"/>
+              </div>
+              {/*<span className="text-secondary-orange">곰클릭</span>*/}
+              {/*<span className="text-white">+</span>*/}
+              {/*<span className="text-primary-skyblue">책방</span>*/}
             </h1>
-            <p className="mt-2 text-white/80">사내 디지털 도서관</p>
+            {/*<p className="mt-2 text-white/80">사내 디지털 도서관</p>*/}
           </div>
-          
+
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle className="text-2xl">로그인</CardTitle>
               <CardDescription>
-                계정 정보로 로그인하세요
+                사내문고 시스템에 로그인하세요
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">이메일</Label>
+                  <Label htmlFor="email">아이디</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="your.email@dhflour.co.kr"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                      id="email"
+                      type="email"
+                      placeholder="your.email@dhflour.co.kr"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">비밀번호</Label>
                   <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
                   />
                 </div>
-                <div className="flex flex-col space-y-2">
+                <div className="flex items-center justify-between px-10">
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="rememberID" 
-                      checked={rememberID}
-                      onCheckedChange={(checked) => setRememberID(checked === true)}
+                    <Checkbox
+                        id="rememberID"
+                        checked={rememberID}
+                        onCheckedChange={(checked) => setRememberID(checked === true)}
                     />
-                    <label
-                      htmlFor="rememberID"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                    <label htmlFor="rememberID" className="text-sm font-medium leading-none">
                       아이디 저장
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="autoLogin" 
-                      checked={autoLogin}
-                      onCheckedChange={(checked) => setAutoLogin(checked === true)}
+                    <Checkbox
+                        id="autoLogin"
+                        checked={autoLogin}
+                        onCheckedChange={(checked) => setAutoLogin(checked === true)}
                     />
-                    <label
-                      htmlFor="autoLogin"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                    <label htmlFor="autoLogin" className="text-sm font-medium leading-none">
                       자동 로그인
                     </label>
                   </div>
@@ -157,9 +156,9 @@ const Login = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  type="submit"
-                  className="w-full bg-primary-realblue hover:bg-primary-deepblue"
-                  disabled={isLoading}
+                    type="submit"
+                    className="w-full bg-primary-realblue hover:bg-primary-deepblue"
+                    disabled={isLoading}
                 >
                   {isLoading ? '로그인 중...' : '로그인'}
                 </Button>
