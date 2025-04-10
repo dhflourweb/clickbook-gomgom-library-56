@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -161,25 +160,9 @@ const AnnouncementForm = () => {
     fileInputRef.current?.click();
   };
   
-  // Modified executeCommand to preserve cursor position and selection
   const executeCommand = (command: string, value: string = '') => {
-    if (contentEditorRef.current) {
-      // Get selection state before executing command
-      const selection = window.getSelection();
-      const range = selection?.getRangeAt(0);
-      
-      // Focus the editor to ensure it receives the command
-      contentEditorRef.current.focus();
-      
-      // Execute the command
-      document.execCommand(command, false, value);
-      
-      // If there was a selection, try to restore focus to the editor
-      if (range && selection) {
-        // Selection is automatically maintained by the browser for most commands
-        contentEditorRef.current.focus();
-      }
-    }
+    document.execCommand(command, false, value);
+    contentEditorRef.current?.focus();
   };
   
   const insertImage = () => {
@@ -209,129 +192,6 @@ const AnnouncementForm = () => {
             </h1>
             
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Notice Options - Moved above title */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-4 bg-gray-50 rounded-md h-full">
-                  <div className="flex items-center justify-between mb-4">
-                    <Label htmlFor="isPinned" className="cursor-pointer text-base font-medium">
-                      상단 고정
-                      <p className="text-xs text-gray-500 font-normal mt-0.5">
-                        중요 공지사항을 목록 상단에 고정합니다
-                      </p>
-                    </Label>
-                    <Switch
-                      id="isPinned"
-                      checked={isPinned}
-                      onCheckedChange={setIsPinned}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="isPopup" className="cursor-pointer text-base font-medium">
-                      팝업 공지
-                      <p className="text-xs text-gray-500 font-normal mt-0.5">
-                        로그인 후 팝업으로 표시됩니다
-                      </p>
-                    </Label>
-                    <Switch
-                      id="isPopup"
-                      checked={isPopup}
-                      onCheckedChange={setIsPopup}
-                    />
-                  </div>
-                  
-                  {isPopup && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <Label className="block mb-1.5 text-sm font-medium">팝업 종료일</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !popupEndDate && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {popupEndDate ? format(popupEndDate, "yyyy-MM-dd") : "날짜 선택"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={popupEndDate}
-                            onSelect={setPopupEndDate}
-                            initialFocus
-                            disabled={(date) => date < new Date()}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="space-y-4">
-                  <Label className="text-base font-medium block mb-2">이미지 업로드</Label>
-                  
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  
-                  <div className="flex flex-col gap-4">
-                    <div className="border rounded-md p-4 bg-gray-50 h-full">
-                      <div className="flex flex-col gap-2 mb-3">
-                        <p className="text-sm text-muted-foreground">권장 사항:</p>
-                        <ul className="text-xs text-muted-foreground list-disc ml-5 space-y-1">
-                          <li>최적 해상도: 1200 x 800px</li>
-                          <li>지원 형식: JPG, PNG, WebP</li>
-                          <li>최대 용량: 5MB</li>
-                        </ul>
-                      </div>
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={triggerFileInput}
-                        className="flex items-center justify-center gap-2 w-full text-base"
-                      >
-                        <Upload size={18} />
-                        파일 선택
-                      </Button>
-                    </div>
-                    
-                    {imagePreview && (
-                      <div className="relative mt-2">
-                        <div className="relative group overflow-hidden rounded-md">
-                          <img 
-                            src={imagePreview} 
-                            alt="Preview" 
-                            className="w-full h-auto max-h-[180px] object-cover rounded-md" 
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button 
-                              type="button" 
-                              variant="destructive" 
-                              size="sm" 
-                              className="p-1"
-                              onClick={handleRemoveImage}
-                            >
-                              <X size={16} />
-                            </Button>
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1 truncate">
-                          {imageUrl ? "이미지가 업로드되었습니다" : "미리보기"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Title and Category */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
                   <Label htmlFor="title" className="text-base font-medium">제목</Label>
@@ -369,7 +229,6 @@ const AnnouncementForm = () => {
                 </div>
               </div>
               
-              {/* Content */}
               <div>
                 <Label htmlFor="content" className="text-base font-medium">내용</Label>
                 
@@ -458,6 +317,129 @@ const AnnouncementForm = () => {
                     setContent(e.currentTarget.innerHTML);
                   }}
                 />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <Label className="text-base font-medium block mb-2">이미지 업로드</Label>
+                  
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  
+                  <div className="flex flex-col gap-4">
+                    <div className="border rounded-md p-4 bg-gray-50 h-full">
+                      <div className="flex flex-col gap-2 mb-3">
+                        <p className="text-sm text-muted-foreground">권장 사항:</p>
+                        <ul className="text-xs text-muted-foreground list-disc ml-5 space-y-1">
+                          <li>최적 해상도: 1200 x 800px</li>
+                          <li>지원 형식: JPG, PNG, WebP</li>
+                          <li>최대 용량: 5MB</li>
+                        </ul>
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={triggerFileInput}
+                        className="flex items-center justify-center gap-2 w-full text-base"
+                      >
+                        <Upload size={18} />
+                        파일 선택
+                      </Button>
+                    </div>
+                    
+                    {imagePreview && (
+                      <div className="relative mt-2">
+                        <div className="relative group overflow-hidden rounded-md">
+                          <img 
+                            src={imagePreview} 
+                            alt="Preview" 
+                            className="w-full h-auto max-h-[180px] object-cover rounded-md" 
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="sm" 
+                              className="p-1"
+                              onClick={handleRemoveImage}
+                            >
+                              <X size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 truncate">
+                          {imageUrl ? "이미지가 업로드되었습니다" : "미리보기"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="p-4 bg-gray-50 rounded-md h-full">
+                    <div className="flex items-center justify-between mb-4">
+                      <Label htmlFor="isPinned" className="cursor-pointer text-base font-medium">
+                        상단 고정
+                        <p className="text-xs text-gray-500 font-normal mt-0.5">
+                          중요 공지사항을 목록 상단에 고정합니다
+                        </p>
+                      </Label>
+                      <Switch
+                        id="isPinned"
+                        checked={isPinned}
+                        onCheckedChange={setIsPinned}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="isPopup" className="cursor-pointer text-base font-medium">
+                        팝업 공지
+                        <p className="text-xs text-gray-500 font-normal mt-0.5">
+                          로그인 후 팝업으로 표시됩니다
+                        </p>
+                      </Label>
+                      <Switch
+                        id="isPopup"
+                        checked={isPopup}
+                        onCheckedChange={setIsPopup}
+                      />
+                    </div>
+                    
+                    {isPopup && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <Label className="block mb-1.5 text-sm font-medium">팝업 종료일</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !popupEndDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {popupEndDate ? format(popupEndDate, "yyyy-MM-dd") : "날짜 선택"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={popupEndDate}
+                              onSelect={setPopupEndDate}
+                              initialFocus
+                              disabled={(date) => date < new Date()}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
