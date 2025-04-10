@@ -1,23 +1,53 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [recoveryEmail, setRecoveryEmail] = useState('');
-  const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
-  const [isRecoveryLoading, setIsRecoveryLoading] = useState(false);
+  const [rememberID, setRememberID] = useState(false);
+  const [autoLogin, setAutoLogin] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check for saved email and auto login
+    const savedEmail = localStorage.getItem('gomclick_saved_email');
+    const savedAutoLogin = localStorage.getItem('gomclick_auto_login');
+
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberID(true);
+    }
+
+    if (savedAutoLogin && savedEmail) {
+      setAutoLogin(true);
+      const savedPassword = localStorage.getItem('gomclick_saved_password');
+      
+      if (savedPassword) {
+        setPassword(savedPassword);
+        handleAutoLogin(savedEmail, savedPassword);
+      }
+    }
+  }, []);
+
+  const handleAutoLogin = async (savedEmail: string, savedPassword: string) => {
+    try {
+      setIsLoading(true);
+      await login(savedEmail, savedPassword);
+      navigate('/');
+    } catch (error) {
+      console.error('Auto login failed:', error);
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,31 +55,28 @@ const Login = () => {
     
     try {
       await login(email, password);
+      
+      // Save email if remember ID is checked
+      if (rememberID) {
+        localStorage.setItem('gomclick_saved_email', email);
+      } else {
+        localStorage.removeItem('gomclick_saved_email');
+      }
+      
+      // Save auto login preference
+      if (autoLogin) {
+        localStorage.setItem('gomclick_auto_login', 'true');
+        localStorage.setItem('gomclick_saved_password', password);
+      } else {
+        localStorage.removeItem('gomclick_auto_login');
+        localStorage.removeItem('gomclick_saved_password');
+      }
+      
       navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
       setIsLoading(false);
     }
-  };
-
-  const handleRecoverySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!recoveryEmail.trim()) {
-      toast.error("이메일을 입력해주세요");
-      return;
-    }
-    
-    setIsRecoveryLoading(true);
-    
-    // Simulate password recovery process
-    setTimeout(() => {
-      toast.success("비밀번호 재설정 이메일이 발송되었습니다", {
-        description: "이메일 내 링크를 통해 비밀번호를 재설정하세요.",
-      });
-      setIsRecoveryLoading(false);
-      setIsRecoveryOpen(false);
-      setRecoveryEmail('');
-    }, 1500);
   };
 
   return (
@@ -86,16 +113,7 @@ const Login = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">비밀번호</Label>
-                    <button 
-                      type="button" 
-                      className="text-xs text-primary-skyblue hover:underline"
-                      onClick={() => setIsRecoveryOpen(true)}
-                    >
-                      비밀번호 찾기
-                    </button>
-                  </div>
+                  <Label htmlFor="password">비밀번호</Label>
                   <Input
                     id="password"
                     type="password"
@@ -103,6 +121,34 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="rememberID" 
+                      checked={rememberID}
+                      onCheckedChange={(checked) => setRememberID(checked === true)}
+                    />
+                    <label
+                      htmlFor="rememberID"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      아이디 저장
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="autoLogin" 
+                      checked={autoLogin}
+                      onCheckedChange={(checked) => setAutoLogin(checked === true)}
+                    />
+                    <label
+                      htmlFor="autoLogin"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      자동 로그인
+                    </label>
+                  </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
                   <p className="mb-1">⭐ <strong>테스트 계정 (사용자)</strong>: user@dhflour.co.kr / password123</p>
@@ -122,48 +168,6 @@ const Login = () => {
           </Card>
         </div>
       </div>
-      
-      {/* Password Recovery Dialog */}
-      <Dialog open={isRecoveryOpen} onOpenChange={setIsRecoveryOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>비밀번호 찾기</DialogTitle>
-            <DialogDescription>
-              등록된 이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleRecoverySubmit} className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label htmlFor="recovery-email">이메일</Label>
-              <Input
-                id="recovery-email"
-                type="email"
-                placeholder="your.email@dhflour.co.kr"
-                value={recoveryEmail}
-                onChange={(e) => setRecoveryEmail(e.target.value)}
-                required
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsRecoveryOpen(false)}
-                className="mt-2 sm:mt-0"
-              >
-                취소
-              </Button>
-              <Button
-                type="submit"
-                className="bg-primary-realblue hover:bg-primary-deepblue"
-                disabled={isRecoveryLoading}
-              >
-                {isRecoveryLoading ? '요청 중...' : '비밀번호 재설정 요청'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
