@@ -14,6 +14,10 @@ import BookRentals from "./pages/BookRentals";
 import MyPage from "./pages/MyPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import Announcements from "./pages/Announcements";
+import AnnouncementDetail from "./pages/AnnouncementDetail";
+import Inquiries from "./pages/Inquiries";
+import InquiryDetail from "./pages/InquiryDetail";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +36,10 @@ const App = () => (
             <Route path="/books/rentals" element={<BookRentals />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/announcements" element={<Announcements />} />
+            <Route path="/announcements/:id" element={<AnnouncementDetail />} />
+            <Route path="/inquiries" element={<Inquiries />} />
+            <Route path="/inquiries/:id" element={<InquiryDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

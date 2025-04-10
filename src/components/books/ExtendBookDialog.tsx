@@ -71,18 +71,18 @@ export function ExtendBookDialog({ book, isOpen, onOpenChange }: ExtendBookDialo
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">대여자</div>
+            <div className="grid grid-cols-5 gap-2 py-1">
+              <div className="col-span-2 text-sm font-medium">대여자</div>
               <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">현재 반납예정일</div>
+            <div className="grid grid-cols-5 gap-2 py-1">
+              <div className="col-span-2 text-sm font-medium">현재 반납예정일</div>
               <div className="col-span-3 text-sm">{format(currentReturnDate, 'yyyy-MM-dd')}</div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 py-1">
-              <div className="text-sm font-medium">연장 후 반납예정일</div>
+            <div className="grid grid-cols-5 gap-2 py-1">
+              <div className="col-span-2 text-sm font-medium">연장 후 반납예정일</div>
               <div className="col-span-3 text-sm">{format(extendedReturnDate, 'yyyy-MM-dd')}</div>
             </div>
 

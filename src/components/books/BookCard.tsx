@@ -57,7 +57,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   // Convert string ID to number before using modulo operator
   const isExtendable = parseInt(book.id.replace('book', '')) % 3 !== 0; // Books with ID not divisible by 3 can be extended
   
-  // Add state to track if book has been extended before
+  // Determine if book has been extended before
   const hasBeenExtended = book.hasBeenExtended || !isExtendable;
 
   const handleBorrow = (e: React.MouseEvent) => {
@@ -76,8 +76,10 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Show the confirmation dialog instead of the extend dialog
-    setExtendConfirmOpen(true);
+    // Check if book has been extended, if not show confirmation dialog
+    if (!hasBeenExtended) {
+      setExtendConfirmOpen(true);
+    }
   };
   
   // Process extension after confirmation
@@ -154,13 +156,14 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           >
             반납하기
           </Button>
-          {/* Now the extend button is conditionally enabled based on hasBeenExtended */}
+          {/* Make the extend button show both active and inactive states */}
           <Button 
             variant="secondary"
             size="sm" 
             className={cn(
-              "bg-secondary hover:bg-secondary/90",
-              hasBeenExtended && "bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+              hasBeenExtended 
+                ? "bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed" 
+                : "bg-secondary hover:bg-secondary/90"
             )}
             onClick={handleExtend}
             disabled={hasBeenExtended}
@@ -334,4 +337,3 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     </>
   );
 };
-
