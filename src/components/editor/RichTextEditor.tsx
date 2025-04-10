@@ -93,7 +93,8 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
           editor.chain().focus().toggleItalic().run();
           break;
         case 'underline':
-          editor.chain().focus().toggleUnderline().run();
+          // Use toggleMark instead of toggleUnderline as it's the correct method
+          editor.chain().focus().toggleMark('underline').run();
           break;
         case 'alignLeft':
           editor.chain().focus().setTextAlign('left').run();
