@@ -1,4 +1,3 @@
-
 import { Announcement, Inquiry } from '@/types/community';
 
 export const ANNOUNCEMENT_CATEGORIES = [
@@ -286,10 +285,16 @@ export function getAnnouncementById(id: string) {
 export function getInquiries(userId?: string) {
   if (!userId) return [];
   
-  // Modified to return all inquiries by the user (including pending ones)
-  // or public inquiries with 'answered' status
+  // Updated to return all inquiries by the user (including pending) AND public inquiries
+  // Modified to ensure users can see both pending and answered inquiries
   return [...mockInquiries]
-    .filter(inquiry => inquiry.createdBy === userId || (inquiry.isPublic && inquiry.status === 'answered'))
+    .filter(inquiry => {
+      // If the user created the inquiry, they can see it regardless of status
+      if (inquiry.createdBy === userId) return true;
+      
+      // Otherwise, only show public inquiries with 'answered' status
+      return inquiry.isPublic && inquiry.status === 'answered';
+    })
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
