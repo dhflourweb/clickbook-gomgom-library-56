@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 export const Sidebar = () => {
   const { hasRole } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = hasRole(["ADM", "system_admin"]);
+  const isAdmin = hasRole(['ADM', 'system_admin']);
   
   const navigateWithFilter = (path: string, filter?: string) => {
     if (filter) {
@@ -73,7 +73,7 @@ export const Sidebar = () => {
                   </div>
                   <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
                        onClick={() => navigate('/books?sort=베스트도서순')}>
-                    베스트도서(국내)
+                    베스트도서(국���)
                   </div>
                 </div>
               </AccordionContent>

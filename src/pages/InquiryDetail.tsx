@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -32,7 +31,6 @@ const InquiryDetail = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const isAdmin = hasRole(['ADM', 'system_admin']);
   
-  // Get the inquiry based on user role and ID
   const inquiry = id ? getInquiryById(id, user?.name, user?.role) : null;
   
   useEffect(() => {
@@ -48,11 +46,9 @@ const InquiryDetail = () => {
   const canEdit = inquiry.createdBy === user?.name && inquiry.status !== 'answered';
   const canDelete = inquiry.createdBy === user?.name && inquiry.status !== 'answered';
   
-  // Admin can answer any inquiry that doesn't have an answer yet
   const canAnswer = isAdmin && inquiry.status !== 'answered';
   
   const handleDelete = () => {
-    // In a real app, this would delete the inquiry
     toast.success("문의사항이 삭제되었습니다.");
     navigate('/inquiries');
   };
@@ -65,12 +61,10 @@ const InquiryDetail = () => {
       return;
     }
     
-    // In a real app, this would submit the answer
     toast.success("답변이 등록되었습니다.", {
       description: "문의사항에 대한 답변이 성공적으로 등록되었습니다.",
     });
     
-    // Simulate a page refresh
     navigate('/inquiries');
   };
   
@@ -168,7 +162,6 @@ const InquiryDetail = () => {
               <p className="whitespace-pre-wrap">{inquiry.content}</p>
             </div>
             
-            {/* Answer section */}
             {inquiry.answer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">
@@ -187,7 +180,6 @@ const InquiryDetail = () => {
               </div>
             )}
             
-            {/* 관리자만 답변을 작성할 수 있도록 수정 */}
             {canAnswer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">

@@ -10,7 +10,7 @@ interface AdminRouteProps {
 export const AdminRoute = ({ children }: AdminRouteProps) => {
   const { hasRole } = useAuth();
   
-  if (!hasRole(["admin", "system_admin"])) {
+  if (!hasRole(["ADM", "system_admin"])) {
     return <Navigate to="/" replace />;
   }
   

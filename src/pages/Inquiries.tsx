@@ -31,10 +31,8 @@ const Inquiries = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const isAdmin = hasRole(['ADM', 'system_admin']);
   
-  // Get inquiries based on user role
   const inquiries = isAdmin ? getInquiriesByAdmin() : getInquiries(user?.name);
   
-  // Filter inquiries based on search term, category, and status (tab)
   const filteredInquiries = inquiries.filter(inquiry => {
     const matchesSearch = searchTerm === '' || 
       inquiry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,7 +46,6 @@ const Inquiries = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  // Pagination logic
   const itemsPerPage = parseInt(displayCount);
   const totalPages = Math.ceil(filteredInquiries.length / itemsPerPage);
   
