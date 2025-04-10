@@ -1,14 +1,14 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { ArrowLeft, Calendar as CalendarIcon, Upload, Image, X } from "lucide-react";
+import { ArrowLeft, Calendar as CalendarIcon, Upload, Image, X, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Link } from "lucide-react";
 import { format } from 'date-fns';
 import { getAnnouncementById, ANNOUNCEMENT_CATEGORIES } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const AnnouncementForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +34,7 @@ const AnnouncementForm = () => {
   const { user } = useAuth();
   const isEditMode = Boolean(id);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contentEditorRef = useRef<HTMLDivElement>(null);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -67,6 +69,13 @@ const AnnouncementForm = () => {
     }
   }, [id, isEditMode, navigate]);
 
+  // Set initial editor content
+  useEffect(() => {
+    if (contentEditorRef.current && content) {
+      contentEditorRef.current.innerHTML = content;
+    }
+  }, [content]);
+
   const validateForm = () => {
     if (!title.trim()) {
       toast.error('제목을 입력해주세요.');
@@ -78,13 +87,13 @@ const AnnouncementForm = () => {
       return false;
     }
     
-    if (!content.trim()) {
-      toast.error('내용을 입력해주세요.');
-      return false;
+    let editorContent = '';
+    if (contentEditorRef.current) {
+      editorContent = contentEditorRef.current.innerHTML;
     }
     
-    if (content.length > 1000) {
-      toast.error('내용은 1000자 이내로 입력해주세요.');
+    if (!editorContent.trim() || editorContent === '<p><br></p>') {
+      toast.error('내용을 입력해주세요.');
       return false;
     }
     
@@ -107,6 +116,12 @@ const AnnouncementForm = () => {
     if (!validateForm()) return;
 
     setIsSaving(true);
+    
+    // Get the HTML content from the editor
+    let finalContent = '';
+    if (contentEditorRef.current) {
+      finalContent = contentEditorRef.current.innerHTML;
+    }
     
     setTimeout(() => {
       setIsSaving(false);
@@ -146,6 +161,17 @@ const AnnouncementForm = () => {
   
   const triggerFileInput = () => {
     fileInputRef.current?.click();
+  };
+  
+  const executeCommand = (command: string, value: string = '') => {
+    document.execCommand(command, false, value);
+    contentEditorRef.current?.focus();
+  };
+  
+  const insertImage = () => {
+    if (imagePreview) {
+      executeCommand('insertImage', imagePreview);
+    }
   };
 
   return (
@@ -208,17 +234,95 @@ const AnnouncementForm = () => {
               
               <div>
                 <Label htmlFor="content" className="text-base font-medium">내용</Label>
-                <Textarea
-                  id="content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="내용을 입력하세요 (1000자 이내)"
-                  className="mt-1.5 min-h-[240px] resize-y"
-                  required
-                />
-                <div className="text-xs text-right mt-1 text-gray-500">
-                  {content.length}/1000
+                
+                {/* Text Editor Toolbar */}
+                <div className="border border-b-0 rounded-t-md bg-gray-50 p-2 flex flex-wrap gap-1">
+                  <ToggleGroup type="multiple" className="flex flex-wrap gap-1">
+                    <ToggleGroupItem value="bold" aria-label="텍스트 굵게" onClick={() => executeCommand('bold')}>
+                      <Bold size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="italic" aria-label="텍스트 기울임" onClick={() => executeCommand('italic')}>
+                      <Italic size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="underline" aria-label="텍스트 밑줄" onClick={() => executeCommand('underline')}>
+                      <Underline size={16} />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  
+                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
+                  
+                  <ToggleGroup type="single" className="flex flex-wrap gap-1">
+                    <ToggleGroupItem value="alignLeft" aria-label="왼쪽 정렬" onClick={() => executeCommand('justifyLeft')}>
+                      <AlignLeft size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="alignCenter" aria-label="가운데 정렬" onClick={() => executeCommand('justifyCenter')}>
+                      <AlignCenter size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="alignRight" aria-label="오른쪽 정렬" onClick={() => executeCommand('justifyRight')}>
+                      <AlignRight size={16} />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  
+                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
+                  
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => executeCommand('insertUnorderedList')}
+                  >
+                    <List size={16} />
+                  </Button>
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => executeCommand('insertOrderedList')}
+                  >
+                    <ListOrdered size={16} />
+                  </Button>
+                  
+                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
+                  
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => {
+                      const url = prompt('링크 URL을 입력하세요:');
+                      if (url) executeCommand('createLink', url);
+                    }}
+                  >
+                    <Link size={16} />
+                  </Button>
+                  
+                  {imagePreview && (
+                    <Button 
+                      type="button" 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8 p-0"
+                      onClick={insertImage}
+                    >
+                      <Image size={16} />
+                    </Button>
+                  )}
                 </div>
+                
+                {/* Text Editor Content Area */}
+                <div 
+                  ref={contentEditorRef}
+                  className="min-h-[240px] max-h-[500px] overflow-y-auto p-4 border rounded-b-md focus:outline-none focus:ring-1 focus:ring-primary"
+                  contentEditable={true}
+                  dangerouslySetInnerHTML={{ __html: content }}
+                  onBlur={(e) => {
+                    // Store HTML content when editor loses focus
+                    setContent(e.currentTarget.innerHTML);
+                  }}
+                />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -234,15 +338,26 @@ const AnnouncementForm = () => {
                   />
                   
                   <div className="flex flex-col gap-4">
-                    <Button 
-                      type="button" 
-                      variant="outline"
-                      onClick={triggerFileInput}
-                      className="flex items-center justify-center gap-2 w-full text-base"
-                    >
-                      <Upload size={18} />
-                      파일 선택
-                    </Button>
+                    <div className="border rounded-md p-4 bg-gray-50">
+                      <div className="flex flex-col gap-2 mb-3">
+                        <p className="text-sm text-muted-foreground">권장 사항:</p>
+                        <ul className="text-xs text-muted-foreground list-disc ml-5 space-y-1">
+                          <li>최적 해상도: 1200 x 800px</li>
+                          <li>지원 형식: JPG, PNG, WebP</li>
+                          <li>최대 용량: 5MB</li>
+                          <li>고품질 이미지를 사용하면 가독성이 향상됩니다</li>
+                        </ul>
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={triggerFileInput}
+                        className="flex items-center justify-center gap-2 w-full text-base"
+                      >
+                        <Upload size={18} />
+                        파일 선택
+                      </Button>
+                    </div>
                     
                     {imagePreview && (
                       <div className="relative mt-2">
@@ -330,42 +445,6 @@ const AnnouncementForm = () => {
                         </Popover>
                       </div>
                     )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <Label htmlFor="image">이미지 업로드 (선택사항)</Label>
-                <div className="border rounded-md p-4 bg-gray-50">
-                  <div className="flex flex-col gap-2 mb-3">
-                    <p className="text-sm text-muted-foreground">권장 사항:</p>
-                    <ul className="text-xs text-muted-foreground list-disc ml-5 space-y-1">
-                      <li>최적 해상도: 1200 x 800px</li>
-                      <li>지원 형식: JPG, PNG, WebP</li>
-                      <li>최대 용량: 5MB</li>
-                      <li>고품질 이미지를 사용하면 가독성이 향상됩니다</li>
-                    </ul>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => document.getElementById('image-upload')?.click()}
-                      className="bg-white"
-                    >
-                      파일 선택
-                    </Button>
-                    <input
-                      id="image-upload"
-                      name="image"
-                      type="file"
-                      className="hidden"
-                      accept=".jpg,.jpeg,.png,.webp"
-                      onChange={handleFileChange}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {/* Display selected filename here */}
-                    </span>
                   </div>
                 </div>
               </div>

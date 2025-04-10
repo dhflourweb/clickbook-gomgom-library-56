@@ -32,6 +32,7 @@ export interface BadgeProps
 
 function Badge({ className, variant, disableHover = true, ...props }: BadgeProps) {
   const baseVariant = badgeVariants({ variant });
+  // Always disable hover effects by default
   const finalClass = disableHover 
     ? cn(baseVariant, className, "pointer-events-none")
     : cn(baseVariant, className, "hover:bg-primary/80");

@@ -5,11 +5,13 @@ import { BookCard } from './BookCard';
 interface BookGridProps {
   books: Book[];
   emptyMessage?: string;
+  viewMode?: 'grid' | 'list';
 }
 
 export const BookGrid = ({ 
   books, 
-  emptyMessage = "검색된 도서가 없습니다."
+  emptyMessage = "검색된 도서가 없습니다.",
+  viewMode = 'grid'
 }: BookGridProps) => {
   if (books.length === 0) {
     return (
@@ -20,9 +22,13 @@ export const BookGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className={
+      viewMode === 'grid' 
+        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+        : "flex flex-col gap-4"
+    }>
       {books.map((book) => (
-        <BookCard key={book.id} book={book} />
+        <BookCard key={book.id} book={book} viewMode={viewMode} />
       ))}
     </div>
   );
