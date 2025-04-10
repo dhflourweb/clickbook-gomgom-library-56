@@ -381,7 +381,7 @@ const AnnouncementForm = () => {
                 </div>
                 
                 <div className="space-y-6">
-                  <div className="p-4 bg-gray-50 rounded-md h-full">
+                  <div className="border rounded-md p-4 bg-gray-50 h-full">
                     <div className="flex items-center justify-between mb-4">
                       <Label htmlFor="isPinned" className="cursor-pointer text-base font-medium">
                         상단 고정
