@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Eye, ArrowLeft, Trash2, PenLine, AlertCircle } from "lucide-react";
+import { Calendar, Eye, ArrowLeft, Trash2, PenLine } from "lucide-react";
 import { getAnnouncementById } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
@@ -72,12 +73,12 @@ const AnnouncementDetail = () => {
                   {announcement.category}
                 </Badge>
                 {announcement.isPinned && (
-                  <Badge variant="secondary" className="bg-primary-deepblue text-white pointer-events-none">
+                  <Badge variant="secondary" className="bg-primary-deepblue text-white" disableHover={true}>
                     상단 고정
                   </Badge>
                 )}
                 {announcement.isPopup && (
-                  <Badge variant="secondary" className="bg-secondary-orange text-white pointer-events-none">
+                  <Badge variant="secondary" className="bg-secondary-orange text-white" disableHover={true}>
                     팝업 공지
                   </Badge>
                 )}

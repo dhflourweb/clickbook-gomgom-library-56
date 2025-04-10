@@ -62,10 +62,14 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
     onOpenChange(false);
   };
   
+  const handleAlertClose = () => {
+    setShowLimitWarning(false);
+  };
+  
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px] max-h-[85vh]">
+        <DialogContent className={cn("sm:max-w-[500px] max-h-[85vh]", isMobile ? "" : "h-auto min-h-[450px]")}>
           <DialogHeader>
             <DialogTitle>도서 대여</DialogTitle>
             <DialogDescription>
@@ -73,45 +77,87 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <ScrollArea className={cn("max-h-[calc(70vh-140px)]", isMobile ? "pr-4" : "")} type="always">
-            <div className="grid gap-3">
-              <div className="flex items-center gap-4 border-b pb-3">
-                <img 
-                  src={book.coverImage} 
-                  alt={book.title} 
-                  className="w-16 h-20 object-cover rounded-sm"
-                />
-                <div>
-                  <h3 className="font-medium text-sm">{book.title}</h3>
-                  <p className="text-muted-foreground text-xs">{book.author}</p>
+          <div className={cn(isMobile ? "max-h-[calc(70vh-140px)]" : "")}>
+            {isMobile ? (
+              <ScrollArea className="pr-4" type="always">
+                <div className="grid gap-3">
+                  <div className="flex items-center gap-4 border-b pb-3">
+                    <img 
+                      src={book.coverImage} 
+                      alt={book.title} 
+                      className="w-16 h-20 object-cover rounded-sm"
+                    />
+                    <div>
+                      <h3 className="font-medium text-sm">{book.title}</h3>
+                      <p className="text-muted-foreground text-xs">{book.author}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-2 py-1">
+                    <div className="col-span-2 text-sm font-medium">대여자</div>
+                    <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-2 py-1">
+                    <div className="col-span-2 text-sm font-medium">대여일자</div>
+                    <div className="col-span-3 text-sm">{format(borrowDate, 'yyyy-MM-dd')}</div>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-2 py-1">
+                    <div className="col-span-2 text-sm font-medium">반납 예정일</div>
+                    <div className="col-span-3 text-sm whitespace-nowrap">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+                  </div>
+                  
+                  <div className="flex justify-center pt-3 pb-2">
+                    <Calendar
+                      mode="single"
+                      selected={returnDueDate}
+                      disabled
+                      className="mx-auto border rounded pointer-events-none"
+                    />
+                  </div>
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="grid gap-3">
+                <div className="flex items-center gap-4 border-b pb-3">
+                  <img 
+                    src={book.coverImage} 
+                    alt={book.title} 
+                    className="w-16 h-20 object-cover rounded-sm"
+                  />
+                  <div>
+                    <h3 className="font-medium text-sm">{book.title}</h3>
+                    <p className="text-muted-foreground text-xs">{book.author}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-5 gap-2 py-1">
+                  <div className="col-span-2 text-sm font-medium">대여자</div>
+                  <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
+                </div>
+
+                <div className="grid grid-cols-5 gap-2 py-1">
+                  <div className="col-span-2 text-sm font-medium">대여일자</div>
+                  <div className="col-span-3 text-sm">{format(borrowDate, 'yyyy-MM-dd')}</div>
+                </div>
+
+                <div className="grid grid-cols-5 gap-2 py-1">
+                  <div className="col-span-2 text-sm font-medium">반납 예정일</div>
+                  <div className="col-span-3 text-sm whitespace-nowrap">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+                </div>
+                
+                <div className="flex justify-center pt-3 pb-2">
+                  <Calendar
+                    mode="single"
+                    selected={returnDueDate}
+                    disabled
+                    className="mx-auto border rounded pointer-events-none"
+                  />
                 </div>
               </div>
-
-              <div className="grid grid-cols-5 gap-2 py-1">
-                <div className="col-span-2 text-sm font-medium">대여자</div>
-                <div className="col-span-3 text-sm">{user?.name || '로그인 사용자'}</div>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2 py-1">
-                <div className="col-span-2 text-sm font-medium">대여일자</div>
-                <div className="col-span-3 text-sm">{format(borrowDate, 'yyyy-MM-dd')}</div>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2 py-1">
-                <div className="col-span-2 text-sm font-medium">반납 예정일</div>
-                <div className="col-span-3 text-sm whitespace-nowrap">{format(returnDueDate, 'yyyy-MM-dd')}</div>
-              </div>
-              
-              <div className="flex justify-center pt-3 pb-2">
-                <Calendar
-                  mode="single"
-                  selected={returnDueDate}
-                  disabled
-                  className="mx-auto border rounded pointer-events-none"
-                />
-              </div>
-            </div>
-          </ScrollArea>
+            )}
+          </div>
 
           <DialogFooter className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
@@ -129,7 +175,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex justify-end gap-2">
-            <AlertDialogAction onClick={() => setShowLimitWarning(false)}>
+            <AlertDialogAction onClick={handleAlertClose}>
               확인
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -10,7 +10,7 @@ import { Calendar, ArrowLeft, Trash2, PenLine, Lock, CheckCircle2, Clock, Messag
 import { getInquiryById } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +27,6 @@ const InquiryDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, hasRole } = useAuth();
-  const { toast } = useToast();
   const [answerContent, setAnswerContent] = useState('');
   const [isPublicAnswer, setIsPublicAnswer] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -47,30 +46,26 @@ const InquiryDetail = () => {
   
   const canEdit = inquiry.createdBy === user?.id && inquiry.status !== 'answered';
   const canDelete = inquiry.createdBy === user?.id && inquiry.status !== 'answered';
+  
+  // Admin can answer any inquiry that doesn't have an answer yet
   const canAnswer = isAdmin && inquiry.status !== 'answered';
   
   const handleDelete = () => {
     // In a real app, this would delete the inquiry
-    toast({
-      title: "문의사항이 삭제되었습니다.",
-      description: "문의사항이 성공적으로 삭제되었습니다.",
-    });
+    toast.success("문의사항이 삭제되었습니다.");
     navigate('/inquiries');
   };
   
   const handleAnswerSubmit = () => {
     if (!answerContent.trim()) {
-      toast({
-        title: "답변 내용을 입력해주세요",
+      toast.error("답변 내용을 입력해주세요", {
         description: "답변 내용은 필수 입력 항목입니다.",
-        variant: "destructive",
       });
       return;
     }
     
     // In a real app, this would submit the answer
-    toast({
-      title: "답변이 등록되었습니다.",
+    toast.success("답변이 등록되었습니다.", {
       description: "문의사항에 대한 답변이 성공적으로 등록되었습니다.",
     });
     
@@ -103,9 +98,10 @@ const InquiryDetail = () => {
                   <Badge 
                     variant={inquiry.status === 'pending' ? 'outline' : 'secondary'}
                     className={inquiry.status === 'pending' ? 
-                      'border-secondary-orange text-secondary-orange pointer-events-none' : 
-                      'bg-primary text-white pointer-events-none'
+                      'border-secondary-orange text-secondary-orange' : 
+                      'bg-primary text-white'
                     }
+                    disableHover={true}
                   >
                     {inquiry.status === 'pending' ? (
                       <div className="flex items-center">
@@ -120,7 +116,7 @@ const InquiryDetail = () => {
                     )}
                   </Badge>
                   {!inquiry.isPublic && (
-                    <Badge variant="secondary" className="bg-gray-700 text-white pointer-events-none">
+                    <Badge variant="secondary" className="bg-gray-700 text-white" disableHover={true}>
                       <div className="flex items-center">
                         <Lock size={12} className="mr-1" />
                         비공개
@@ -175,7 +171,7 @@ const InquiryDetail = () => {
             {inquiry.answer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">
-                  <Badge variant="secondary" className="bg-primary text-white pointer-events-none">
+                  <Badge variant="secondary" className="bg-primary text-white" disableHover={true}>
                     답변
                   </Badge>
                   <span className="text-sm text-gray-500">
@@ -191,7 +187,7 @@ const InquiryDetail = () => {
             )}
             
             {/* Admin answer form - now visible anytime admin is viewing and there's no answer */}
-            {isAdmin && !inquiry.answer && (
+            {canAnswer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageSquare size={18} className="text-primary" />

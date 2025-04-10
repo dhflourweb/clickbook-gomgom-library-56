@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -25,11 +26,18 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+    disableHover?: boolean;
+  }
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, disableHover = false, ...props }: BadgeProps) {
+  const baseVariant = badgeVariants({ variant });
+  const finalClass = disableHover 
+    ? cn(baseVariant, className, "pointer-events-none")
+    : cn(baseVariant, className);
+    
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={finalClass} {...props} />
   )
 }
 
