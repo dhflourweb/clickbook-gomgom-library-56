@@ -26,7 +26,7 @@ const AnnouncementDetail = () => {
   const { hasRole } = useAuth();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const isAdmin = hasRole(['admin', 'system_admin']);
+  const isAdmin = hasRole("ADM");
   
   const announcement = id ? getAnnouncementById(id) : null;
   

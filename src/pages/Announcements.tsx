@@ -29,7 +29,7 @@ const Announcements = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [displayCount, setDisplayCount] = useState<string>("10");
   const [currentPage, setCurrentPage] = useState(1);
-  const isAdmin = hasRole(['admin', 'system_admin']);
+  const isAdmin = hasRole("ADM");
   
   // Get announcements
   const announcements = getAnnouncements();

@@ -30,7 +30,7 @@ const InquiryDetail = () => {
   const [answerContent, setAnswerContent] = useState('');
   const [isPublicAnswer, setIsPublicAnswer] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const isAdmin = hasRole(['ADM' as const, 'system_admin' as const]);
+  const isAdmin = hasRole("ADM");
   
   const inquiry = id ? getInquiryById(id, user?.name, user?.role) : null;
   

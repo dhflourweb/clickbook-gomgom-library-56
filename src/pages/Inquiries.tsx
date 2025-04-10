@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -30,7 +29,7 @@ const Inquiries = () => {
   const [tabFilter, setTabFilter] = useState<string>('all');
   const [displayCount, setDisplayCount] = useState<string>("10");
   const [currentPage, setCurrentPage] = useState(1);
-  const isAdmin = hasRole(['ADM' as const, 'system_admin' as const]);
+  const isAdmin = hasRole("ADM");
   
   const inquiries = isAdmin ? getInquiriesByAdmin() : getInquiries(user?.name);
   
