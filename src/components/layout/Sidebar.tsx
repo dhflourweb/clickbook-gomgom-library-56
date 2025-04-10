@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 export const Sidebar = () => {
   const { hasRole } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = hasRole(['ADM', 'system_admin']);
+  const isAdmin = hasRole(['ADM' as const, 'system_admin' as const]);
   
   const navigateWithFilter = (path: string, filter?: string) => {
     if (filter) {

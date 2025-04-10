@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -29,7 +30,7 @@ const InquiryDetail = () => {
   const [answerContent, setAnswerContent] = useState('');
   const [isPublicAnswer, setIsPublicAnswer] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const isAdmin = hasRole(['ADM', 'system_admin']);
+  const isAdmin = hasRole(['ADM' as const, 'system_admin' as const]);
   
   const inquiry = id ? getInquiryById(id, user?.name, user?.role) : null;
   

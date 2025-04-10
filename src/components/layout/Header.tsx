@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, ChevronDown, X } from 'lucide-react';
@@ -26,7 +27,7 @@ export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const isAdmin = hasRole(['ADM', 'system_admin']);
+  const isAdmin = hasRole(['ADM' as const, 'system_admin' as const]);
   
   useEffect(() => {
     // If user is admin and on the home page, redirect to admin dashboard
