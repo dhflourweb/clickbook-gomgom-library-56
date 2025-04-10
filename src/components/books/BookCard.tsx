@@ -10,6 +10,17 @@ import { useAuth } from '@/context/AuthContext';
 import { BorrowBookDialog } from './BorrowBookDialog';
 import { ReturnBookDialog } from './ReturnBookDialog';
 import { ExtendBookDialog } from './ExtendBookDialog';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { SYSTEM_SETTINGS } from '@/data/mockData';
 
 interface BookCardProps {
   book: Book;
@@ -27,6 +38,7 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   const [borrowDialogOpen, setBorrowDialogOpen] = useState(false);
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
+  const [extendConfirmOpen, setExtendConfirmOpen] = useState(false);
   
   // Ensure favorite state is updated when book prop changes
   useEffect(() => {
@@ -44,6 +56,9 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   // Randomly determine if a book can be extended based on book id
   // Convert string ID to number before using modulo operator
   const isExtendable = parseInt(book.id.replace('book', '')) % 3 !== 0; // Books with ID not divisible by 3 can be extended
+  
+  // Add state to track if book has been extended before
+  const hasBeenExtended = book.hasBeenExtended || !isExtendable;
 
   const handleBorrow = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -60,6 +75,14 @@ export const BookCard = ({ book, className }: BookCardProps) => {
   const handleExtend = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Show the confirmation dialog instead of the extend dialog
+    setExtendConfirmOpen(true);
+  };
+  
+  // Process extension after confirmation
+  const processExtension = () => {
+    setExtendConfirmOpen(false);
     setExtendDialogOpen(true);
   };
 
@@ -131,16 +154,16 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           >
             반납하기
           </Button>
-          {/* Now the extend button is conditionally enabled based on isExtendable */}
+          {/* Now the extend button is conditionally enabled based on hasBeenExtended */}
           <Button 
             variant="secondary"
             size="sm" 
             className={cn(
               "bg-secondary hover:bg-secondary/90",
-              !isExtendable && "bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
+              hasBeenExtended && "bg-gray-300 text-gray-600 hover:bg-gray-300 cursor-not-allowed"
             )}
             onClick={handleExtend}
-            disabled={!isExtendable}
+            disabled={hasBeenExtended}
           >
             연장하기
           </Button>
@@ -284,10 +307,30 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       />
       
       <ExtendBookDialog 
-        book={{...book, isExtendable, hasBeenExtended: !isExtendable}}
+        book={{...book, isExtendable, hasBeenExtended}}
         isOpen={extendDialogOpen}
         onOpenChange={setExtendDialogOpen}
       />
+      
+      {/* Extension confirmation dialog - shown before processing extension */}
+      <AlertDialog open={extendConfirmOpen} onOpenChange={setExtendConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>도서 연장 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              도서 반납일 연장은 최대 {SYSTEM_SETTINGS.maxExtensionCount}회이며, {SYSTEM_SETTINGS.extensionDays}일을 연장할 수 있습니다. 연장하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-end gap-2">
+            <AlertDialogCancel onClick={() => setExtendConfirmOpen(false)} className="sm:mt-0">
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={processExtension}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

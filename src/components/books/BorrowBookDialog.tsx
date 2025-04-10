@@ -25,6 +25,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 interface BorrowBookDialogProps {
   book: Book;
@@ -35,6 +37,7 @@ interface BorrowBookDialogProps {
 export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialogProps) {
   const { user } = useAuth();
   const [showLimitWarning, setShowLimitWarning] = useState(false);
+  const isMobile = useIsMobile();
   
   const today = new Date();
   const borrowDate = today;
@@ -65,7 +68,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <ScrollArea className="md:pr-4 max-h-[calc(85vh-140px)] md:max-h-none">
+          <ScrollArea className={cn("md:pr-4", isMobile ? "max-h-[calc(85vh-140px)]" : "max-h-none")}>
             <div className="grid gap-3 py-3">
               <div className="flex items-center gap-4 border-b pb-3">
                 <img 
@@ -90,16 +93,17 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
               </div>
 
               <div className="grid grid-cols-4 gap-2 py-1">
-                <div className="text-sm font-medium whitespace-nowrap">반납<br />예정일</div>
-                <div className="col-span-3">
-                  <div className="text-sm mb-2">{format(returnDueDate, 'yyyy-MM-dd')}</div>
-                  <Calendar
-                    mode="single"
-                    selected={returnDueDate}
-                    disabled
-                    className="mx-auto border rounded pointer-events-none w-full"
-                  />
-                </div>
+                <div className="text-sm font-medium">반납 예정일</div>
+                <div className="col-span-3 text-sm">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+              </div>
+              
+              <div className="flex justify-center pt-3 pb-2">
+                <Calendar
+                  mode="single"
+                  selected={returnDueDate}
+                  disabled
+                  className="mx-auto border rounded pointer-events-none"
+                />
               </div>
             </div>
           </ScrollArea>
