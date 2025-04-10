@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,13 +21,13 @@ import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { MOCK_BOOKS, MOCK_READING_GOAL } from '@/data/mockData';
 import { ReadingGoal } from '@/types';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const MyPage = () => {
   const { user } = useAuth();
   const [goal, setGoal] = useState<ReadingGoal>(MOCK_READING_GOAL);
   const [newGoalTarget, setNewGoalTarget] = useState(goal.target.toString());
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
   const handleGoalUpdate = () => {
     const target = parseInt(newGoalTarget);
@@ -48,7 +47,6 @@ const MyPage = () => {
     });
   };
 
-  // Mock borrowed books data - in a real app, this would come from an API
   const borrowedBooks = MOCK_BOOKS.slice(0, 2);
   const historyBooks = MOCK_BOOKS.slice(2, 6);
   
@@ -68,7 +66,6 @@ const MyPage = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* User Info Card */}
           <Card className="md:col-span-1">
             <CardHeader>
               <CardTitle>회원 정보</CardTitle>
@@ -107,7 +104,6 @@ const MyPage = () => {
             </CardContent>
           </Card>
           
-          {/* Reading Goal Card */}
           <Card className="md:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>2024 독서 목표</CardTitle>
