@@ -27,7 +27,7 @@ export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const isAdmin = hasRole(['admin', 'system_admin']);
+  const isAdmin = hasRole(['ADM', 'system_admin']);
   
   useEffect(() => {
     // If user is admin and on the home page, redirect to admin dashboard

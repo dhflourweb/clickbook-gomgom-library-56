@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Users, Settings, MessageSquare, Home, 
@@ -17,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 export const Sidebar = () => {
   const { hasRole } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = hasRole(["admin", "system_admin"]);
+  const isAdmin = hasRole(["ADM", "system_admin"]);
   
   const navigateWithFilter = (path: string, filter?: string) => {
     if (filter) {

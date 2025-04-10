@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, ArrowLeft, Trash2, PenLine, Lock, CheckCircle2, Clock, MessageSquare } from "lucide-react";
-import { getInquiryById } from '@/data/communityData';
+import { getInquiryById, mockInquiries } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -30,25 +30,10 @@ const InquiryDetail = () => {
   const [answerContent, setAnswerContent] = useState('');
   const [isPublicAnswer, setIsPublicAnswer] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const isAdmin = hasRole(['admin', 'system_admin']);
+  const isAdmin = hasRole(['ADM', 'system_admin']);
   
-  // For mocking purposes, always return a valid inquiry
-  const getMockInquiry = (id: string) => {
-    return {
-      id,
-      title: '도서관 이용 시간 문의',
-      content: '주말에도 도서관을 이용할 수 있나요? 운영 시간이 궁금합니다.',
-      category: '이용문의',
-      isPublic: true,
-      status: 'pending',
-      createdAt: '2025-01-15T09:00:00',
-      createdBy: user?.id || 'anonymous',
-      answer: null
-    };
-  };
-  
-  // Try to get the inquiry from the data service, fall back to mock if needed
-  const inquiry = id ? (getInquiryById(id, user?.id) || (isAdmin ? getMockInquiry(id) : null)) : null;
+  // Get the inquiry based on user role and ID
+  const inquiry = id ? getInquiryById(id, user?.name, user?.role) : null;
   
   useEffect(() => {
     if (!inquiry) {
@@ -60,8 +45,8 @@ const InquiryDetail = () => {
     return null;
   }
   
-  const canEdit = inquiry.createdBy === user?.id && inquiry.status !== 'answered';
-  const canDelete = inquiry.createdBy === user?.id && inquiry.status !== 'answered';
+  const canEdit = inquiry.createdBy === user?.name && inquiry.status !== 'answered';
+  const canDelete = inquiry.createdBy === user?.name && inquiry.status !== 'answered';
   
   // Admin can answer any inquiry that doesn't have an answer yet
   const canAnswer = isAdmin && inquiry.status !== 'answered';
@@ -171,7 +156,7 @@ const InquiryDetail = () => {
             
             <div className="flex justify-between text-sm text-gray-500 border-y border-gray-100 py-3 mb-6">
               <div className="flex items-center gap-4">
-                <span>작성자: {inquiry.createdBy === user?.id ? '나' : inquiry.createdBy}</span>
+                <span>작성자: {inquiry.createdBy}</span>
                 <div className="flex items-center">
                   <Calendar size={14} className="mr-1" />
                   <span>{format(new Date(inquiry.createdAt), 'yyyy.MM.dd')}</span>

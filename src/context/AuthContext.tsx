@@ -19,11 +19,11 @@ const MOCK_USERS = [
   {
     id: "u1",
     name: "홍길동",
-    email: "user@example.com",
+    email: "user@dhflour.co.kr",
     password: "password123",
     phone: "010-1234-5678",
     department: "IT 개발팀",
-    role: "user" as UserRole,
+    role: "EMP" as UserRole,
     borrowedBooks: 1,
     reservedBooks: 0,
     status: "active" as const
@@ -31,11 +31,11 @@ const MOCK_USERS = [
   {
     id: "a1",
     name: "관리자",
-    email: "admin@example.com",
+    email: "admin@dhflour.co.kr",
     password: "admin123",
     phone: "010-9876-5432",
     department: "인사부",
-    role: "admin" as UserRole,
+    role: "ADM" as UserRole,
     borrowedBooks: 0,
     reservedBooks: 0,
     status: "active" as const
@@ -43,7 +43,7 @@ const MOCK_USERS = [
   {
     id: "s1",
     name: "시스템관리자",
-    email: "system@example.com",
+    email: "system@dhflour.co.kr",
     password: "system123",
     phone: "010-5555-5555",
     department: "IT 인프라팀",

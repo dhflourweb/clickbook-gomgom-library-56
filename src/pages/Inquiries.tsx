@@ -29,10 +29,10 @@ const Inquiries = () => {
   const [tabFilter, setTabFilter] = useState<string>('all');
   const [displayCount, setDisplayCount] = useState<string>("10");
   const [currentPage, setCurrentPage] = useState(1);
-  const isAdmin = hasRole(['admin', 'system_admin']);
+  const isAdmin = hasRole(['ADM', 'system_admin']);
   
   // Get inquiries based on user role
-  const inquiries = isAdmin ? getInquiriesByAdmin() : getInquiries(user?.id);
+  const inquiries = isAdmin ? getInquiriesByAdmin() : getInquiries(user?.name);
   
   // Filter inquiries based on search term, category, and status (tab)
   const filteredInquiries = inquiries.filter(inquiry => {

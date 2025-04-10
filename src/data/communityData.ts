@@ -1,3 +1,4 @@
+
 import { Announcement, Inquiry } from '@/types/community';
 
 export const ANNOUNCEMENT_CATEGORIES = [
@@ -201,13 +202,13 @@ export const mockInquiries: Inquiry[] = [
     isPublic: true,
     status: 'answered',
     createdAt: '2025-04-05T09:22:00',
-    createdBy: 'user123',
+    createdBy: '홍길동',
     answer: {
       id: 'ans-001',
       content: '안녕하세요. 요청하신 도서는 다음 주 입고 예정입니다. 입고되면 알림 드리겠습니다.',
       isPublic: true,
       createdAt: '2025-04-06T11:32:00',
-      createdBy: 'admin'
+      createdBy: '관리자'
     }
   },
   {
@@ -218,13 +219,13 @@ export const mockInquiries: Inquiry[] = [
     isPublic: false,
     status: 'answered',
     createdAt: '2025-04-07T14:15:00',
-    createdBy: 'user456',
+    createdBy: '김영희',
     answer: {
       id: 'ans-002',
       content: '안녕하세요. 사전에 신고해주셔서 감사합니다. 해당 사항은 기록해두었으니 반납 시 별도 비용이 발생하지 않습니다. 다만 반납 시 직원에게 말씀해주세요.',
       isPublic: false,
       createdAt: '2025-04-07T16:05:00',
-      createdBy: 'admin'
+      createdBy: '관리자'
     }
   },
   {
@@ -235,13 +236,13 @@ export const mockInquiries: Inquiry[] = [
     isPublic: true,
     status: 'answered',
     createdAt: '2025-04-08T10:30:00',
-    createdBy: 'user789',
+    createdBy: '이지훈',
     answer: {
       id: 'ans-003',
       content: '안녕하세요. 도서 연장은 1회만 가능합니다. 추가 연장은 불가능하오니 반납일을 준수해 주시기 바랍니다.',
       isPublic: true,
       createdAt: '2025-04-08T13:25:00',
-      createdBy: 'admin'
+      createdBy: '관리자'
     }
   },
   {
@@ -252,7 +253,7 @@ export const mockInquiries: Inquiry[] = [
     isPublic: true,
     status: 'pending',
     createdAt: '2025-04-10T09:17:00',
-    createdBy: 'user234'
+    createdBy: '박서준'
   },
   {
     id: 'inq-005',
@@ -262,7 +263,7 @@ export const mockInquiries: Inquiry[] = [
     isPublic: true,
     status: 'pending',
     createdAt: '2025-04-10T11:44:00',
-    createdBy: 'user567'
+    createdBy: '최민지'
   }
 ];
 
@@ -309,12 +310,17 @@ export function getInquiriesByAdmin() {
   });
 }
 
-export function getInquiryById(id: string, userId?: string) {
+export function getInquiryById(id: string, userId?: string, userRole?: string) {
   const inquiry = mockInquiries.find(inquiry => inquiry.id === id);
   if (!inquiry) return null;
   
-  // Modified to allow users to see their own pending inquiries
-  if (inquiry.createdBy === userId || (inquiry.isPublic && inquiry.status === 'answered') || userId === 'admin') {
+  // Admin can see all inquiries
+  if (userRole === 'ADM' || userRole === 'system_admin') {
+    return inquiry;
+  }
+  
+  // User can see their own inquiries or public inquiries that have been answered
+  if (inquiry.createdBy === userId || (inquiry.isPublic && inquiry.status === 'answered')) {
     return inquiry;
   }
   
