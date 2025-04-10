@@ -27,6 +27,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor } from '@toast-ui/react-editor';
+
 const AnnouncementForm = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -228,96 +231,104 @@ const AnnouncementForm = () => {
                   </Select>
                 </div>
               </div>
+
+              <Editor
+                  initialValue="내용을 입력하세요"
+                  previewStyle="vertical"
+                  height="400px"
+                  initialEditType="wysiwyg"
+                  useCommandShortcut={true}
+              />
               
-              <div>
-                <Label htmlFor="content" className="text-base font-medium">내용</Label>
-                
-                <div className="border border-b-0 rounded-t-md bg-gray-50 p-2 flex flex-wrap gap-1">
-                  <ToggleGroup type="multiple" className="flex flex-wrap gap-1">
-                    <ToggleGroupItem value="bold" aria-label="텍스트 굵게" onClick={() => executeCommand('bold')}>
-                      <Bold size={16} />
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="italic" aria-label="텍스트 기울임" onClick={() => executeCommand('italic')}>
-                      <Italic size={16} />
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="underline" aria-label="텍스트 밑줄" onClick={() => executeCommand('underline')}>
-                      <Underline size={16} />
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                  
-                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
-                  
-                  <ToggleGroup type="single" className="flex flex-wrap gap-1">
-                    <ToggleGroupItem value="alignLeft" aria-label="왼쪽 정렬" onClick={() => executeCommand('justifyLeft')}>
-                      <AlignLeft size={16} />
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="alignCenter" aria-label="가운데 정렬" onClick={() => executeCommand('justifyCenter')}>
-                      <AlignCenter size={16} />
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="alignRight" aria-label="오른쪽 정렬" onClick={() => executeCommand('justifyRight')}>
-                      <AlignRight size={16} />
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                  
-                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
-                  
-                  <Button 
-                    type="button" 
-                    size="icon" 
-                    variant="ghost" 
-                    className="h-8 w-8 p-0"
-                    onClick={() => executeCommand('insertUnorderedList')}
-                  >
-                    <List size={16} />
-                  </Button>
-                  <Button 
-                    type="button" 
-                    size="icon" 
-                    variant="ghost" 
-                    className="h-8 w-8 p-0"
-                    onClick={() => executeCommand('insertOrderedList')}
-                  >
-                    <ListOrdered size={16} />
-                  </Button>
-                  
-                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
-                  
-                  <Button 
-                    type="button" 
-                    size="icon" 
-                    variant="ghost" 
-                    className="h-8 w-8 p-0"
-                    onClick={() => {
-                      const url = prompt('링크 URL을 입력하세요:');
-                      if (url) executeCommand('createLink', url);
-                    }}
-                  >
-                    <Link size={16} />
-                  </Button>
-                  
-                  {imagePreview && (
-                    <Button 
-                      type="button" 
-                      size="icon" 
-                      variant="ghost" 
-                      className="h-8 w-8 p-0"
-                      onClick={insertImage}
-                    >
-                      <Image size={16} />
-                    </Button>
-                  )}
-                </div>
-                
-                <div 
-                  ref={contentEditorRef}
-                  className="min-h-[240px] max-h-[500px] overflow-y-auto p-4 border rounded-b-md focus:outline-none focus:ring-1 focus:ring-primary"
-                  contentEditable={true}
-                  dangerouslySetInnerHTML={{ __html: content }}
-                  onBlur={(e) => {
-                    setContent(e.currentTarget.innerHTML);
-                  }}
-                />
-              </div>
+              {/*<div>*/}
+              {/*  <Label htmlFor="content" className="text-base font-medium">내용</Label>*/}
+              {/*  */}
+              {/*  <div className="border border-b-0 rounded-t-md bg-gray-50 p-2 flex flex-wrap gap-1">*/}
+              {/*    <ToggleGroup type="multiple" className="flex flex-wrap gap-1">*/}
+              {/*      <ToggleGroupItem value="bold" aria-label="텍스트 굵게" onClick={() => executeCommand('bold')}>*/}
+              {/*        <Bold size={16} />*/}
+              {/*      </ToggleGroupItem>*/}
+              {/*      <ToggleGroupItem value="italic" aria-label="텍스트 기울임" onClick={() => executeCommand('italic')}>*/}
+              {/*        <Italic size={16} />*/}
+              {/*      </ToggleGroupItem>*/}
+              {/*      <ToggleGroupItem value="underline" aria-label="텍스트 밑줄" onClick={() => executeCommand('underline')}>*/}
+              {/*        <Underline size={16} />*/}
+              {/*      </ToggleGroupItem>*/}
+              {/*    </ToggleGroup>*/}
+              {/*    */}
+              {/*    <span className="w-px h-6 bg-gray-300 mx-1"></span>*/}
+              {/*    */}
+              {/*    <ToggleGroup type="single" className="flex flex-wrap gap-1">*/}
+              {/*      <ToggleGroupItem value="alignLeft" aria-label="왼쪽 정렬" onClick={() => executeCommand('justifyLeft')}>*/}
+              {/*        <AlignLeft size={16} />*/}
+              {/*      </ToggleGroupItem>*/}
+              {/*      <ToggleGroupItem value="alignCenter" aria-label="가운데 정렬" onClick={() => executeCommand('justifyCenter')}>*/}
+              {/*        <AlignCenter size={16} />*/}
+              {/*      </ToggleGroupItem>*/}
+              {/*      <ToggleGroupItem value="alignRight" aria-label="오른쪽 정렬" onClick={() => executeCommand('justifyRight')}>*/}
+              {/*        <AlignRight size={16} />*/}
+              {/*      </ToggleGroupItem>*/}
+              {/*    </ToggleGroup>*/}
+              {/*    */}
+              {/*    <span className="w-px h-6 bg-gray-300 mx-1"></span>*/}
+              {/*    */}
+              {/*    <Button */}
+              {/*      type="button" */}
+              {/*      size="icon" */}
+              {/*      variant="ghost" */}
+              {/*      className="h-8 w-8 p-0"*/}
+              {/*      onClick={() => executeCommand('insertUnorderedList')}*/}
+              {/*    >*/}
+              {/*      <List size={16} />*/}
+              {/*    </Button>*/}
+              {/*    <Button */}
+              {/*      type="button" */}
+              {/*      size="icon" */}
+              {/*      variant="ghost" */}
+              {/*      className="h-8 w-8 p-0"*/}
+              {/*      onClick={() => executeCommand('insertOrderedList')}*/}
+              {/*    >*/}
+              {/*      <ListOrdered size={16} />*/}
+              {/*    </Button>*/}
+              {/*    */}
+              {/*    <span className="w-px h-6 bg-gray-300 mx-1"></span>*/}
+              {/*    */}
+              {/*    <Button */}
+              {/*      type="button" */}
+              {/*      size="icon" */}
+              {/*      variant="ghost" */}
+              {/*      className="h-8 w-8 p-0"*/}
+              {/*      onClick={() => {*/}
+              {/*        const url = prompt('링크 URL을 입력하세요:');*/}
+              {/*        if (url) executeCommand('createLink', url);*/}
+              {/*      }}*/}
+              {/*    >*/}
+              {/*      <Link size={16} />*/}
+              {/*    </Button>*/}
+              {/*    */}
+              {/*    {imagePreview && (*/}
+              {/*      <Button */}
+              {/*        type="button" */}
+              {/*        size="icon" */}
+              {/*        variant="ghost" */}
+              {/*        className="h-8 w-8 p-0"*/}
+              {/*        onClick={insertImage}*/}
+              {/*      >*/}
+              {/*        <Image size={16} />*/}
+              {/*      </Button>*/}
+              {/*    )}*/}
+              {/*  </div>*/}
+              {/*  */}
+              {/*  <div */}
+              {/*    ref={contentEditorRef}*/}
+              {/*    className="min-h-[240px] max-h-[500px] overflow-y-auto p-4 border rounded-b-md focus:outline-none focus:ring-1 focus:ring-primary"*/}
+              {/*    contentEditable={true}*/}
+              {/*    dangerouslySetInnerHTML={{ __html: content }}*/}
+              {/*    onBlur={(e) => {*/}
+              {/*      setContent(e.currentTarget.innerHTML);*/}
+              {/*    }}*/}
+              {/*  />*/}
+              {/*</div>*/}
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
