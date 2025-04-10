@@ -23,7 +23,7 @@ const InquiryForm = () => {
     title: '',
     content: '',
     category: '',
-    isPublic: true
+    isPublic: false // Changed default to false (private)
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -154,7 +154,7 @@ const InquiryForm = () => {
                     htmlFor="isPublic"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    내 문의를 공개로 설정합니다
+                    내 문의를 비공개로 설정합니다
                   </label>
                 </div>
                 

@@ -286,7 +286,8 @@ export function getAnnouncementById(id: string) {
 export function getInquiries(userId?: string) {
   if (!userId) return [];
   
-  // If userId is provided, return only inquiries by that user or public inquiries
+  // Modified to return all inquiries by the user (including pending ones)
+  // or public inquiries with 'answered' status
   return [...mockInquiries]
     .filter(inquiry => inquiry.createdBy === userId || (inquiry.isPublic && inquiry.status === 'answered'))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -307,7 +308,7 @@ export function getInquiryById(id: string, userId?: string) {
   const inquiry = mockInquiries.find(inquiry => inquiry.id === id);
   if (!inquiry) return null;
   
-  // Only return if the inquiry is by the user, public, or if the user is admin
+  // Modified to allow users to see their own pending inquiries
   if (inquiry.createdBy === userId || (inquiry.isPublic && inquiry.status === 'answered') || userId === 'admin') {
     return inquiry;
   }
