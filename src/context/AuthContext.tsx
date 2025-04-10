@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole } from '@/types';
 import { useToast } from "@/components/ui/use-toast";
@@ -35,18 +36,6 @@ const MOCK_USERS = [
     phone: "010-9876-5432",
     department: "인사부",
     role: "ADM" as UserRole,
-    borrowedBooks: 0,
-    reservedBooks: 0,
-    status: "active" as const
-  },
-  {
-    id: "s1",
-    name: "시스템관리자",
-    email: "system@dhflour.co.kr",
-    password: "system123",
-    phone: "010-5555-5555",
-    department: "IT 인프라팀",
-    role: "system_admin" as UserRole,
     borrowedBooks: 0,
     reservedBooks: 0,
     status: "active" as const

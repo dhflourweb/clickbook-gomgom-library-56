@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 export const Sidebar = () => {
   const { hasRole } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = hasRole(['ADM' as const, 'system_admin' as const]);
+  const isAdmin = hasRole("ADM");
   
   const navigateWithFilter = (path: string, filter?: string) => {
     if (filter) {
@@ -73,7 +73,7 @@ export const Sidebar = () => {
                   </div>
                   <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
                        onClick={() => navigate('/books?sort=베스트도서순')}>
-                    베스트도서(국���)
+                    베스트도서(국내)
                   </div>
                 </div>
               </AccordionContent>
@@ -172,13 +172,11 @@ export const Sidebar = () => {
                   <Users size={20} className="mr-2 text-gray-600" />
                   <span>사용자 관리</span>
                 </div>
-                {hasRole("system_admin") && (
-                  <div className="flex items-center py-2 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
-                       onClick={() => navigate('/admin/system')}>
-                    <Settings size={20} className="mr-2 text-gray-600" />
-                    <span>시스템 관리</span>
-                  </div>
-                )}
+                <div className="flex items-center py-2 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
+                     onClick={() => navigate('/admin/system')}>
+                  <Settings size={20} className="mr-2 text-gray-600" />
+                  <span>시스템 관리</span>
+                </div>
               </div>
             </div>
           )}

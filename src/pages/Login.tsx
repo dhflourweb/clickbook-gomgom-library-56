@@ -90,11 +90,7 @@ const Login = () => {
               <div className="bg-white p-2 rounded-md inline-block">
                 <img src={logo} alt="로고" className="h-15 w-auto object-contain"/>
               </div>
-              {/*<span className="text-secondary-orange">곰클릭</span>*/}
-              {/*<span className="text-white">+</span>*/}
-              {/*<span className="text-primary-skyblue">책방</span>*/}
             </h1>
-            {/*<p className="mt-2 text-white/80">사내 디지털 도서관</p>*/}
           </div>
 
           <Card className="border-0 shadow-lg">

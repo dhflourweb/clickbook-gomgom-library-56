@@ -1,4 +1,3 @@
-
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -40,7 +39,7 @@ const categoryData = [
 const AdminDashboard = () => {
   const { user, hasRole } = useAuth();
   
-  if (!hasRole(['admin', 'system_admin'])) {
+  if (!hasRole("ADM")) {
     return <Navigate to="/" />;
   }
 

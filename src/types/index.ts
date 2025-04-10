@@ -1,3 +1,4 @@
+
 export interface Book {
   id: string;
   title: string;
@@ -45,7 +46,7 @@ export interface User {
   borrowedCount?: number;
 }
 
-export type UserRole = 'user' | 'admin' | 'system_admin';
+export type UserRole = 'EMP' | 'ADM';
 
 export interface Announcement {
   id: string;
