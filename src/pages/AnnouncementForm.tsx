@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { ArrowLeft, Calendar as CalendarIcon, Upload, Image, X } from "lucide-react";
+import { ArrowLeft, Calendar as CalendarIcon, Upload, Image, X, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Link } from "lucide-react";
 import { format } from 'date-fns';
 import { getAnnouncementById, ANNOUNCEMENT_CATEGORIES } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
@@ -26,7 +25,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import RichTextEditor, { RichTextEditorRef } from '@/components/editor/RichTextEditor';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const AnnouncementForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,7 +33,7 @@ const AnnouncementForm = () => {
   const { user } = useAuth();
   const isEditMode = Boolean(id);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const editorRef = useRef<RichTextEditorRef>(null);
+  const contentEditorRef = useRef<HTMLDivElement>(null);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -69,6 +68,12 @@ const AnnouncementForm = () => {
     }
   }, [id, isEditMode, navigate]);
 
+  useEffect(() => {
+    if (contentEditorRef.current && content) {
+      contentEditorRef.current.innerHTML = content;
+    }
+  }, [content]);
+
   const validateForm = () => {
     if (!title.trim()) {
       toast.error('제목을 입력해주세요.');
@@ -81,11 +86,11 @@ const AnnouncementForm = () => {
     }
     
     let editorContent = '';
-    if (editorRef.current) {
-      editorContent = editorRef.current.getContent();
+    if (contentEditorRef.current) {
+      editorContent = contentEditorRef.current.innerHTML;
     }
     
-    if (!editorContent.trim() || editorContent === '<p></p>') {
+    if (!editorContent.trim() || editorContent === '<p><br></p>') {
       toast.error('내용을 입력해주세요.');
       return false;
     }
@@ -111,8 +116,8 @@ const AnnouncementForm = () => {
     setIsSaving(true);
     
     let finalContent = '';
-    if (editorRef.current) {
-      finalContent = editorRef.current.getContent();
+    if (contentEditorRef.current) {
+      finalContent = contentEditorRef.current.innerHTML;
     }
     
     setTimeout(() => {
@@ -154,9 +159,16 @@ const AnnouncementForm = () => {
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-
-  const handleEditorUpdate = (newContent: string) => {
-    setContent(newContent);
+  
+  const executeCommand = (command: string, value: string = '') => {
+    document.execCommand(command, false, value);
+    contentEditorRef.current?.focus();
+  };
+  
+  const insertImage = () => {
+    if (imagePreview) {
+      executeCommand('insertImage', imagePreview);
+    }
   };
 
   return (
@@ -181,68 +193,7 @@ const AnnouncementForm = () => {
             
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-4 md:col-span-1 order-1 md:order-1">
-                  <div className="p-4 bg-gray-50 rounded-md">
-                    <div className="flex items-center justify-between mb-4">
-                      <Label htmlFor="isPinned" className="cursor-pointer text-base font-medium">
-                        상단 고정
-                        <p className="text-xs text-gray-500 font-normal mt-0.5">
-                          중요 공지사항을 목록 상단에 고정합니다
-                        </p>
-                      </Label>
-                      <Switch
-                        id="isPinned"
-                        checked={isPinned}
-                        onCheckedChange={setIsPinned}
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="isPopup" className="cursor-pointer text-base font-medium">
-                        팝업 공지
-                        <p className="text-xs text-gray-500 font-normal mt-0.5">
-                          로그인 후 팝업으로 표시됩니다
-                        </p>
-                      </Label>
-                      <Switch
-                        id="isPopup"
-                        checked={isPopup}
-                        onCheckedChange={setIsPopup}
-                      />
-                    </div>
-                    
-                    {isPopup && (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <Label className="block mb-1.5 text-sm font-medium">팝업 종료일</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !popupEndDate && "text-muted-foreground"
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {popupEndDate ? format(popupEndDate, "yyyy-MM-dd") : "날짜 선택"}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={popupEndDate}
-                              onSelect={setPopupEndDate}
-                              initialFocus
-                              disabled={(date) => date < new Date()}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="md:col-span-2 order-2 md:order-2">
+                <div className="md:col-span-2">
                   <Label htmlFor="title" className="text-base font-medium">제목</Label>
                   <Input
                     id="title"
@@ -257,16 +208,14 @@ const AnnouncementForm = () => {
                     {title.length}/50
                   </div>
                 </div>
-              </div>
                 
-              <div>
-                <div className="flex justify-between items-center mb-2">
+                <div>
                   <Label htmlFor="category" className="text-base font-medium">카테고리</Label>
                   <Select
                     value={category}
                     onValueChange={setCategory}
                   >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="mt-1.5">
                       <SelectValue placeholder="카테고리 선택" />
                     </SelectTrigger>
                     <SelectContent>
@@ -281,12 +230,92 @@ const AnnouncementForm = () => {
               </div>
               
               <div>
-                <Label htmlFor="content" className="text-base font-medium block mb-2">내용</Label>
-                <RichTextEditor
-                  ref={editorRef}
-                  initialContent={content}
-                  onUpdate={handleEditorUpdate}
-                  imageUrl={imagePreview}
+                <Label htmlFor="content" className="text-base font-medium">내용</Label>
+                
+                <div className="border border-b-0 rounded-t-md bg-gray-50 p-2 flex flex-wrap gap-1">
+                  <ToggleGroup type="multiple" className="flex flex-wrap gap-1">
+                    <ToggleGroupItem value="bold" aria-label="텍스트 굵게" onClick={() => executeCommand('bold')}>
+                      <Bold size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="italic" aria-label="텍스트 기울임" onClick={() => executeCommand('italic')}>
+                      <Italic size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="underline" aria-label="텍스트 밑줄" onClick={() => executeCommand('underline')}>
+                      <Underline size={16} />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  
+                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
+                  
+                  <ToggleGroup type="single" className="flex flex-wrap gap-1">
+                    <ToggleGroupItem value="alignLeft" aria-label="왼쪽 정렬" onClick={() => executeCommand('justifyLeft')}>
+                      <AlignLeft size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="alignCenter" aria-label="가운데 정렬" onClick={() => executeCommand('justifyCenter')}>
+                      <AlignCenter size={16} />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="alignRight" aria-label="오른쪽 정렬" onClick={() => executeCommand('justifyRight')}>
+                      <AlignRight size={16} />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  
+                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
+                  
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => executeCommand('insertUnorderedList')}
+                  >
+                    <List size={16} />
+                  </Button>
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => executeCommand('insertOrderedList')}
+                  >
+                    <ListOrdered size={16} />
+                  </Button>
+                  
+                  <span className="w-px h-6 bg-gray-300 mx-1"></span>
+                  
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => {
+                      const url = prompt('링크 URL을 입력하세요:');
+                      if (url) executeCommand('createLink', url);
+                    }}
+                  >
+                    <Link size={16} />
+                  </Button>
+                  
+                  {imagePreview && (
+                    <Button 
+                      type="button" 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8 p-0"
+                      onClick={insertImage}
+                    >
+                      <Image size={16} />
+                    </Button>
+                  )}
+                </div>
+                
+                <div 
+                  ref={contentEditorRef}
+                  className="min-h-[240px] max-h-[500px] overflow-y-auto p-4 border rounded-b-md focus:outline-none focus:ring-1 focus:ring-primary"
+                  contentEditable={true}
+                  dangerouslySetInnerHTML={{ __html: content }}
+                  onBlur={(e) => {
+                    setContent(e.currentTarget.innerHTML);
+                  }}
                 />
               </div>
               
@@ -346,6 +375,67 @@ const AnnouncementForm = () => {
                         <p className="text-xs text-gray-500 mt-1 truncate">
                           {imageUrl ? "이미지가 업로드되었습니다" : "미리보기"}
                         </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="p-4 bg-gray-50 rounded-md h-full">
+                    <div className="flex items-center justify-between mb-4">
+                      <Label htmlFor="isPinned" className="cursor-pointer text-base font-medium">
+                        상단 고정
+                        <p className="text-xs text-gray-500 font-normal mt-0.5">
+                          중요 공지사항을 목록 상단에 고정합니다
+                        </p>
+                      </Label>
+                      <Switch
+                        id="isPinned"
+                        checked={isPinned}
+                        onCheckedChange={setIsPinned}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="isPopup" className="cursor-pointer text-base font-medium">
+                        팝업 공지
+                        <p className="text-xs text-gray-500 font-normal mt-0.5">
+                          로그인 후 팝업으로 표시됩니다
+                        </p>
+                      </Label>
+                      <Switch
+                        id="isPopup"
+                        checked={isPopup}
+                        onCheckedChange={setIsPopup}
+                      />
+                    </div>
+                    
+                    {isPopup && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <Label className="block mb-1.5 text-sm font-medium">팝업 종료일</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !popupEndDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {popupEndDate ? format(popupEndDate, "yyyy-MM-dd") : "날짜 선택"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={popupEndDate}
+                              onSelect={setPopupEndDate}
+                              initialFocus
+                              disabled={(date) => date < new Date()}
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
                     )}
                   </div>
