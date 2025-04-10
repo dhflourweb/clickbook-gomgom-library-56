@@ -31,6 +31,7 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   const [review, setReview] = useState<string>('');
   const [returnLocation, setReturnLocation] = useState<string>('');
   const [isRecommended, setIsRecommended] = useState<boolean>(false);
+  const [locationError, setLocationError] = useState<boolean>(false);
 
   const dummyRef = useRef<HTMLButtonElement | null>(null); // ✅ 더미 ref
   
@@ -38,6 +39,12 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   const returnDate = format(today, 'yyyy-MM-dd');
   
   const handleReturn = () => {
+    // Validate return location is provided
+    if (!returnLocation.trim()) {
+      setLocationError(true);
+      return;
+    }
+    
     // Process the return
     toast.success(`'${book.title}' 도서를 반납했습니다.`);
     onOpenChange(false);
@@ -92,17 +99,27 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
           </div>
 
           <div className="grid grid-cols-4 gap-2 py-1">
-            <Label htmlFor="returnLocation" className="text-sm font-medium">반납 위치</Label>
+            <Label htmlFor="returnLocation" className="text-sm font-medium flex items-center gap-1">
+              반납 위치
+              <span className="text-red-500">*</span>
+            </Label>
             <div className="col-span-3">
               <Input
                 id="returnLocation"
                 value={returnLocation}
-                onChange={(e) => setReturnLocation(e.target.value)}
+                onChange={(e) => {
+                  setReturnLocation(e.target.value);
+                  if (e.target.value.trim()) setLocationError(false);
+                }}
                 placeholder="반납 위치 번호를 입력해주세요."
-                className="w-full"
+                className={`w-full ${locationError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                 type="text"
                 autoFocus={false}
+                required
               />
+              {locationError && (
+                <p className="text-red-500 text-xs mt-1">반납 위치를 입력해주세요.</p>
+              )}
             </div>
           </div>
 
