@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { INQUIRY_CATEGORIES } from '@/data/communityData';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor } from '@toast-ui/react-editor';
 
 const InquiryForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -131,18 +133,15 @@ const InquiryForm = () => {
                     className="w-full"
                   />
                 </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="content" className="block font-medium">내용</label>
-                  <Textarea
-                    id="content"
-                    name="content"
-                    value={formData.content}
-                    onChange={handleInputChange}
-                    placeholder="문의 내용을 입력하세요"
-                    className="w-full min-h-[240px]"
-                  />
-                </div>
+
+                <Editor
+                    // initialValue="내용을 입력하세요"
+                    placeholder="내용을 입력하세요"
+                    previewStyle="vertical"
+                    height="400px"
+                    initialEditType="wysiwyg"
+                    useCommandShortcut={true}
+                />
                 
                 <div className="flex items-center space-x-2">
                   <Checkbox 
