@@ -86,25 +86,25 @@ export const TabsBookSection = ({
           <TabsList className="grid grid-cols-2 gap-2 w-full mb-6 bg-gray-100 p-1 rounded-md">
             <TabsTrigger 
               value="new" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               신규 도서
             </TabsTrigger>
             <TabsTrigger 
               value="recommended" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               추천 도서
             </TabsTrigger>
             <TabsTrigger 
               value="best" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               베스트 도서(사내)
             </TabsTrigger>
             <TabsTrigger 
               value="nationalBest" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               베스트 도서(국내)
             </TabsTrigger>
@@ -113,25 +113,25 @@ export const TabsBookSection = ({
           <TabsList className="inline-flex w-auto mb-6 bg-gray-100 p-1 rounded-md">
             <TabsTrigger 
               value="new" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               신규 도서
             </TabsTrigger>
             <TabsTrigger 
               value="recommended" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               추천 도서
             </TabsTrigger>
             <TabsTrigger 
               value="best" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               베스트 도서(사내)
             </TabsTrigger>
             <TabsTrigger 
               value="nationalBest" 
-              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-skyblue"
+              className="text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary-deepblue"
             >
               베스트 도서(국내)
             </TabsTrigger>
@@ -151,13 +151,13 @@ export const TabsBookSection = ({
               href={getMoreLink()} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 flex items-center"
+              className="text-sm font-medium text-primary-deepblue hover:text-primary-deepblue/90 flex items-center"
             >
               더보기
               <ChevronRight size={16} className="ml-1" />
             </a>
           ) : (
-            <Link to={getMoreLink()} className="text-sm font-medium text-primary-skyblue hover:text-primary-skyblue/90 flex items-center">
+            <Link to={getMoreLink()} className="text-sm font-medium text-primary-deepblue hover:text-primary-deepblue/90 flex items-center">
               더보기
               <ChevronRight size={16} className="ml-1" />
             </Link>
