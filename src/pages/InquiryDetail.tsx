@@ -202,7 +202,7 @@ const InquiryDetail = () => {
               </div>
             )}
             
-            {/* Admin answer form - now visible anytime admin is viewing and there's no answer */}
+            {/* 관리자만 답변을 작성할 수 있도록 수정 */}
             {canAnswer && (
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-4">

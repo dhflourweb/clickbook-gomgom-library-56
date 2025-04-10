@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -69,20 +68,16 @@ const Inquiries = () => {
             </p>
           </div>
           
-          {!isAdmin && (
-            <Button 
-              onClick={() => navigate('/inquiries/new')} 
-              className="mt-4 md:mt-0"
-            >
-              문의하기
-            </Button>
-          )}
+          <Button 
+            onClick={() => navigate('/inquiries/new')} 
+            className="mt-4 md:mt-0"
+          >
+            문의하기
+          </Button>
         </div>
         
-        {/* Filter Section - Completely separated */}
         <div className="bg-white rounded-lg shadow-sm mb-4">
           <div className="p-4">
-            {/* Tabs for inquiry status */}
             <Tabs 
               defaultValue="all" 
               value={tabFilter} 
@@ -96,7 +91,6 @@ const Inquiries = () => {
               </TabsList>
             </Tabs>
             
-            {/* Search and Category Filter */}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -129,7 +123,7 @@ const Inquiries = () => {
                   value={displayCount}
                   onValueChange={(value) => {
                     setDisplayCount(value);
-                    setCurrentPage(1); // Reset to first page when changing display count
+                    setCurrentPage(1);
                   }}
                 >
                   <SelectTrigger className="w-[120px]">
@@ -146,7 +140,6 @@ const Inquiries = () => {
           </div>
         </div>
         
-        {/* Content Section - Completely separated */}
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-4">
             <div className="space-y-3">
@@ -229,7 +222,6 @@ const Inquiries = () => {
               )}
             </div>
             
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="mt-6">
                 <Pagination>
@@ -242,7 +234,6 @@ const Inquiries = () => {
                     </PaginationItem>
                     
                     {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                      // Simple pagination logic for up to 5 pages
                       let pageNum;
                       if (totalPages <= 5) {
                         pageNum = i + 1;

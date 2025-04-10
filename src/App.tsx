@@ -19,6 +19,7 @@ import AnnouncementDetail from "./pages/AnnouncementDetail";
 import AnnouncementForm from "./pages/AnnouncementForm";
 import Inquiries from "./pages/Inquiries";
 import InquiryDetail from "./pages/InquiryDetail";
+import InquiryForm from "./pages/InquiryForm";
 import { AdminRoute } from "./components/auth/AdminRoute";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,8 @@ const App = () => (
             />
             <Route path="/inquiries" element={<Inquiries />} />
             <Route path="/inquiries/:id" element={<InquiryDetail />} />
+            <Route path="/inquiries/new" element={<InquiryForm />} />
+            <Route path="/inquiries/:id/edit" element={<InquiryForm />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>
