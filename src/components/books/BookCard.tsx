@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
@@ -25,39 +24,32 @@ import { SYSTEM_SETTINGS } from '@/data/mockData';
 interface BookCardProps {
   book: Book;
   className?: string;
+  viewMode?: 'grid' | 'list';
 }
 
-export const BookCard = ({ book, className }: BookCardProps) => {
+export const BookCard = ({ book, className, viewMode = 'grid' }: BookCardProps) => {
   const { user } = useAuth();
   const isAvailable = book.status.available > 0;
   const isBorrowedByUser = book.borrowedByCurrentUser || false;
   const [isFavorite, setIsFavorite] = useState(book.isFavorite || false);
   const [isReserved, setIsReserved] = useState(false);
   
-  // Dialogs state
   const [borrowDialogOpen, setBorrowDialogOpen] = useState(false);
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
   const [extendConfirmOpen, setExtendConfirmOpen] = useState(false);
   
-  // Ensure favorite state is updated when book prop changes
   useEffect(() => {
     if (book.isFavorite !== undefined) {
       setIsFavorite(book.isFavorite);
     }
   }, [book.isFavorite]);
   
-  // Assume user is the reserver if they've marked it as reserved (in real app, this would come from backend)
   const isUserReserver = isReserved;
   
-  // Check if user has reached borrowing limit (2 books max)
   const hasReachedBorrowLimit = user?.borrowedCount >= 2;
 
-  // Randomly determine if a book can be extended based on book id
-  // Convert string ID to number before using modulo operator
-  const isExtendable = parseInt(book.id.replace('book', '')) % 3 !== 0; // Books with ID not divisible by 3 can be extended
-  
-  // Determine if book has been extended before
+  const isExtendable = parseInt(book.id.replace('book', '')) % 3 !== 0;
   const hasBeenExtended = book.hasBeenExtended || !isExtendable;
 
   const handleBorrow = (e: React.MouseEvent) => {
@@ -76,13 +68,11 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Check if book has been extended, if not show confirmation dialog
     if (!hasBeenExtended) {
       setExtendConfirmOpen(true);
     }
   };
   
-  // Process extension after confirmation
   const processExtension = () => {
     setExtendConfirmOpen(false);
     setExtendDialogOpen(true);
@@ -100,21 +90,16 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     setIsFavorite(!isFavorite);
   };
 
-  // Get appropriate status badge
   const getStatusBadge = () => {
     if (isAvailable) return "대여가능";
-    // Update: Show books with isReservable=false as "예약중" instead of "대여중"
     if (isReserved || book.isReservable === false) return "예약중";
     return "대여중";
   };
 
   const handleCardClick = (e: React.MouseEvent, to: string) => {
-    // Allow default navigation
   };
 
-  // Determine which button to show based on book status and user
   const renderActionButton = () => {
-    // Case 1: User is the reserver and book is available - Show borrow button
     if (isUserReserver && isAvailable) {
       return (
         <Button 
@@ -129,7 +114,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       );
     }
     
-    // Case 2: Book is available and user is not a reserver - Show borrow button
     if (isAvailable && !isUserReserver) {
       return (
         <Button 
@@ -144,7 +128,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       );
     }
     
-    // Case 3: Book is borrowed by current user - Show return and extend buttons
     if (isBorrowedByUser) {
       return (
         <div className="grid grid-cols-2 gap-2">
@@ -156,7 +139,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
           >
             반납하기
           </Button>
-          {/* Make the extend button show both active and inactive states */}
           <Button 
             variant="secondary"
             size="sm" 
@@ -174,7 +156,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       );
     }
     
-    // Case 4: Book is not reservable - Show disabled reservation button
     if (book.isReservable === false) {
       return (
         <div 
@@ -195,7 +176,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
       );
     }
     
-    // Case 5: Book is borrowed by someone else - Show reserve/cancel button
     return (
       <Button 
         variant={isReserved ? "outline" : "outline"}
@@ -212,28 +192,30 @@ export const BookCard = ({ book, className }: BookCardProps) => {
     );
   };
 
-  // Get the status class for the badge
   const getStatusClass = () => {
     if (isAvailable) return "bg-primary-deepblue";
     if (isReserved || book.isReservable === false) return "bg-secondary-orange";
     return "bg-point-red";
   };
 
+  const cardClassName = cn(
+    "book-card overflow-visible transition-all hover:shadow-md hover:scale-[1.02] hover:z-10 cursor-pointer",
+    viewMode === 'grid' 
+      ? "flex flex-col min-h-[420px]" 
+      : "flex flex-row gap-4 min-h-[180px] p-4 border rounded-lg",
+    className
+  );
+
   return (
     <>
       <div 
-        className={cn(
-          "book-card overflow-visible transition-all hover:shadow-md hover:scale-[1.02] hover:z-10 cursor-pointer",
-          "flex flex-col min-h-[420px]", // Fixed height to ensure uniformity
-          className
-        )}
+        className={cardClassName}
         onClick={(e) => handleCardClick(e, `/books/${book.id}`)}
       >
         <Link 
           to={`/books/${book.id}`} 
-          className="block"
+          className={cn("block", viewMode === 'list' && "flex-shrink-0 w-[120px]")}
           onClick={(e) => {
-            // Let the parent div handle the click
             e.stopPropagation();
           }}
         >
@@ -241,7 +223,10 @@ export const BookCard = ({ book, className }: BookCardProps) => {
             <img
               src={book.coverImage}
               alt={`${book.title} cover`}
-              className="book-cover"
+              className={cn(
+                "book-cover", 
+                viewMode === 'list' && "max-h-[160px] w-[120px] object-cover"
+              )}
             />
             <div className="absolute top-2 left-2">
               <BadgeDisplay badges={book.badges} size="sm" />
@@ -263,13 +248,18 @@ export const BookCard = ({ book, className }: BookCardProps) => {
             </button>
           </div>
         </Link>
-        <div className="p-3 flex flex-col flex-grow">
-          <Link to={`/books/${book.id}`} className="block flex-grow">
+        <div className={cn(
+          "p-3 flex flex-col", 
+          viewMode === 'grid' ? "flex-grow" : "flex-grow"
+        )}>
+          <Link to={`/books/${book.id}`} className={cn(
+            "block", 
+            viewMode === 'grid' ? "flex-grow" : ""
+          )}>
             <h3 className="font-medium text-sm line-clamp-2 h-10">{book.title}</h3>
             <p className="text-muted-foreground text-xs mt-1">{book.author}</p>
             <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
             
-            {/* Moved the status badge here, above the rating */}
             <div className="mt-3 mb-1">
               <span className={cn(
                 "text-xs px-3 py-1 rounded-full font-medium text-white inline-block",
@@ -279,19 +269,32 @@ export const BookCard = ({ book, className }: BookCardProps) => {
               </span>
             </div>
             
-            <div className="mt-auto pt-2 flex items-center justify-between">
-              <span className="text-xs text-gray-500">{book.category}</span>
-              <div className="flex items-center gap-2">
+            <div className={cn(
+              "mt-auto pt-2 flex items-center",
+              viewMode === 'list' ? "justify-end gap-4" : "justify-between"
+            )}>
+              <span className={cn(
+                "text-xs text-gray-500 whitespace-nowrap", 
+                viewMode === 'list' && "order-2"
+              )}>
+                {book.category}
+              </span>
+              <div className={cn(
+                "flex items-center gap-2", 
+                viewMode === 'list' && "order-3 flex-nowrap whitespace-nowrap"
+              )}>
                 <span className="text-xs text-gray-500">대여 {book.status.borrowed || 0}회</span>
                 {book.rating && (
-                  <span className="text-secondary-orange text-xs font-semibold">
+                  <span className="text-secondary-orange text-xs font-semibold whitespace-nowrap">
                     ★ {book.rating.toFixed(1)}
                   </span>
                 )}
               </div>
             </div>
           </Link>
-          <div className="mt-2 pt-2 border-t border-gray-100">
+          <div className={cn(
+            viewMode === 'grid' ? "mt-2 pt-2 border-t border-gray-100" : "mt-4"
+          )}>
             {renderActionButton()}
           </div>
         </div>
@@ -315,7 +318,6 @@ export const BookCard = ({ book, className }: BookCardProps) => {
         onOpenChange={setExtendDialogOpen}
       />
       
-      {/* Extension confirmation dialog - shown before processing extension */}
       <AlertDialog open={extendConfirmOpen} onOpenChange={setExtendConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
