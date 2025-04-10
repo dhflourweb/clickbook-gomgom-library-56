@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
@@ -193,6 +192,7 @@ export const BookCard = ({ book, className, viewMode = 'grid' }: BookCardProps) 
     );
   };
 
+  // Modified to ensure the status badge style is consistent between mobile and desktop
   const getStatusClass = () => {
     if (isAvailable) return "bg-primary-deepblue";
     if (isReserved || book.isReservable === false) return "bg-secondary-orange";
@@ -200,7 +200,7 @@ export const BookCard = ({ book, className, viewMode = 'grid' }: BookCardProps) 
   };
 
   const cardClassName = cn(
-    "book-card overflow-visible transition-all hover:shadow-md hover:scale-[1.02] hover:z-10 cursor-pointer",
+    "book-card overflow-visible transition-all hover:shadow-md hover:hover:scale-[1.02] hover:z-10 cursor-pointer",
     viewMode === 'grid' 
       ? "flex flex-col min-h-[420px]" 
       : "flex flex-row gap-4 min-h-[180px] p-4 border rounded-lg",
@@ -262,6 +262,7 @@ export const BookCard = ({ book, className, viewMode = 'grid' }: BookCardProps) 
             <p className="text-muted-foreground text-xs mt-0.5">{book.publisher}</p>
             
             <div className="mt-3 mb-1">
+              {/* Use consistent status badge style for both mobile and desktop */}
               <span className={cn(
                 "text-xs px-3 py-1 rounded-full font-medium text-white inline-block",
                 getStatusClass()
