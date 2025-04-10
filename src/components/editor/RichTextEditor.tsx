@@ -4,8 +4,10 @@ import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
 import { 
-  Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, 
+  Bold, Italic, Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight, 
   List, ListOrdered, Link as LinkIcon, Image as ImageIcon 
 } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -42,12 +44,25 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
             class: 'mx-auto my-4 max-w-full h-auto rounded-md',
           },
         }),
+        Underline,
+        TextAlign.configure({
+          types: ['heading', 'paragraph'],
+          alignments: ['left', 'center', 'right'],
+          defaultAlignment: 'left',
+        }),
       ],
       content: initialContent,
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
         setContent(html);
         if (onUpdate) onUpdate(html);
+      },
+      // Prevent cursor from jumping to the start
+      autofocus: 'end',
+      editorProps: {
+        attributes: {
+          class: 'focus:outline-none',
+        },
       },
     });
 
@@ -108,7 +123,7 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
           break;
         case 'image':
           if (imageUrl) {
-            editor.chain().focus().setImage({ src: imageUrl }).run();
+            editor.chain().focus().insertContent(`<img src="${imageUrl}" alt="Uploaded image" />`).run();
           }
           break;
         default:
@@ -149,7 +164,7 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
               data-active={editor.isActive('underline')}
               className={editor.isActive('underline') ? 'bg-gray-200' : ''}
             >
-              <Underline size={16} />
+              <UnderlineIcon size={16} />
             </ToggleGroupItem>
           </ToggleGroup>
           
