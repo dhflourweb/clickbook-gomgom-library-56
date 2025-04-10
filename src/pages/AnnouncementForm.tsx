@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -69,7 +68,6 @@ const AnnouncementForm = () => {
     }
   }, [id, isEditMode, navigate]);
 
-  // Set initial editor content
   useEffect(() => {
     if (contentEditorRef.current && content) {
       contentEditorRef.current.innerHTML = content;
@@ -98,7 +96,7 @@ const AnnouncementForm = () => {
     }
     
     if (!category) {
-      toast.error('카테고리를 선택해주세요.');
+      toast.error('카테고리 선택해주세요.');
       return false;
     }
     
@@ -117,7 +115,6 @@ const AnnouncementForm = () => {
 
     setIsSaving(true);
     
-    // Get the HTML content from the editor
     let finalContent = '';
     if (contentEditorRef.current) {
       finalContent = contentEditorRef.current.innerHTML;
@@ -235,7 +232,6 @@ const AnnouncementForm = () => {
               <div>
                 <Label htmlFor="content" className="text-base font-medium">내용</Label>
                 
-                {/* Text Editor Toolbar */}
                 <div className="border border-b-0 rounded-t-md bg-gray-50 p-2 flex flex-wrap gap-1">
                   <ToggleGroup type="multiple" className="flex flex-wrap gap-1">
                     <ToggleGroupItem value="bold" aria-label="텍스트 굵게" onClick={() => executeCommand('bold')}>
@@ -312,14 +308,12 @@ const AnnouncementForm = () => {
                   )}
                 </div>
                 
-                {/* Text Editor Content Area */}
                 <div 
                   ref={contentEditorRef}
                   className="min-h-[240px] max-h-[500px] overflow-y-auto p-4 border rounded-b-md focus:outline-none focus:ring-1 focus:ring-primary"
                   contentEditable={true}
                   dangerouslySetInnerHTML={{ __html: content }}
                   onBlur={(e) => {
-                    // Store HTML content when editor loses focus
                     setContent(e.currentTarget.innerHTML);
                   }}
                 />
@@ -338,14 +332,13 @@ const AnnouncementForm = () => {
                   />
                   
                   <div className="flex flex-col gap-4">
-                    <div className="border rounded-md p-4 bg-gray-50">
+                    <div className="border rounded-md p-4 bg-gray-50 h-full">
                       <div className="flex flex-col gap-2 mb-3">
                         <p className="text-sm text-muted-foreground">권장 사항:</p>
                         <ul className="text-xs text-muted-foreground list-disc ml-5 space-y-1">
                           <li>최적 해상도: 1200 x 800px</li>
                           <li>지원 형식: JPG, PNG, WebP</li>
                           <li>최대 용량: 5MB</li>
-                          <li>고품질 이미지를 사용하면 가독성이 향상됩니다</li>
                         </ul>
                       </div>
                       <Button 
@@ -388,7 +381,7 @@ const AnnouncementForm = () => {
                 </div>
                 
                 <div className="space-y-6">
-                  <div className="p-4 bg-gray-50 rounded-md">
+                  <div className="p-4 bg-gray-50 rounded-md h-full">
                     <div className="flex items-center justify-between mb-4">
                       <Label htmlFor="isPinned" className="cursor-pointer text-base font-medium">
                         상단 고정

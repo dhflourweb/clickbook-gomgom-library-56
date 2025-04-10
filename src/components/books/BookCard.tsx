@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Book } from '@/types';
@@ -281,9 +282,9 @@ export const BookCard = ({ book, className, viewMode = 'grid' }: BookCardProps) 
               </span>
               <div className={cn(
                 "flex items-center gap-2", 
-                viewMode === 'list' && "order-3 flex-nowrap whitespace-nowrap"
+                viewMode === 'list' && "order-3 whitespace-nowrap"
               )}>
-                <span className="text-xs text-gray-500">대여 {book.status.borrowed || 0}회</span>
+                <span className="text-xs text-gray-500 whitespace-nowrap">대여 {book.status.borrowed || 0}회</span>
                 {book.rating && (
                   <span className="text-secondary-orange text-xs font-semibold whitespace-nowrap">
                     ★ {book.rating.toFixed(1)}
