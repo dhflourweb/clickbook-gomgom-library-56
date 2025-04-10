@@ -167,8 +167,8 @@ export const Header = () => {
                   <form onSubmit={handleSearch} className="flex items-center border rounded-md bg-white">
                     <Input 
                       id="searchInput" 
-                      placeholder="도서명, 저자, 출판사 검색..." 
-                      className="border-0 focus-visible:ring-0 h-10 w-[280px] md:w-[320px] sm:w-[240px]"
+                      placeholder="도서명, 저자, 출판사 검색..."
+                      className="border-0 focus:outline-none focus:ring-0 focus:shadow-none h-10 w-[280px] md:w-[320px] sm:w-[240px]"
                       value={searchQuery} 
                       onChange={e => setSearchQuery(e.target.value)}
                     />
