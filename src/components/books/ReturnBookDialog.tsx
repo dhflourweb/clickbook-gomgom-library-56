@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { format } from 'date-fns';
 import { Book } from '@/types';
 import { useAuth } from '@/context/AuthContext';
@@ -31,6 +31,8 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   const [review, setReview] = useState<string>('');
   const [returnLocation, setReturnLocation] = useState<string>('');
   const [isRecommended, setIsRecommended] = useState<boolean>(false);
+
+  const dummyRef = useRef<HTMLButtonElement | null>(null); // ✅ 더미 ref
   
   const today = new Date();
   const returnDate = format(today, 'yyyy-MM-dd');
@@ -43,7 +45,22 @@ export function ReturnBookDialog({ book, isOpen, onOpenChange }: ReturnBookDialo
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
+      <DialogContent
+          {...{ initialFocusRef: dummyRef }} // ✅ 타입 무시 트릭
+          className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto"
+      >
+        {/* ✅ 숨겨진 포커스 요소 */}
+        <button
+            ref={dummyRef}
+            style={{
+              position: 'absolute',
+              opacity: 0,
+              pointerEvents: 'none',
+              height: 0,
+              width: 0,
+            }}
+            aria-hidden
+        />
         <DialogHeader>
           <DialogTitle>도서 반납</DialogTitle>
           <DialogDescription>
