@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,14 @@ export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const isAdmin = hasRole(['admin', 'system_admin']);
+  
+  useEffect(() => {
+    // If user is admin and on the home page, redirect to admin dashboard
+    if (isAdmin && window.location.pathname === '/') {
+      navigate('/admin');
+    }
+  }, [isAdmin, navigate]);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +70,7 @@ export const Header = () => {
           <div className="container mx-auto flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
-              <Link to="/" className="text-xl font-bold flex items-center">
+              <Link to={isAdmin ? "/admin" : "/"} className="text-xl font-bold flex items-center">
                 <img src={logo} alt="" className={cn("h-10", isMobile ? "mr-2" : "")} />
               </Link>
             </div>
@@ -180,12 +188,6 @@ export const Header = () => {
                   <User size={20} />
                 </Button>
               </Link>
-
-              {hasRole(["admin", "system_admin"]) && <Link to="/admin">
-                    <Button variant="outline" size="sm" className="ml-2 text-xs bg-transparent border-gray-300 text-black hover:bg-gray-100">
-                      관리자
-                    </Button>
-                  </Link>}
 
               <Button variant="ghost" size="icon" onClick={logout} className="text-black">
                 <LogOut size={20} />

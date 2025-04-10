@@ -49,7 +49,11 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
     
     // Check if user has reached borrow limit
     if (hasReachedBorrowLimit(user.id)) {
-      setShowLimitWarning(true);
+      // Close the dialog first, then show the warning
+      onOpenChange(false);
+      setTimeout(() => {
+        setShowLimitWarning(true);
+      }, 100);
       return;
     }
     
@@ -69,7 +73,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
             </DialogDescription>
           </DialogHeader>
           
-          <div className="overflow-auto py-3" style={{ maxHeight: isMobile ? 'calc(70vh - 100px)' : 'auto' }}>
+          <ScrollArea className={cn("max-h-[calc(70vh-140px)]", isMobile ? "pr-4" : "")} type="always">
             <div className="grid gap-3">
               <div className="flex items-center gap-4 border-b pb-3">
                 <img 
@@ -95,7 +99,7 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
 
               <div className="grid grid-cols-5 gap-2 py-1">
                 <div className="col-span-2 text-sm font-medium">반납 예정일</div>
-                <div className="col-span-3 text-sm">{format(returnDueDate, 'yyyy-MM-dd')}</div>
+                <div className="col-span-3 text-sm whitespace-nowrap">{format(returnDueDate, 'yyyy-MM-dd')}</div>
               </div>
               
               <div className="flex justify-center pt-3 pb-2">
@@ -107,10 +111,10 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
                 />
               </div>
             </div>
-          </div>
+          </ScrollArea>
 
-          <DialogFooter className="sm:justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} className="sm:mt-0">취소</Button>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
             <Button onClick={handleBorrow}>대여하기</Button>
           </DialogFooter>
         </DialogContent>
@@ -124,8 +128,8 @@ export function BorrowBookDialog({ book, isOpen, onOpenChange }: BorrowBookDialo
               최대 {SYSTEM_SETTINGS.maxBorrowLimit}권까지 대여할 수 있습니다!
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="sm:justify-end gap-2">
-            <AlertDialogAction onClick={() => setShowLimitWarning(false)} className="w-full sm:w-auto">
+          <AlertDialogFooter className="flex justify-end gap-2">
+            <AlertDialogAction onClick={() => setShowLimitWarning(false)}>
               확인
             </AlertDialogAction>
           </AlertDialogFooter>

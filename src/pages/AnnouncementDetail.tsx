@@ -8,6 +8,7 @@ import { Calendar, Eye, ArrowLeft, Trash2, PenLine, AlertCircle } from "lucide-r
 import { getAnnouncementById } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,7 @@ const AnnouncementDetail = () => {
   const navigate = useNavigate();
   const { hasRole } = useAuth();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const isAdmin = hasRole(['admin', 'system_admin']);
   
   const announcement = id ? getAnnouncementById(id) : null;
@@ -39,8 +41,14 @@ const AnnouncementDetail = () => {
   }
   
   const handleDelete = () => {
-    // In a real app, this would delete the announcement
-    navigate('/announcements');
+    setIsDeleting(true);
+    
+    // Simulate API call for deletion
+    setTimeout(() => {
+      setIsDeleting(false);
+      toast.success('공지사항이 삭제되었습니다.');
+      navigate('/announcements');
+    }, 800);
   };
   
   return (
@@ -60,7 +68,7 @@ const AnnouncementDetail = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <Badge variant="outline" className="bg-gray-100">
                   {announcement.category}
                 </Badge>
@@ -141,8 +149,12 @@ const AnnouncementDetail = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
-              삭제
+            <AlertDialogAction 
+              onClick={handleDelete} 
+              className="bg-red-500 hover:bg-red-600"
+              disabled={isDeleting}
+            >
+              {isDeleting ? '삭제 중...' : '삭제'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
