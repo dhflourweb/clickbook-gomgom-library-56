@@ -80,9 +80,9 @@ const Announcements = () => {
           )}
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm">
-          {/* Search and Filter */}
-          <div className="border-b p-4">
+        {/* Filter Section - Completely separated */}
+        <div className="bg-white rounded-lg shadow-sm mb-4">
+          <div className="p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -130,8 +130,10 @@ const Announcements = () => {
               </div>
             </div>
           </div>
+        </div>
           
-          {/* Announcements List */}
+        {/* Content Section - Completely separated */}
+        <div className="bg-white rounded-lg shadow-sm">
           <div className="p-4">
             <div className="space-y-3">
               {displayedAnnouncements.length === 0 ? (

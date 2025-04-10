@@ -21,6 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Card, CardContent } from "@/components/ui/card";
 
 const InquiryDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -84,139 +85,151 @@ const InquiryDetail = () => {
           <Button 
             variant="ghost" 
             onClick={() => navigate('/inquiries')}
-            className="px-2"
+            className="px-2 hover:bg-gray-100"
           >
             <ArrowLeft size={16} className="mr-2" />
             문의하기 목록
           </Button>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline" className="bg-gray-100">
-                  {inquiry.category}
-                </Badge>
-                <Badge 
-                  variant={inquiry.status === 'pending' ? 'outline' : 'secondary'}
-                  className={inquiry.status === 'pending' ? 
-                    'border-secondary-orange text-secondary-orange' : 
-                    'bg-primary text-white'
-                  }
-                >
-                  {inquiry.status === 'pending' ? (
-                    <div className="flex items-center">
-                      <Clock size={12} className="mr-1" />
-                      답변 대기
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <CheckCircle2 size={12} className="mr-1" />
-                      답변 완료
-                    </div>
-                  )}
-                </Badge>
-                {!inquiry.isPublic && (
-                  <Badge variant="secondary" className="bg-gray-700 text-white">
-                    <div className="flex items-center">
-                      <Lock size={12} className="mr-1" />
-                      비공개
-                    </div>
+        <Card className="border border-gray-200 shadow-sm">
+          <CardContent className="p-6">
+            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Badge variant="outline" className="bg-gray-100">
+                    {inquiry.category}
                   </Badge>
+                  <Badge 
+                    variant={inquiry.status === 'pending' ? 'outline' : 'secondary'}
+                    className={inquiry.status === 'pending' ? 
+                      'border-secondary-orange text-secondary-orange' : 
+                      'bg-primary text-white'
+                    }
+                  >
+                    {inquiry.status === 'pending' ? (
+                      <div className="flex items-center">
+                        <Clock size={12} className="mr-1" />
+                        답변 대기
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <CheckCircle2 size={12} className="mr-1" />
+                        답변 완료
+                      </div>
+                    )}
+                  </Badge>
+                  {!inquiry.isPublic && (
+                    <Badge variant="secondary" className="bg-gray-700 text-white">
+                      <div className="flex items-center">
+                        <Lock size={12} className="mr-1" />
+                        비공개
+                      </div>
+                    </Badge>
+                  )}
+                </div>
+                
+                <h1 className="text-2xl font-bold">{inquiry.title}</h1>
+              </div>
+              
+              <div className="flex gap-2">
+                {canEdit && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate(`/inquiries/${id}/edit`)}
+                  >
+                    <PenLine size={16} className="mr-1" />
+                    수정
+                  </Button>
+                )}
+                {canDelete && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    className="text-red-500 border-red-200 hover:bg-red-50"
+                  >
+                    <Trash2 size={16} className="mr-1" />
+                    삭제
+                  </Button>
                 )}
               </div>
-              
-              <h1 className="text-2xl font-bold">{inquiry.title}</h1>
             </div>
             
-            <div className="flex gap-2">
-              {canEdit && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => navigate(`/inquiries/${id}/edit`)}
-                >
-                  <PenLine size={16} className="mr-1" />
-                  수정
-                </Button>
-              )}
-              {canDelete && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setDeleteDialogOpen(true)}
-                  className="text-red-500 border-red-200 hover:bg-red-50"
-                >
-                  <Trash2 size={16} className="mr-1" />
-                  삭제
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          <div className="flex justify-between text-sm text-gray-500 border-y border-gray-100 py-3 mb-6">
-            <div className="flex items-center gap-4">
-              <span>작성자: {inquiry.createdBy === user?.id ? '나' : inquiry.createdBy}</span>
-              <div className="flex items-center">
-                <Calendar size={14} className="mr-1" />
-                <span>{format(new Date(inquiry.createdAt), 'yyyy.MM.dd')}</span>
+            <div className="flex justify-between text-sm text-gray-500 border-y border-gray-100 py-3 mb-6">
+              <div className="flex items-center gap-4">
+                <span>작성자: {inquiry.createdBy === user?.id ? '나' : inquiry.createdBy}</span>
+                <div className="flex items-center">
+                  <Calendar size={14} className="mr-1" />
+                  <span>{format(new Date(inquiry.createdAt), 'yyyy.MM.dd')}</span>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="prose max-w-none">
-            <p className="whitespace-pre-wrap">{inquiry.content}</p>
-          </div>
-          
-          {/* Answer section */}
-          {inquiry.answer && (
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <div className="flex items-center gap-2 mb-4">
-                <Badge variant="secondary" className="bg-primary text-white">
-                  답변
-                </Badge>
-                <span className="text-sm text-gray-500">
-                  {format(new Date(inquiry.answer.createdAt), 'yyyy.MM.dd')}
-                </span>
-              </div>
-              
-              <div className="bg-gray-50 p-4 rounded-md">
-                <p className="whitespace-pre-wrap">{inquiry.answer.content}</p>
-                <p className="text-sm text-gray-500 mt-4">답변자: {inquiry.answer.createdBy}</p>
-              </div>
+            
+            <div className="prose max-w-none">
+              <p className="whitespace-pre-wrap">{inquiry.content}</p>
             </div>
-          )}
-          
-          {/* Admin answer form */}
-          {canAnswer && (
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <h3 className="text-lg font-medium mb-4">답변 작성</h3>
-              
-              <Textarea
-                placeholder="답변 내용을 입력하세요."
-                className="min-h-[150px] mb-4"
-                value={answerContent}
-                onChange={(e) => setAnswerContent(e.target.value)}
-              />
-              
-              <div className="flex items-center gap-2 mb-4">
-                <Checkbox 
-                  id="public-answer" 
-                  checked={isPublicAnswer} 
-                  onCheckedChange={(checked) => setIsPublicAnswer(!!checked)} 
-                />
-                <label htmlFor="public-answer" className="text-sm cursor-pointer">
-                  이 답변을 공개로 설정합니다
-                </label>
+            
+            {/* Answer section */}
+            {inquiry.answer && (
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <Badge variant="secondary" className="bg-primary text-white">
+                    답변
+                  </Badge>
+                  <span className="text-sm text-gray-500">
+                    {format(new Date(inquiry.answer.createdAt), 'yyyy.MM.dd')}
+                  </span>
+                </div>
+                
+                <div className="bg-gray-50 p-5 rounded-md">
+                  <p className="whitespace-pre-wrap">{inquiry.answer.content}</p>
+                  <p className="text-sm text-gray-500 mt-4">답변자: {inquiry.answer.createdBy}</p>
+                </div>
               </div>
-              
-              <Button onClick={handleAnswerSubmit}>
-                답변 등록
-              </Button>
-            </div>
-          )}
-        </div>
+            )}
+            
+            {/* Admin answer form */}
+            {canAnswer && (
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <MessageSquare size={18} className="text-primary" />
+                  <h3 className="text-lg font-medium">답변 작성</h3>
+                </div>
+                
+                <div className="bg-gray-50 p-5 rounded-md">
+                  <Textarea
+                    placeholder="답변 내용을 입력하세요."
+                    className="min-h-[150px] mb-4 bg-white"
+                    value={answerContent}
+                    onChange={(e) => setAnswerContent(e.target.value)}
+                  />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        id="public-answer" 
+                        checked={isPublicAnswer} 
+                        onCheckedChange={(checked) => setIsPublicAnswer(!!checked)} 
+                      />
+                      <label htmlFor="public-answer" className="text-sm cursor-pointer">
+                        이 답변을 공개로 설정합니다
+                      </label>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleAnswerSubmit}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      답변 등록
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
       
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
