@@ -754,7 +754,6 @@ const BookRentalHistory = () => {
               category: selectedBook.category,
               publishDate: '',
               publisher: '',
-              tags: [],
               status: {
                 available: 1,
                 total: 1,
@@ -781,7 +780,6 @@ const BookRentalHistory = () => {
               category: selectedBook.category,
               publishDate: '',
               publisher: '',
-              tags: [],
               status: {
                 available: 1,
                 total: 1,
@@ -810,7 +808,6 @@ const BookRentalHistory = () => {
               category: selectedBook.category,
               publishDate: '',
               publisher: '',
-              tags: [],
               status: {
                 available: 1,
                 total: 1,
