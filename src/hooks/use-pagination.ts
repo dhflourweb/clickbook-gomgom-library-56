@@ -36,6 +36,10 @@ export function usePagination<T>({
     setItemsPerPage: setItemsPerPageWithReset, // Use the wrapped setter
     paginate,
     totalPages: (items: T[]) => Math.max(1, Math.ceil(items.length / itemsPerPage)),
-    startIndex: (page - 1) * itemsPerPage + 1
+    startIndex: (page - 1) * itemsPerPage + 1,
+    // Added: Helper to determine if pagination should display
+    shouldShowPagination: (items: T[]) => items.length > 0,
+    // Added: Get endIndex for display purposes (e.g., "Showing 1-10 of 50")
+    endIndex: (items: T[]) => Math.min((page - 1) * itemsPerPage + itemsPerPage, items.length)
   };
 }

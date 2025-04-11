@@ -44,7 +44,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
           } else if (badge === 'popular') {
             badgeClassName += " bg-primary-skyblue text-white"; // 인기
           } else if (badge === 'new') {
-            badgeClassName += " bg-primary-deepblue text-white"; // 신규
+            badgeClassName += " bg-secondary-green text-white"; // Changed: 신규 badge color to secondary-green (#6AB960)
           } else {
             badgeClassName += " badge-" + badge;
           }

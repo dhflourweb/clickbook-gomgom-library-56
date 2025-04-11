@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, ChevronDown, X, UserRound, History } from 'lucide-react';
@@ -208,10 +209,10 @@ export const Header = () => {
             </div>
           </div>
 
-          {/* Mobile Search Modal */}
+          {/* Mobile Search Modal - Positioned at the top */}
           {isMobile && (
             <Dialog open={showSearchModal} onOpenChange={setShowSearchModal}>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-md fixed top-0 translate-y-0" style={{ top: '10px', transform: 'none' }}>
                 <DialogHeader>
                   <DialogTitle>도서 검색</DialogTitle>
                 </DialogHeader>
