@@ -751,7 +751,11 @@ const BookRentalHistory = () => {
               publishedDate: '',
               publisher: '',
               tags: [],
-              status: 'available',
+              status: {
+                available: 1,
+                total: 1,
+                borrowed: 0
+              },
               location: '',
             }}
             isOpen={returnDialogOpen} 
@@ -771,7 +775,11 @@ const BookRentalHistory = () => {
               publishedDate: '',
               publisher: '',
               tags: [],
-              status: 'available',
+              status: {
+                available: 1,
+                total: 1,
+                borrowed: 0
+              },
               location: '',
               returnDueDate: selectedBook.dueDate,
               hasBeenExtended: selectedBook.status === '연체', // Assume overdue books have been extended
@@ -793,7 +801,11 @@ const BookRentalHistory = () => {
               publishedDate: '',
               publisher: '',
               tags: [],
-              status: 'available',
+              status: {
+                available: 1,
+                total: 1,
+                borrowed: 0
+              },
               location: '',
             }}
             isOpen={reviewDialogOpen} 
