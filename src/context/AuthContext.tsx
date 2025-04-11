@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const MOCK_USERS = [
   {
     id: "u1",
-    name: "홍길동",
+    name: "장성근",
     email: "user@dhflour.co.kr",
     password: "password123",
     phone: "010-1234-5678",
@@ -26,6 +26,7 @@ const MOCK_USERS = [
     role: "EMP" as UserRole,
     borrowedBooks: 1,
     reservedBooks: 0,
+    employeeId: "102304016",
     status: "active" as const
   },
   {
@@ -38,6 +39,7 @@ const MOCK_USERS = [
     role: "ADM" as UserRole,
     borrowedBooks: 0,
     reservedBooks: 0,
+    employeeId: "100000001",
     status: "active" as const
   }
 ];

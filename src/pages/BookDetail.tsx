@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -25,7 +24,6 @@ const BookDetail = () => {
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(5);
   
-  // Dialog states
   const [borrowDialogOpen, setBorrowDialogOpen] = useState(false);
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
@@ -48,7 +46,6 @@ const BookDetail = () => {
   const reviews = getReviewsForBook(id);
   const isAvailable = book.status.available > 0;
   
-  // Generate a shelf number between 1-10 based on book ID
   const shelfLocation = `${parseInt(book.id.replace(/\D/g, ''), 10) % 10 + 1}`;
   
   const handleBorrow = (e: React.MouseEvent) => {
@@ -105,7 +102,6 @@ const BookDetail = () => {
       return;
     }
     
-    // In a real app, this would call an API to submit the review
     toast({
       title: "리뷰 등록 완료",
       description: "도서 리뷰가 성공적으로 등록되었습니다.",
@@ -115,7 +111,6 @@ const BookDetail = () => {
     setRating(5);
   };
 
-  // Mock functions to simulate user permissions
   const canBorrow = isAvailable && user?.borrowedCount < 2;
   const canReserve = !isAvailable && book.isReservable !== false;
   const isBorrowedByUser = book.borrowedByCurrentUser || false;
@@ -125,16 +120,13 @@ const BookDetail = () => {
     setIsDescriptionOpen(!isDescriptionOpen);
   };
 
-  // Get status class based on availability
   const getStatusClass = () => {
     if (isAvailable) return "bg-primary-deepblue";
     if (isReserved || book.isReservable === false) return "bg-secondary-orange";
     return "bg-point-red";
   };
 
-  // Render action buttons based on book status and user
   const renderActionButtons = () => {
-    // Case 1: Book is available - Show borrow button
     if (isAvailable) {
       return (
         <Button 
@@ -148,7 +140,6 @@ const BookDetail = () => {
       );
     }
     
-    // Case 2: Book is borrowed by current user - Show return and extend buttons
     if (isBorrowedByUser) {
       return (
         <div className="w-full flex flex-col gap-2">
@@ -171,7 +162,6 @@ const BookDetail = () => {
       );
     }
     
-    // Case 3: Book is not reservable - Show disabled reservation button
     if (book.isReservable === false) {
       return (
         <Button 
@@ -188,7 +178,6 @@ const BookDetail = () => {
       );
     }
     
-    // Case 4: Book is borrowed by someone else - Show reserve button
     return (
       <Button 
         variant={isReserved ? "outline" : "secondary"}
@@ -208,9 +197,7 @@ const BookDetail = () => {
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* Main content area with left sidebar and right content */}
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Left sidebar - Book cover and action buttons - Fixed height */}
           <div className="md:w-1/3">
             <div className="bg-white rounded-lg shadow-sm overflow-hidden p-6 flex flex-col items-center border-r border-gray-100 md:min-h-[600px]">
               <div className="relative w-full max-w-[250px]">
@@ -236,7 +223,6 @@ const BookDetail = () => {
                 </button>
               </div>
               
-              {/* Book stats */}
               <div className="w-full mt-4 mb-6 space-y-3">
                 <div className="flex items-center justify-between text-sm text-gray-600 border-b border-gray-100 pb-2">
                   <div className="flex items-center">
@@ -252,12 +238,10 @@ const BookDetail = () => {
                     대여상태
                   </div>
                   <div>
-                    <span className={cn(
-                      "text-xs px-3 py-1 rounded-full font-medium text-white inline-block",
-                      getStatusClass()
-                    )}>
-                      {isAvailable ? "대여가능" : (isReserved || book.isReservable === false) ? "예약중" : "대여중"}
-                    </span>
+                    <BadgeDisplay
+                      badges={[isAvailable ? "available" : (isReserved || book.isReservable === false) ? "reserved" : "borrowed"]}
+                      size="sm"
+                    />
                   </div>
                 </div>
                 
@@ -272,28 +256,23 @@ const BookDetail = () => {
                 )}
               </div>
               
-              {/* Action buttons */}
               <div className="w-full space-y-3 mt-2">
                 {renderActionButtons()}
               </div>
             </div>
           </div>
             
-          {/* Right content - Book details */}
           <div className="md:w-2/3">
             <div className="bg-white rounded-lg shadow-sm overflow-hidden p-6">
-              {/* Book badges */}
               {book.badges && book.badges.length > 0 && (
                 <div className="mb-4">
                   <BadgeDisplay badges={book.badges} size="md" />
                 </div>
               )}
               
-              {/* Book title and basic info */}
               <h1 className="text-2xl font-bold mb-3">{book.title}</h1>
               <p className="text-gray-700 mb-6">{book.author}</p>
               
-              {/* Tab navigation - Use shadcn Tab component */}
               <Tabs defaultValue="info" className="w-full">
                 <TabsList className="w-full grid grid-cols-2 mb-6">
                   <TabsTrigger value="info">도서 정보</TabsTrigger>
@@ -301,35 +280,9 @@ const BookDetail = () => {
                 </TabsList>
                 
                 <TabsContent value="info" className="pt-2">
-                  {/* Book details */}
-                  {book.description && (
-                    <div className="mb-6">
-                      <Collapsible 
-                        open={isDescriptionOpen} 
-                        onOpenChange={setIsDescriptionOpen}
-                        className="border rounded-md"
-                      >
-                        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-t-md">
-                          <h2 className="text-lg font-semibold">책 소개</h2>
-                          <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="p-1 h-auto">
-                              {isDescriptionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </Button>
-                          </CollapsibleTrigger>
-                        </div>
-                        <CollapsibleContent className="p-4">
-                          <p className="text-gray-700 whitespace-pre-line">
-                            {book.description || "이 책은 다양한 주제에 대한 깊은 통찰력을 제공합니다. 저자는 자신의 경험과 연구를 바탕으로 독자들에게 새로운 관점을 제시합니다. 각 장은 특정 주제를 다루며, 이해하기 쉬운 설명과 예시를 통해 복잡한 개념을 명확히 전달합니다. 또한 책의 후반부에서는 실제 사례 연구와 적용 방법을 제시하여 독자들이 배운 내용을 실생활에 활용할 수 있도록 돕습니다. 이 책은 해당 분야에 관심 있는 모든 독자에게 가치 있는 자료가 될 것입니다. 저자의 명확한 문체와 체계적인 접근 방식은 복잡한 주제를 이해하기 쉽게 만들어 주며, 다양한 사례 연구와 예시를 통해 이론이 실제로 어떻게 적용되는지 보여줍니다. 이 책은 학문적 연구뿐만 아니라 실용적인 지식을 찾는 독자들에게도 유용한 자료가 될 것입니다."}
-                          </p>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    </div>
-                  )}
-                  
                   <div className="mt-6 border-t border-gray-100 pt-6">
                     <h2 className="text-lg font-semibold mb-4">상세 정보</h2>
                     
-                    {/* Book metadata in grid layout */}
                     <div className="grid grid-cols-2 gap-y-3 gap-x-6">
                       <div className="col-span-2 md:col-span-1">
                         <p className="flex items-baseline gap-2">
@@ -370,9 +323,10 @@ const BookDetail = () => {
                       <div className="col-span-2">
                         <p className="flex items-baseline gap-2">
                           <span className="text-gray-500 text-sm">대여 상태:</span>
-                          <span className={cn("inline-block", "text-xs px-3 py-1 rounded-full font-medium text-white", getStatusClass())}>
-                            {isAvailable ? "대여가능" : (isReserved || book.isReservable === false) ? "예약중" : "대여중"}
-                          </span>
+                          <BadgeDisplay
+                            badges={[isAvailable ? "available" : (isReserved || book.isReservable === false) ? "reserved" : "borrowed"]}
+                            size="sm"
+                          />
                           <span className="ml-2">
                             ({book.status.available}/{book.status.total})
                           </span>
@@ -380,10 +334,33 @@ const BookDetail = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {book.description && (
+                    <div className="mt-6 border-t border-gray-100 pt-6">
+                      <Collapsible 
+                        open={isDescriptionOpen} 
+                        onOpenChange={setIsDescriptionOpen}
+                        className="border rounded-md"
+                      >
+                        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-t-md">
+                          <h2 className="text-lg font-semibold">도서 줄거리</h2>
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="p-1 h-auto">
+                              {isDescriptionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </Button>
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent className="p-4">
+                          <p className="text-gray-700 whitespace-pre-line">
+                            {book.description || "이 책은 다양한 주제에 대한 깊은 통찰력을 제공합니다. 저자는 자신의 경험과 연구를 바탕으로 독자들에게 새로운 관점을 제시합니다. 각 장은 특정 주제를 다루며, 이해하기 쉬운 설명과 예시를 통해 복잡한 개념을 명확히 전달합니다. 또한 책의 후반부에서는 실제 사례 연구와 적용 방법을 제시하여 독자들이 배운 내용을 실생활에 활용할 수 있도록 돕습니다. 이 책은 해당 분야에 관심 있는 모든 독자에게 가치 있는 자료가 될 것입니다. 저자의 명확한 문체와 체계적인 접근 방식은 복잡한 주제를 이해하기 쉽게 만들어 주며, 다양한 사례 연구와 예시를 통해 이론이 실제로 어떻게 적용되는지 보여줍니다. 이 책은 학문적 연구뿐만 아니라 실용적인 지식을 찾는 독자들에게도 유용한 자료가 될 것입니다."}
+                          </p>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
+                  )}
                 </TabsContent>
                 
                 <TabsContent value="reviews" className="pt-2">
-                  {/* Review form */}
                   <div className="mb-6 border-b border-gray-200 pb-6">
                     <h3 className="text-lg font-medium mb-4">리뷰 작성</h3>
                     <div className="mb-4">
@@ -410,7 +387,6 @@ const BookDetail = () => {
                     </Button>
                   </div>
                   
-                  {/* Reviews list */}
                   <div className="space-y-6">
                     <h3 className="text-lg font-medium mb-2">리뷰 {reviews.length}건</h3>
                     
@@ -440,7 +416,6 @@ const BookDetail = () => {
         </div>
       </div>
       
-      {/* Reusable Dialogs */}
       <BorrowBookDialog 
         book={book}
         isOpen={borrowDialogOpen}

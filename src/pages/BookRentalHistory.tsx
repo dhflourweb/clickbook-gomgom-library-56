@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -122,6 +121,12 @@ const BookRentalHistory = () => {
     const endIndex = startIndex + itemsPerPage;
     setPaginatedRentals(filteredRentals.slice(startIndex, endIndex));
   }, [filteredRentals, currentPage, itemsPerPage]);
+
+  // Handle items per page change - Modified to always reset to page 1
+  const handleItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   // Go to book detail page
   const handleBookClick = (bookId: string) => {
@@ -320,9 +325,9 @@ const BookRentalHistory = () => {
         {/* Filter Controls - Wrapped with white background */}
         <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Search */}
-              <div className="relative w-full sm:w-64 flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              {/* Search - Reduced width */}
+              <div className="relative w-full sm:w-52 flex-shrink-0">
                 <Input
                   type="text"
                   placeholder="도서명, 저자 검색..."
@@ -333,8 +338,8 @@ const BookRentalHistory = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               </div>
               
-              {/* Category Filter */}
-              <div className="w-full xs:w-auto sm:w-40">
+              {/* Category Filter - Adjusted width */}
+              <div className="w-full xs:w-auto sm:w-36 flex-grow sm:flex-grow-0">
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="카테고리" />
@@ -348,12 +353,12 @@ const BookRentalHistory = () => {
                 </Select>
               </div>
               
-              {/* Date Range Picker */}
+              {/* Date Range Picker - Adjusted width */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full sm:w-auto justify-start text-left font-normal"
+                    className="w-full sm:w-44 justify-start text-left font-normal flex-grow sm:flex-grow-0"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange.from ? (
@@ -397,9 +402,12 @@ const BookRentalHistory = () => {
                 </PopoverContent>
               </Popover>
               
-              {/* Items per page selector */}
-              <div className="w-full xs:w-auto sm:w-32 ml-auto">
-                <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
+              {/* Items per page selector - Adjusted width */}
+              <div className="w-full xs:w-auto sm:w-32 ml-auto flex-grow sm:flex-grow-0">
+                <Select 
+                  value={itemsPerPage.toString()} 
+                  onValueChange={(value) => handleItemsPerPageChange(parseInt(value))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="표시 개수" />
                   </SelectTrigger>

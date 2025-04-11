@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -71,6 +72,10 @@ const MyPage = () => {
               <CardTitle>회원 정보</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">사번</div>
+                <div className="font-medium">{user?.employeeId}</div>
+              </div>
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">이름</div>
                 <div className="font-medium">{user?.name}</div>
