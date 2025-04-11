@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -313,45 +312,93 @@ const BookRentalHistory = () => {
   return (
     <MainLayout>
       <div className="container pt-6 pb-10">
-        <h1 className="text-2xl font-semibold mb-6">도서대여목록</h1>
+        <h1 className="text-2xl font-semibold mb-2">도서대여목록</h1>
+        <p className="text-gray-500 mb-6">내가 대여한 도서 목록을 조회하고 반납/연장할 수 있습니다.</p>
         
         {/* Filter Controls - Wrapped with white background */}
         <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
           <div className="space-y-4">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
-                {/* Search */}
-                <div className="relative flex-1">
-                  <Input
-                    type="text"
-                    placeholder="도서명, 저자 검색..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                </div>
-                
-                {/* Category Filter */}
-                <div className="w-full sm:w-auto">
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="w-full sm:w-[180px]">
-                      <SelectValue placeholder="카테고리" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="전체">전체 카테고리</SelectItem>
-                      {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Search */}
+              <div className="relative w-full sm:w-64 flex-shrink-0">
+                <Input
+                  type="text"
+                  placeholder="도서명, 저자 검색..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               </div>
               
-              {/* Items per page selector - Moved to filter section */}
-              <div>
+              {/* Category Filter */}
+              <div className="w-full xs:w-auto sm:w-40">
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="카테고리" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="전체">전체 카테고리</SelectItem>
+                    {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Date Range Picker */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "MM.dd")} - {format(dateRange.to, "MM.dd")}
+                        </>
+                      ) : (
+                        format(dateRange.from, "yyyy-MM-dd")
+                      )
+                    ) : (
+                      <span>대여기간</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    selected={{
+                      from: dateRange.from,
+                      to: dateRange.to,
+                    }}
+                    onSelect={(range) => {
+                      setDateRange({
+                        from: range?.from,
+                        to: range?.to,
+                      });
+                    }}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                  <div className="p-2 border-t border-border">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setDateRange({ from: undefined, to: undefined })}
+                    >
+                      초기화
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              
+              {/* Items per page selector */}
+              <div className="w-full xs:w-auto sm:w-32 ml-auto">
                 <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger>
                     <SelectValue placeholder="표시 개수" />
                   </SelectTrigger>
                   <SelectContent>
@@ -363,55 +410,6 @@ const BookRentalHistory = () => {
                 </Select>
               </div>
             </div>
-            
-            {/* Date Range Picker */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.from ? (
-                    dateRange.to ? (
-                      <>
-                        FROM: {format(dateRange.from, "yyyy-MM-dd")} - TO: {format(dateRange.to, "yyyy-MM-dd")}
-                      </>
-                    ) : (
-                      format(dateRange.from, "yyyy-MM-dd")
-                    )
-                  ) : (
-                    <span>대여기간 선택</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="range"
-                  selected={{
-                    from: dateRange.from,
-                    to: dateRange.to,
-                  }}
-                  onSelect={(range) => {
-                    setDateRange({
-                      from: range?.from,
-                      to: range?.to,
-                    });
-                  }}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                />
-                <div className="p-2 border-t border-border">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setDateRange({ from: undefined, to: undefined })}
-                  >
-                    초기화
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
           </div>
           
           {/* Status Tabs */}

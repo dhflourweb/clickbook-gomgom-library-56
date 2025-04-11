@@ -20,7 +20,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for saved email and auto login
+    // Check for saved email
     const savedEmail = localStorage.getItem('gomclick_saved_email');
     const savedAutoLogin = localStorage.getItem('gomclick_auto_login');
 
@@ -29,6 +29,7 @@ const Login = () => {
       setRememberID(true);
     }
 
+    // Only perform auto-login if explicitly enabled
     if (savedAutoLogin && savedEmail) {
       setAutoLogin(true);
       const savedPassword = localStorage.getItem('gomclick_saved_password');

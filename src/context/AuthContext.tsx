@@ -99,6 +99,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('gomclick_user');
+    // Clear auto login when logging out
+    localStorage.removeItem('gomclick_auto_login');
+    localStorage.removeItem('gomclick_saved_password');
+    
     toast({
       title: "로그아웃",
       description: "성공적으로 로그아웃되었습니다.",
