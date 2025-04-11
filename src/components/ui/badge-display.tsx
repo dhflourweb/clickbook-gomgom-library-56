@@ -11,7 +11,8 @@ interface BadgeDisplayProps {
 const badgeLabels: Record<Exclude<NonNullable<BookBadge>, null>, string> = {
   'recommended': '예약중',
   'best': '대여중',
-  'popular': '인기'
+  'popular': '인기',
+  'new': '신규'
 };
 
 export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
