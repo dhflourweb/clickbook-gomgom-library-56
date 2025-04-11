@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { Heart, Calendar, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { BookBadge } from '@/types';
 
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -47,6 +48,13 @@ const BookDetail = () => {
   const isAvailable = book.status.available > 0;
   
   const shelfLocation = `${parseInt(book.id.replace(/\D/g, ''), 10) % 10 + 1}`;
+  
+  // Helper function to convert status to valid BookBadge
+  const getStatusBadge = (): BookBadge[] => {
+    if (isAvailable) return ['new']; // Using 'new' as placeholder for available
+    if (isReserved || book.isReservable === false) return ['recommended']; // Using 'recommended' as placeholder for reserved
+    return ['best']; // Using 'best' as placeholder for borrowed
+  };
   
   const handleBorrow = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -239,7 +247,7 @@ const BookDetail = () => {
                   </div>
                   <div>
                     <BadgeDisplay
-                      badges={[isAvailable ? "available" : (isReserved || book.isReservable === false) ? "reserved" : "borrowed"]}
+                      badges={getStatusBadge()}
                       size="sm"
                     />
                   </div>
@@ -324,7 +332,7 @@ const BookDetail = () => {
                         <p className="flex items-baseline gap-2">
                           <span className="text-gray-500 text-sm">대여 상태:</span>
                           <BadgeDisplay
-                            badges={[isAvailable ? "available" : (isReserved || book.isReservable === false) ? "reserved" : "borrowed"]}
+                            badges={getStatusBadge()}
                             size="sm"
                           />
                           <span className="ml-2">

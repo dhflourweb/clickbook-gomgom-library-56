@@ -44,6 +44,7 @@ export interface User {
   reservedBooks: number;
   status: 'active' | 'inactive';
   borrowedCount?: number;
+  employeeId: string; // Added this property
 }
 
 export type UserRole = 'EMP' | 'ADM';
