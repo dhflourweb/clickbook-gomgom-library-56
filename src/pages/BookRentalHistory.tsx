@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -22,6 +23,7 @@ import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { ReviewDialog } from '@/components/books/ReviewDialog';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { MOCK_BOOKS } from '@/data/mockData';
+import { BookBadge } from '@/types';
 
 // Types
 type SortDirection = 'asc' | 'desc' | null;
@@ -38,7 +40,7 @@ interface RentalBook {
   dueDate: string;
   status: '대여중' | '연체' | '반납완료';
   returnDate?: string;
-  badges: Array<'new' | 'best' | 'recommended' | null>;
+  badges: BookBadge[]; // Changed from ("new" | "recommended" | "best")[] to BookBadge[]
 }
 
 const BookRentalHistory = () => {
