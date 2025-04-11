@@ -1,6 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { BookBadge } from "@/types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BadgeDisplayProps {
   badges: BookBadge[];
@@ -14,6 +15,8 @@ const badgeLabels: Record<Exclude<NonNullable<BookBadge>, 'popular'>, string> = 
 };
 
 export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
+  const isMobile = useIsMobile();
+  
   if (!badges || badges.length === 0 || badges.every(badge => !badge)) {
     return null;
   }
@@ -30,7 +33,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
       {badges
         .filter((badge): badge is NonNullable<BookBadge> => badge !== null && badge !== 'popular')
         .map(badge => {
-          let badgeClassName = "font-medium rounded-md";
+          let badgeClassName = "font-medium rounded-md inline-block";
           
           // Apply specific styles based on badge type
           if (badge === 'new') {
@@ -46,7 +49,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
           return (
             <span
               key={badge}
-              className={cn(badgeClassName, sizeClasses[size])}
+              className={cn(badgeClassName, sizeClasses[size], isMobile ? "mb-1" : "")}
             >
               {badgeLabels[badge as keyof typeof badgeLabels]}
             </span>

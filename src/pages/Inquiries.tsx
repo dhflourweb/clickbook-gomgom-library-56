@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -11,6 +12,7 @@ import { Calendar, MessageCircle, Search, Lock, CheckCircle2, Clock } from "luci
 import { getInquiries, getInquiriesByAdmin, INQUIRY_CATEGORIES } from '@/data/communityData';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   Pagination, 
   PaginationContent, 
@@ -29,6 +31,7 @@ const Inquiries = () => {
   const [tabFilter, setTabFilter] = useState<string>('all');
   const [displayCount, setDisplayCount] = useState<string>("10");
   const [currentPage, setCurrentPage] = useState(1);
+  const isMobile = useIsMobile();
   const isAdmin = hasRole("ADM");
   
   const inquiries = isAdmin ? getInquiriesByAdmin() : getInquiries(user?.name);
@@ -157,15 +160,15 @@ const Inquiries = () => {
                   >
                     <CardHeader className="pb-2 px-4 pt-3">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="bg-gray-100">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <Badge variant="outline" className="bg-gray-100 inline-block mb-1">
                             {inquiry.category}
                           </Badge>
                           <Badge 
                             variant={inquiry.status === 'pending' ? 'outline' : 'secondary'}
-                            className={inquiry.status === 'pending' ? 
+                            className={`inline-block mb-1 ${inquiry.status === 'pending' ? 
                               'border-secondary-orange text-secondary-orange' : 
-                              'bg-primary text-white'
+                              'bg-primary text-white'}`
                             }
                           >
                             {inquiry.status === 'pending' ? (
@@ -181,7 +184,7 @@ const Inquiries = () => {
                             )}
                           </Badge>
                           {!inquiry.isPublic && (
-                            <Badge variant="secondary" className="bg-gray-700 text-white">
+                            <Badge variant="secondary" className="bg-gray-700 text-white inline-block mb-1">
                               <div className="flex items-center">
                                 <Lock size={12} className="mr-1" />
                                 비공개
@@ -189,7 +192,7 @@ const Inquiries = () => {
                             </Badge>
                           )}
                         </div>
-                        <div className="flex items-center text-sm text-gray-500">
+                        <div className="flex items-center text-sm text-gray-500 shrink-0">
                           <Calendar size={14} className="mr-1" />
                           <span>{format(new Date(inquiry.createdAt), 'yyyy.MM.dd')}</span>
                         </div>
