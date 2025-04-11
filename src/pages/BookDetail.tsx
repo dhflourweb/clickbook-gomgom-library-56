@@ -13,7 +13,7 @@ import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
 import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
 import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { cn } from '@/lib/utils';
-import { Heart, Calendar, Users } from 'lucide-react';
+import { Heart, Calendar, Users, BookOpen, Building2, Book, Bookmark, Clock } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BookBadge } from '@/types';
 
@@ -48,11 +48,18 @@ const BookDetail = () => {
   
   const shelfLocation = `${parseInt(book.id.replace(/\D/g, ''), 10) % 10 + 1}`;
   
-  // Helper function to convert status to valid BookBadge
-  const getStatusBadge = (): BookBadge[] => {
-    if (isAvailable) return [];  // No badge for available books
-    if (isReserved || book.isReservable === false) return ['recommended']; // Using 'recommended' as placeholder for reserved
-    return ['best']; // Using 'best' as placeholder for borrowed
+  // Helper function to get status text
+  const getStatusText = (): string => {
+    if (isAvailable) return "대여가능";
+    if (isReserved || book.isReservable === false) return "예약중";
+    return "대여중";
+  };
+  
+  // Helper function to get status badge styles
+  const getStatusBadgeClass = (): string => {
+    if (isAvailable) return "bg-primary-deepblue";
+    if (isReserved || book.isReservable === false) return "bg-secondary-orange";
+    return "bg-point-red";
   };
   
   const handleBorrow = (e: React.MouseEvent) => {
@@ -246,13 +253,12 @@ const BookDetail = () => {
                     대여상태
                   </div>
                   <div>
-                    <BadgeDisplay
-                      badges={getStatusBadge()}
-                      size="sm"
-                    />
-                    {isAvailable && (
-                      <span className="text-green-600 font-medium text-xs">대여가능</span>
-                    )}
+                    <span className={cn(
+                      "text-xs px-3 py-1 rounded-full font-medium text-white inline-block",
+                      getStatusBadgeClass()
+                    )}>
+                      {getStatusText()}
+                    </span>
                   </div>
                 </div>
                 
@@ -333,16 +339,39 @@ const BookDetail = () => {
                           <span className="font-medium">{book.registeredDate}</span>
                         </p>
                       </div>
-                      <div className="col-span-2">
+                      <div className="col-span-2 md:col-span-1">
                         <p className="flex items-baseline gap-2">
                           <span className="text-gray-500 text-sm">대여 상태:</span>
-                          <BadgeDisplay
-                            badges={getStatusBadge()}
-                            size="sm"
-                          />
-                          {isAvailable && (
-                            <span className="text-green-600 font-medium text-xs">대여가능</span>
-                          )}
+                          <span className={cn(
+                            "text-xs px-3 py-1 rounded-full font-medium text-white inline-block",
+                            getStatusBadgeClass()
+                          )}>
+                            {getStatusText()}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="col-span-2 md:col-span-1">
+                        <p className="flex items-baseline gap-2">
+                          <span className="text-gray-500 text-sm">보유 권수:</span>
+                          <span className="font-medium">{book.status.total}권</span>
+                        </p>
+                      </div>
+                      <div className="col-span-2 md:col-span-1">
+                        <p className="flex items-baseline gap-2">
+                          <span className="text-gray-500 text-sm">대여 가능 권수:</span>
+                          <span className="font-medium">{book.status.available}권</span>
+                        </p>
+                      </div>
+                      <div className="col-span-2 md:col-span-1">
+                        <p className="flex items-baseline gap-2">
+                          <span className="text-gray-500 text-sm">누적 대여 횟수:</span>
+                          <span className="font-medium">{book.status.borrowed || 0}회</span>
+                        </p>
+                      </div>
+                      <div className="col-span-2 md:col-span-1">
+                        <p className="flex items-baseline gap-2">
+                          <span className="text-gray-500 text-sm">출처:</span>
+                          <span className="font-medium">{book.source === 'purchase' ? '구매' : '기증'}</span>
                         </p>
                       </div>
                     </div>

@@ -9,8 +9,8 @@ interface BadgeDisplayProps {
 }
 
 const badgeLabels: Record<Exclude<NonNullable<BookBadge>, null>, string> = {
-  'recommended': '예약중',
-  'best': '대여중',
+  'recommended': '추천',
+  'best': '베스트',
   'popular': '인기',
   'new': '신규'
 };
@@ -32,17 +32,19 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
   return (
     <div className="flex flex-wrap gap-1.5">
       {badges
-        .filter((badge): badge is NonNullable<BookBadge> => badge !== null && badge !== 'new')
+        .filter((badge): badge is NonNullable<BookBadge> => badge !== null)
         .map(badge => {
           let badgeClassName = "font-medium rounded-md inline-block";
           
           // Apply specific styles based on badge type
           if (badge === 'recommended') {
-            badgeClassName += " bg-secondary-orange text-white"; // 예약중
+            badgeClassName += " bg-secondary-orange text-white"; // 추천
           } else if (badge === 'best') {
-            badgeClassName += " bg-point-red text-white"; // 대여중
+            badgeClassName += " bg-point-red text-white"; // 베스트
           } else if (badge === 'popular') {
             badgeClassName += " bg-primary-skyblue text-white"; // 인기
+          } else if (badge === 'new') {
+            badgeClassName += " bg-primary-deepblue text-white"; // 신규
           } else {
             badgeClassName += " badge-" + badge;
           }
