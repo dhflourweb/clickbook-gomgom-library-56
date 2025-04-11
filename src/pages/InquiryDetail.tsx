@@ -71,7 +71,6 @@ const InquiryDetail = () => {
   
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6">
           <Button 
             variant="ghost" 
@@ -220,7 +219,6 @@ const InquiryDetail = () => {
             )}
           </CardContent>
         </Card>
-      </div>
       
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

@@ -53,7 +53,6 @@ const AnnouncementDetail = () => {
   
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6">
           <Button 
             variant="ghost" 
@@ -136,7 +135,6 @@ const AnnouncementDetail = () => {
             <p className="whitespace-pre-wrap">{announcement.content}</p>
           </div>
         </div>
-      </div>
       
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

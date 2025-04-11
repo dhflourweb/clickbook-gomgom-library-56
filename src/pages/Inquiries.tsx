@@ -60,7 +60,6 @@ const Inquiries = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">문의하기</h1>
@@ -294,7 +293,6 @@ const Inquiries = () => {
             )}
           </div>
         </div>
-      </div>
     </MainLayout>
   );
 };
