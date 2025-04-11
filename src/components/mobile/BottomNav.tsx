@@ -19,12 +19,21 @@ export const BottomNav = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [showFullMenu, setShowFullMenu] = useState(false);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
 
   // Don't render on desktop
   if (!isMobile) return null;
 
   const handleMainMenuClick = () => {
     setShowFullMenu(true);
+  };
+
+  const handleCategoryClick = () => {
+    setShowCategoryMenu(true);
+  };
+
+  const handleCategoryClose = () => {
+    setShowCategoryMenu(false);
   };
 
   return (
@@ -42,37 +51,13 @@ export const BottomNav = () => {
           </button>
           
           {/* 카테고리 */}
-          <Drawer>
-            <DrawerTrigger asChild>
-              <button className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full">
-                <Grid size={20} />
-                <span className="text-xs">카테고리</span>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="h-[85vh] rounded-t-xl">
-              <DrawerHeader>
-                <DrawerTitle className="text-center">카테고리</DrawerTitle>
-              </DrawerHeader>
-              <div className="px-4">
-                <div className="flex flex-col space-y-3">
-                  {categories.map((category) => (
-                    <button 
-                      key={category}
-                      className="w-full py-3 px-4 text-left border-b"
-                      onClick={() => navigate(`/books?filter=category=${category}`)}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <DrawerFooter>
-                <DrawerClose>
-                  <button className="w-full py-2 bg-gray-100 rounded-md">닫기</button>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+          <button 
+            className="flex flex-col items-center justify-center text-gray-600 space-y-1 w-full"
+            onClick={handleCategoryClick}
+          >
+            <Grid size={20} />
+            <span className="text-xs">카테고리</span>
+          </button>
           
           {/* 홈 (중앙) */}
           <Link to="/" className="flex flex-col items-center justify-center text-gray-600 space-y-1">
@@ -93,6 +78,39 @@ export const BottomNav = () => {
           </Link>
         </div>
       </nav>
+      
+      {/* Category Drawer */}
+      <Drawer open={showCategoryMenu} onOpenChange={setShowCategoryMenu}>
+        <DrawerContent className="h-[85vh] rounded-t-xl">
+          <DrawerHeader>
+            <DrawerTitle className="text-center">카테고리</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4">
+            <div className="flex flex-col space-y-3">
+              {categories.map((category) => (
+                <button 
+                  key={category}
+                  className="w-full py-3 px-4 text-left border-b"
+                  onClick={() => {
+                    navigate(`/books?filter=category=${category}`);
+                    handleCategoryClose();
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+          <DrawerFooter>
+            <button 
+              className="w-full py-2 bg-gray-100 rounded-md"
+              onClick={handleCategoryClose}
+            >
+              닫기
+            </button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
       
       {/* Full Menu Drawer - Updated to match Header's menu structure */}
       <Drawer open={showFullMenu} onOpenChange={setShowFullMenu}>
@@ -225,9 +243,12 @@ export const BottomNav = () => {
             </div>
           </div>
           <DrawerFooter>
-            <DrawerClose>
-              <button className="w-full py-2 bg-gray-100 rounded-md">닫기</button>
-            </DrawerClose>
+            <button 
+              className="w-full py-2 bg-gray-100 rounded-md"
+              onClick={() => setShowFullMenu(false)}
+            >
+              닫기
+            </button>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

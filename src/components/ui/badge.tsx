@@ -34,8 +34,8 @@ function Badge({ className, variant, disableHover = true, ...props }: BadgeProps
   const baseVariant = badgeVariants({ variant });
   // Always disable hover effects by default
   const finalClass = disableHover 
-    ? cn(baseVariant, className, "pointer-events-none")
-    : cn(baseVariant, className, "hover:bg-primary/80");
+    ? cn(baseVariant, className, "pointer-events-none max-w-full overflow-hidden text-ellipsis whitespace-nowrap")
+    : cn(baseVariant, className, "hover:bg-primary/80 max-w-full overflow-hidden text-ellipsis whitespace-nowrap");
     
   return (
     <div className={finalClass} {...props} />
