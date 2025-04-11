@@ -185,7 +185,7 @@ export const MOCK_BOOKS: Book[] = [
     category: '문학',
     location: '본관 1층 문학',
     source: 'purchase',
-    badges: ['best'],
+    badges: ['new', 'best', 'recommended'],
     status: { available: 1, total: 2, borrowed: 1 },
     rating: 4.5,
     registeredDate: '2023-02-28',
