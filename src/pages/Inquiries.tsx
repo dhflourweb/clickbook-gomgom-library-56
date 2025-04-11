@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -158,45 +159,51 @@ const Inquiries = () => {
                     }`}
                     onClick={() => navigate(`/inquiries/${inquiry.id}`)}
                   >
-                    <CardHeader className="pb-2 px-4 pt-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <Badge variant="outline" className="bg-gray-100 inline-block mb-1">
-                            {inquiry.category}
-                          </Badge>
-                          <Badge 
+                    <CardHeader className="px-4 pt-3 pb-2 space-y-2">
+                      {/* 1. Badge Row */}
+                      <div className="flex flex-wrap gap-1">
+                        <Badge variant="outline" className="bg-gray-100">
+                          {inquiry.category}
+                        </Badge>
+                        <Badge
                             variant={inquiry.status === 'pending' ? 'outline' : 'secondary'}
-                            className={`inline-block mb-1 ${inquiry.status === 'pending' ? 
-                              'border-secondary-orange text-secondary-orange' : 
-                              'bg-primary text-white'}`
-                            }
-                          >
-                            {inquiry.status === 'pending' ? (
-                              <div className="flex items-center">
-                                <Clock size={12} className="mr-1" />
-                                답변 대기
-                              </div>
-                            ) : (
-                              <div className="flex items-center">
-                                <CheckCircle2 size={12} className="mr-1" />
-                                답변 완료
-                              </div>
+                            className={cn(
+                                inquiry.status === 'pending'
+                                    ? 'border-secondary-orange text-secondary-orange'
+                                    : 'bg-primary text-white'
                             )}
-                          </Badge>
-                          {!inquiry.isPublic && (
-                            <Badge variant="secondary" className="bg-gray-700 text-white inline-block mb-1">
+                        >
+                          <div className="flex items-center">
+                            {inquiry.status === 'pending' ? (
+                                <>
+                                  <Clock size={12} className="mr-1" />
+                                  답변 대기
+                                </>
+                            ) : (
+                                <>
+                                  <CheckCircle2 size={12} className="mr-1" />
+                                  답변 완료
+                                </>
+                            )}
+                          </div>
+                        </Badge>
+                        {!inquiry.isPublic && (
+                            <Badge variant="secondary" className="bg-gray-700 text-white">
                               <div className="flex items-center">
                                 <Lock size={12} className="mr-1" />
                                 비공개
                               </div>
                             </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-500 shrink-0">
-                          <Calendar size={14} className="mr-1" />
-                          <span>{format(new Date(inquiry.createdAt), 'yyyy.MM.dd')}</span>
-                        </div>
+                        )}
                       </div>
+
+                      {/* 2. 날짜 (오른쪽 정렬) */}
+                      <div className="flex justify-end text-sm text-gray-500">
+                        <Calendar size={14} className="mr-1" />
+                        <span>{format(new Date(inquiry.createdAt), 'yyyy.MM.dd')}</span>
+                      </div>
+
+                      {/* 3. 제목 */}
                       <CardTitle className="text-base mt-1">{inquiry.title}</CardTitle>
                     </CardHeader>
                     
