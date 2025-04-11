@@ -14,16 +14,16 @@ export const Footer = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between">
           <div className={`logo ${isMobile ? 'mb-2' : ''} ${isMobile ? 'text-left w-full' : ''}`}>
             <Link to="/">
-              <img 
+              <img
                 src={logo} 
                 alt="DHFLOUR" 
-                className={isMobile ? "h-12" : "h-8"}
+                className={isMobile ? "h-12" : "h-20"}
               />
             </Link>
           </div>
           <div className="ft-left">
             <div className={`info ${isMobile ? 'text-left' : 'text-center sm:text-left'}`}>
-              <p className={`whitespace-nowrap text-white ${isMobile ? 'text-xs' : 'text-m'}`}>
+              <p className={`whitespace-nowrap text-white ${isMobile ? 'text-xs' : 'text-xl'}`}>
                 문의전화번호 :
                 <Link to={`tel:02-3455-0000`} className="text-white"> 02-3455-0000</Link>
               </p>
