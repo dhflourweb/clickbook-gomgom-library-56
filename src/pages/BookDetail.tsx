@@ -50,7 +50,7 @@ const BookDetail = () => {
   
   // Helper function to convert status to valid BookBadge
   const getStatusBadge = (): BookBadge[] => {
-    if (isAvailable) return ['new']; // Using 'new' as placeholder for available
+    if (isAvailable) return [];  // No badge for available books
     if (isReserved || book.isReservable === false) return ['recommended']; // Using 'recommended' as placeholder for reserved
     return ['best']; // Using 'best' as placeholder for borrowed
   };
@@ -194,6 +194,17 @@ const BookDetail = () => {
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Book title and author at the top */}
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">{book.title}</h1>
+          <p className="text-gray-700 text-lg">{book.author}</p>
+          {book.badges && book.badges.length > 0 && (
+            <div className="mt-3">
+              <BadgeDisplay badges={book.badges} size="md" />
+            </div>
+          )}
+        </div>
+        
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/3">
             <div className="bg-white rounded-lg shadow-sm overflow-hidden p-6 flex flex-col items-center border-r border-gray-100 md:min-h-[600px]">
@@ -239,6 +250,9 @@ const BookDetail = () => {
                       badges={getStatusBadge()}
                       size="sm"
                     />
+                    {isAvailable && (
+                      <span className="text-green-600 font-medium text-xs">대여가능</span>
+                    )}
                   </div>
                 </div>
                 
@@ -261,14 +275,6 @@ const BookDetail = () => {
             
           <div className="md:w-2/3">
             <div className="bg-white rounded-lg shadow-sm overflow-hidden p-6">
-              {book.badges && book.badges.length > 0 && (
-                <div className="mb-4">
-                  <BadgeDisplay badges={book.badges} size="md" />
-                </div>
-              )}
-              
-              <h1 className="text-2xl font-bold mb-3">{book.title}</h1>
-              <p className="text-gray-700 mb-6">{book.author}</p>
               
               <Tabs defaultValue="info" className="w-full">
                 <TabsList className="w-full grid grid-cols-2 mb-6">
@@ -277,7 +283,17 @@ const BookDetail = () => {
                 </TabsList>
                 
                 <TabsContent value="info" className="pt-2">
-                  <div className="mt-6 border-t border-gray-100 pt-6">
+                  {/* Book Description */}
+                  {book.description && (
+                    <div className="mb-6">
+                      <h2 className="text-lg font-semibold mb-4">도서 소개</h2>
+                      <p className="text-gray-700 whitespace-pre-line">
+                        {book.description}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="border-t border-gray-100 pt-6">
                     <h2 className="text-lg font-semibold mb-4">상세 정보</h2>
                     
                     <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -324,19 +340,13 @@ const BookDetail = () => {
                             badges={getStatusBadge()}
                             size="sm"
                           />
+                          {isAvailable && (
+                            <span className="text-green-600 font-medium text-xs">대여가능</span>
+                          )}
                         </p>
                       </div>
                     </div>
                   </div>
-                  
-                  {book.description && (
-                    <div className="mt-6 border-t border-gray-100 pt-6">
-                      <h2 className="text-lg font-semibold mb-4">도서 소개</h2>
-                      <p className="text-gray-700 whitespace-pre-line">
-                        {book.description || "이 책은 다양한 주제에 대한 깊은 통찰력을 제공합니다. 저자는 자신의 경험과 연구를 바탕으로 독자들에게 새로운 관점을 제시합니다. 각 장은 특정 주제를 다루며, 이해하기 쉬운 설명과 예시를 통해 복잡한 개념을 명확히 전달합니다. 또한 책의 후반부에서는 실제 사례 연구와 적용 방법을 제시하여 독자들이 배운 내용을 실생활에 활용할 수 있도록 돕습니다. 이 책은 해당 분야에 관심 있는 모든 독자에게 가치 있는 자료가 될 것입니다. 저자의 명확한 문체와 체계적인 접근 방식은 복잡한 주제를 이해하기 쉽게 만들어 주며, 다양한 사례 연구와 예시를 통해 이론이 실제로 어떻게 적용되는지 보여줍니다. 이 책은 학문적 연구뿐만 아니라 실용적인 지식을 찾는 독자들에게도 유용한 자료가 될 것입니다."}
-                      </p>
-                    </div>
-                  )}
                 </TabsContent>
                 
                 <TabsContent value="reviews" className="pt-2">

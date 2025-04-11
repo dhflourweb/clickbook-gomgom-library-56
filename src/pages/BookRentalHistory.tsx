@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -8,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Search, ArrowDownUp, ArrowUp, ArrowDown } from 'lucide-react';
+import { Calendar as CalendarIcon, Search, ArrowDownUp, ArrowUp, ArrowDown, Filter } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,7 @@ import { ReviewDialog } from '@/components/books/ReviewDialog';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { MOCK_BOOKS } from '@/data/mockData';
 import { BookBadge } from '@/types';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 // Types
 type SortDirection = 'asc' | 'desc' | null;
@@ -109,6 +111,7 @@ const BookRentalHistory = () => {
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('전체');
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
   
   // Pagination
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -122,7 +125,7 @@ const BookRentalHistory = () => {
     setPaginatedRentals(filteredRentals.slice(startIndex, endIndex));
   }, [filteredRentals, currentPage, itemsPerPage]);
 
-  // Handle items per page change - Modified to always reset to page 1
+  // Handle items per page change
   const handleItemsPerPageChange = (value: number) => {
     setItemsPerPage(value);
     setCurrentPage(1); // Reset to first page when changing items per page
@@ -326,8 +329,8 @@ const BookRentalHistory = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2 md:gap-3">
-              {/* Search - Reduced width */}
-              <div className="relative w-full sm:w-52 flex-shrink-0">
+              {/* Search - Full Width on Mobile, Fixed Width on Desktop */}
+              <div className="relative w-full md:w-64 flex-grow md:flex-grow-0">
                 <Input
                   type="text"
                   placeholder="도서명, 저자 검색..."
@@ -338,77 +341,189 @@ const BookRentalHistory = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               </div>
               
-              {/* Category Filter - Adjusted width */}
-              <div className="w-full xs:w-auto sm:w-36 flex-grow sm:flex-grow-0">
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="카테고리" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="전체">전체 카테고리</SelectItem>
-                    {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Date Range Picker - Adjusted width */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-44 justify-start text-left font-normal flex-grow sm:flex-grow-0"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "MM.dd")} - {format(dateRange.to, "MM.dd")}
-                        </>
-                      ) : (
-                        format(dateRange.from, "yyyy-MM-dd")
-                      )
-                    ) : (
-                      <span>대여기간</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="range"
-                    selected={{
-                      from: dateRange.from,
-                      to: dateRange.to,
-                    }}
-                    onSelect={(range) => {
-                      setDateRange({
-                        from: range?.from,
-                        to: range?.to,
-                      });
-                    }}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                  <div className="p-2 border-t border-border">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setDateRange({ from: undefined, to: undefined })}
-                    >
-                      초기화
+              {/* On Mobile: Hide these filters and show filter button */}
+              {isMobile ? (
+                <Sheet open={showFilterSheet} onOpenChange={setShowFilterSheet}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="w-full md:w-auto" onClick={() => setShowFilterSheet(true)}>
+                      <Filter className="mr-2 h-4 w-4" />
+                      필터
                     </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[80vh] px-4">
+                    <SheetHeader>
+                      <SheetTitle>필터</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-6 space-y-4">
+                      {/* Status Filter in Sheet */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">상태</label>
+                        <Select value={activeTab} onValueChange={setActiveTab}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="상태 선택" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="전체">전체</SelectItem>
+                            <SelectItem value="대여중">대여중</SelectItem>
+                            <SelectItem value="연체">연체</SelectItem>
+                            <SelectItem value="반납완료">반납완료</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* Category Filter in Sheet */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">카테고리</label>
+                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="카테고리 선택" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="전체">전체 카테고리</SelectItem>
+                            {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
+                              <SelectItem key={category} value={category}>{category}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* Date Range in Sheet */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">대여기간</label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateRange.from ? (
+                                dateRange.to ? (
+                                  <>
+                                    {format(dateRange.from, "MM.dd")} - {format(dateRange.to, "MM.dd")}
+                                  </>
+                                ) : (
+                                  format(dateRange.from, "yyyy-MM-dd")
+                                )
+                              ) : (
+                                <span>대여기간 선택</span>
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="range"
+                              selected={{
+                                from: dateRange.from,
+                                to: dateRange.to,
+                              }}
+                              onSelect={(range) => {
+                                setDateRange({
+                                  from: range?.from,
+                                  to: range?.to,
+                                });
+                              }}
+                              initialFocus
+                              className="p-3 pointer-events-auto"
+                            />
+                            <div className="p-2 border-t border-border">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => setDateRange({ from: undefined, to: undefined })}
+                              >
+                                초기화
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      
+                      {/* Apply Filters Button */}
+                      <Button 
+                        className="w-full mt-4" 
+                        onClick={() => setShowFilterSheet(false)}
+                      >
+                        필터 적용
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <>
+                  {/* Category Filter - Desktop */}
+                  <div className="w-full sm:w-auto flex-grow">
+                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="카테고리" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="전체">전체 카테고리</SelectItem>
+                        {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
+                          <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </PopoverContent>
-              </Popover>
+                  
+                  {/* Date Range Picker - Desktop */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full sm:w-auto flex-grow"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateRange.from ? (
+                          dateRange.to ? (
+                            <>
+                              {format(dateRange.from, "MM.dd")} - {format(dateRange.to, "MM.dd")}
+                            </>
+                          ) : (
+                            format(dateRange.from, "yyyy-MM-dd")
+                          )
+                        ) : (
+                          <span>대여기간</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        selected={{
+                          from: dateRange.from,
+                          to: dateRange.to,
+                        }}
+                        onSelect={(range) => {
+                          setDateRange({
+                            from: range?.from,
+                            to: range?.to,
+                          });
+                        }}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                      <div className="p-2 border-t border-border">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setDateRange({ from: undefined, to: undefined })}
+                        >
+                          초기화
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              )}
               
-              {/* Items per page selector - Adjusted width */}
-              <div className="w-full xs:w-auto sm:w-32 ml-auto flex-grow sm:flex-grow-0">
+              {/* Items per page selector - Always visible */}
+              <div className="w-full md:w-auto flex-grow md:flex-grow-0 md:ml-auto">
                 <Select 
                   value={itemsPerPage.toString()} 
                   onValueChange={(value) => handleItemsPerPageChange(parseInt(value))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="표시 개수" />
                   </SelectTrigger>
                   <SelectContent>
@@ -422,15 +537,17 @@ const BookRentalHistory = () => {
             </div>
           </div>
           
-          {/* Status Tabs */}
-          <Tabs defaultValue="전체" className="mt-6" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-2">
-              <TabsTrigger value="전체">전체</TabsTrigger>
-              <TabsTrigger value="대여중">대여중</TabsTrigger>
-              <TabsTrigger value="연체">연체</TabsTrigger>
-              <TabsTrigger value="반납완료">반납완료</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {/* Status Tabs - Desktop only */}
+          {!isMobile && (
+            <Tabs defaultValue="전체" className="mt-6" value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="mb-2">
+                <TabsTrigger value="전체">전체</TabsTrigger>
+                <TabsTrigger value="대여중">대여중</TabsTrigger>
+                <TabsTrigger value="연체">연체</TabsTrigger>
+                <TabsTrigger value="반납완료">반납완료</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
         </div>
         
         {/* Book List Section - Wrapped with white background */}
@@ -669,69 +786,67 @@ const BookRentalHistory = () => {
             </div>
           )}
           
-          {/* Pagination */}
-          {filteredRentals.length > itemsPerPage && (
-            <Pagination className="mt-8">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    href="#" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage > 1) handlePageChange(currentPage - 1);
-                    }}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
+          {/* Pagination - Always show even with just one page */}
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage > 1) handlePageChange(currentPage - 1);
+                  }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }).map((_, i) => {
+                const pageNumber = i + 1;
+                // Show first page, last page, current page, and adjacent pages
+                const showPage = 
+                  pageNumber === 1 || 
+                  pageNumber === totalPages || 
+                  (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
                 
-                {Array.from({ length: totalPages }).map((_, i) => {
-                  const pageNumber = i + 1;
-                  // Show first page, last page, current page, and adjacent pages
-                  const showPage = 
-                    pageNumber === 1 || 
-                    pageNumber === totalPages || 
-                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
-                  
-                  if (!showPage) {
-                    if (pageNumber === 2 || pageNumber === totalPages - 1) {
-                      return (
-                        <PaginationItem key={`ellipsis-${pageNumber}`}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      );
-                    }
-                    return null;
+                if (!showPage) {
+                  if (pageNumber === 2 || pageNumber === totalPages - 1) {
+                    return (
+                      <PaginationItem key={`ellipsis-${pageNumber}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
                   }
-                  
-                  return (
-                    <PaginationItem key={pageNumber}>
-                      <PaginationLink 
-                        href="#" 
-                        isActive={pageNumber === currentPage}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePageChange(pageNumber);
-                        }}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                })}
+                  return null;
+                }
                 
-                <PaginationItem>
-                  <PaginationNext 
-                    href="#" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
-                    }}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
+                return (
+                  <PaginationItem key={pageNumber}>
+                    <PaginationLink 
+                      href="#" 
+                      isActive={pageNumber === currentPage}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageNumber);
+                      }}
+                    >
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                  }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
       

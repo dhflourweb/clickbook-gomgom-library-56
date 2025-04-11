@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, User, LogOut, ChevronDown, X, BookOpen, BookMarked, History, UserRound } from 'lucide-react';
+import { Search, User, LogOut, ChevronDown, X, UserRound, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -198,15 +197,7 @@ export const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/mypage/history')}>
                     <History className="mr-2 h-4 w-4" />
-                    <span>대여 이력</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/books?filter=borrowed=true')}>
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    <span>현재 대여 도서</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/books?filter=reserved=true')}>
-                    <BookMarked className="mr-2 h-4 w-4" />
-                    <span>예약 도서</span>
+                    <span>도서대여이력</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

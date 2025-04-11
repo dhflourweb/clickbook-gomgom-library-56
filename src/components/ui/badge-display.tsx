@@ -9,7 +9,6 @@ interface BadgeDisplayProps {
 }
 
 const badgeLabels: Record<Exclude<NonNullable<BookBadge>, null>, string> = {
-  'new': '대여가능',
   'recommended': '예약중',
   'best': '대여중',
   'popular': '인기'
@@ -32,14 +31,12 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
   return (
     <div className="flex flex-wrap gap-1.5">
       {badges
-        .filter((badge): badge is NonNullable<BookBadge> => badge !== null)
+        .filter((badge): badge is NonNullable<BookBadge> => badge !== null && badge !== 'new')
         .map(badge => {
           let badgeClassName = "font-medium rounded-md inline-block";
           
           // Apply specific styles based on badge type
-          if (badge === 'new') {
-            badgeClassName += " bg-secondary-green text-white"; // 대여가능
-          } else if (badge === 'recommended') {
+          if (badge === 'recommended') {
             badgeClassName += " bg-secondary-orange text-white"; // 예약중
           } else if (badge === 'best') {
             badgeClassName += " bg-point-red text-white"; // 대여중

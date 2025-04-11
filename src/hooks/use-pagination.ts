@@ -18,6 +18,12 @@ export function usePagination<T>({
     setPage(1);
   }, [itemsPerPage]);
   
+  // Custom setter for itemsPerPage that ensures page is reset to 1
+  const setItemsPerPageWithReset = (value: number) => {
+    setItemsPerPage(value);
+    setPage(1); // Always reset to page 1 when changing items per page
+  };
+  
   const paginate = (items: T[]): T[] => {
     const startIndex = (page - 1) * itemsPerPage;
     return items.slice(startIndex, startIndex + itemsPerPage);
@@ -27,7 +33,7 @@ export function usePagination<T>({
     page,
     setPage,
     itemsPerPage,
-    setItemsPerPage,
+    setItemsPerPage: setItemsPerPageWithReset, // Use the wrapped setter
     paginate,
     totalPages: (items: T[]) => Math.max(1, Math.ceil(items.length / itemsPerPage)),
     startIndex: (page - 1) * itemsPerPage + 1
