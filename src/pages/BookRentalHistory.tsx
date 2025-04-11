@@ -321,299 +321,168 @@ const BookRentalHistory = () => {
       <div className="container pt-6 pb-10">
         <h1 className="text-2xl font-semibold mb-6">도서대여목록</h1>
         
-        {/* Filter Controls */}
-        <div className="mb-6 space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            {/* Search */}
-            <div className="relative flex-1">
-              <Input
-                type="text"
-                placeholder="도서명, 저자 검색..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-            
-            {/* Category Filter */}
-            <div className="w-full sm:w-auto">
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="카테고리" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="전체">전체 카테고리</SelectItem>
-                  {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
-                    <SelectItem key={category} value={category}>{category}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Date Range Picker */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal sm:w-[300px]"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.from ? (
-                    dateRange.to ? (
-                      <>
-                        FROM: {format(dateRange.from, "yyyy-MM-dd")} - TO: {format(dateRange.to, "yyyy-MM-dd")}
-                      </>
-                    ) : (
-                      format(dateRange.from, "yyyy-MM-dd")
-                    )
-                  ) : (
-                    <span>대여기간 선택</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="range"
-                  selected={{
-                    from: dateRange.from,
-                    to: dateRange.to,
-                  }}
-                  onSelect={(range) => {
-                    setDateRange({
-                      from: range?.from,
-                      to: range?.to,
-                    });
-                  }}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                />
-                <div className="p-2 border-t border-border">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setDateRange({ from: undefined, to: undefined })}
-                  >
-                    초기화
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-
-        {/* Status Tabs */}
-        <Tabs defaultValue="전체" className="mb-6" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="전체">전체</TabsTrigger>
-            <TabsTrigger value="대여중">대여중</TabsTrigger>
-            <TabsTrigger value="연체">연체</TabsTrigger>
-            <TabsTrigger value="반납완료">반납완료</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        
-        {/* Items per page selector */}
-        <div className="flex justify-end mb-4">
-          <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="표시 개수" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5개</SelectItem>
-              <SelectItem value="10">10개</SelectItem>
-              <SelectItem value="20">20개</SelectItem>
-              <SelectItem value="50">50개</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Rental List */}
-        {isMobile ? (
-          // Mobile view - cards
+        {/* Filter Controls - Wrapped with white background */}
+        <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
           <div className="space-y-4">
-            {paginatedRentals.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500">대여 내역이 없습니다.</p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder="도서명, 저자 검색..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               </div>
-            ) : (
-              paginatedRentals.map(rental => (
-                <Card 
-                  key={rental.id} 
-                  className="p-4 cursor-pointer hover:shadow-md transition-shadow" 
-                  onClick={() => handleBookClick(rental.bookId)}
-                >
-                  <div className="flex gap-4">
-                    <div className="w-20 h-28 flex-shrink-0">
-                      <img 
-                        src={rental.coverUrl} 
-                        alt={rental.title} 
-                        className="w-full h-full object-cover rounded-md"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "https://via.placeholder.com/150x200?text=No+Cover";
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-base line-clamp-2">{rental.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1">{rental.author}</p>
-                          <div className="mt-1">
-                            <BadgeDisplay badges={rental.badges} size="xs" />
-                          </div>
-                        </div>
-                        <div>
-                          <span className={cn("text-xs px-2 py-1 rounded-full inline-block", getStatusColor(rental.status))}>
-                            {rental.status}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="text-xs text-gray-500 space-y-1 mt-2">
-                        <p>카테고리: {rental.category}</p>
-                        <p>대여일: {rental.rentDate}</p>
-                        <p>반납예정일: {rental.dueDate}</p>
-                        {rental.returnDate && <p>반납일: {rental.returnDate}</p>}
-                      </div>
-                      
-                      {/* Action buttons */}
-                      {rental.status === '대여중' || rental.status === '연체' ? (
-                        <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openReturnDialog(rental);
-                            }}
-                          >
-                            반납
-                          </Button>
-                          
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="border-primary text-primary hover:bg-primary/10"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openExtendDialog(rental);
-                            }}
-                          >
-                            연장
-                          </Button>
-                        </div>
+              
+              {/* Category Filter */}
+              <div className="w-full sm:w-auto">
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="카테고리" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="전체">전체 카테고리</SelectItem>
+                    {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Date Range Picker */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal sm:w-[300px]"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.from ? (
+                      dateRange.to ? (
+                        <>
+                          FROM: {format(dateRange.from, "yyyy-MM-dd")} - TO: {format(dateRange.to, "yyyy-MM-dd")}
+                        </>
                       ) : (
-                        rental.status === '반납완료' && (
-                          <div className="mt-3" onClick={e => e.stopPropagation()}>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openReviewDialog(rental);
-                              }}
-                            >
-                              리뷰 작성
-                            </Button>
-                          </div>
-                        )
-                      )}
-                    </div>
+                        format(dateRange.from, "yyyy-MM-dd")
+                      )
+                    ) : (
+                      <span>대여기간 선택</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    selected={{
+                      from: dateRange.from,
+                      to: dateRange.to,
+                    }}
+                    onSelect={(range) => {
+                      setDateRange({
+                        from: range?.from,
+                        to: range?.to,
+                      });
+                    }}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                  <div className="p-2 border-t border-border">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setDateRange({ from: undefined, to: undefined })}
+                    >
+                      초기화
+                    </Button>
                   </div>
-                </Card>
-              ))
-            )}
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        ) : (
-          // Desktop view - table
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort('title')}
+          
+          {/* Status Tabs */}
+          <Tabs defaultValue="전체" className="mt-6" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-2">
+              <TabsTrigger value="전체">전체</TabsTrigger>
+              <TabsTrigger value="대여중">대여중</TabsTrigger>
+              <TabsTrigger value="연체">연체</TabsTrigger>
+              <TabsTrigger value="반납완료">반납완료</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {/* Book List Section - Wrapped with white background */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          {/* Items per page selector */}
+          <div className="flex justify-end mb-4">
+            <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
+              <SelectTrigger className="w-[100px]">
+                <SelectValue placeholder="표시 개수" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5개</SelectItem>
+                <SelectItem value="10">10개</SelectItem>
+                <SelectItem value="20">20개</SelectItem>
+                <SelectItem value="50">50개</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Rental List */}
+          {isMobile ? (
+            // Mobile view - cards
+            <div className="space-y-4">
+              {paginatedRentals.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">대여 내역이 없습니다.</p>
+                </div>
+              ) : (
+                paginatedRentals.map(rental => (
+                  <Card 
+                    key={rental.id} 
+                    className="p-4 cursor-pointer hover:shadow-md transition-shadow" 
+                    onClick={() => handleBookClick(rental.bookId)}
                   >
-                    <div className="flex items-center">
-                      도서 {renderSortIndicator('title')}
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort('category')}
-                  >
-                    <div className="flex items-center">
-                      카테고리 {renderSortIndicator('category')}
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort('rentDate')}
-                  >
-                    <div className="flex items-center">
-                      대여일 {renderSortIndicator('rentDate')}
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort('dueDate')}
-                  >
-                    <div className="flex items-center">
-                      반납예정일 {renderSortIndicator('dueDate')}
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort('status')}
-                  >
-                    <div className="flex items-center">
-                      상태 {renderSortIndicator('status')}
-                    </div>
-                  </TableHead>
-                  <TableHead>버튼</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedRentals.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      <p className="text-gray-500">대여 내역이 없습니다.</p>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedRentals.map((rental) => (
-                    <TableRow key={rental.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleBookClick(rental.bookId)}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={rental.coverUrl} 
-                            alt={rental.title} 
-                            className="w-12 h-16 object-cover rounded"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = "https://via.placeholder.com/150x200?text=No+Cover";
-                            }}
-                          />
+                    <div className="flex gap-4">
+                      <div className="w-20 h-28 flex-shrink-0">
+                        <img 
+                          src={rental.coverUrl} 
+                          alt={rental.title} 
+                          className="w-full h-full object-cover rounded-md"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "https://via.placeholder.com/150x200?text=No+Cover";
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-medium">{rental.title}</p>
-                            <p className="text-sm text-gray-500">{rental.author}</p>
+                            <h3 className="font-medium text-base line-clamp-2">{rental.title}</h3>
+                            <p className="text-sm text-gray-600 mt-1">{rental.author}</p>
                             <div className="mt-1">
                               <BadgeDisplay badges={rental.badges} size="xs" />
                             </div>
                           </div>
+                          <div>
+                            <span className={cn("text-xs px-2 py-1 rounded-full inline-block", getStatusColor(rental.status))}>
+                              {rental.status}
+                            </span>
+                          </div>
                         </div>
-                      </TableCell>
-                      <TableCell>{rental.category}</TableCell>
-                      <TableCell>{rental.rentDate}</TableCell>
-                      <TableCell>{rental.dueDate}</TableCell>
-                      <TableCell>
-                        <span className={cn("px-2 py-1 rounded-full text-xs", getStatusColor(rental.status))}>
-                          {rental.status}
-                        </span>
-                      </TableCell>
-                      <TableCell onClick={e => e.stopPropagation()}>
+                        
+                        <div className="text-xs text-gray-500 space-y-1 mt-2">
+                          <p>카테고리: {rental.category}</p>
+                          <p>대여일: {rental.rentDate}</p>
+                          <p>반납예정일: {rental.dueDate}</p>
+                          {rental.returnDate && <p>반납일: {rental.returnDate}</p>}
+                        </div>
+                        
+                        {/* Action buttons */}
                         {rental.status === '대여중' || rental.status === '연체' ? (
-                          <div className="flex space-x-2">
+                          <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
                             <Button 
                               variant="outline" 
                               size="sm"
@@ -640,115 +509,250 @@ const BookRentalHistory = () => {
                           </div>
                         ) : (
                           rental.status === '반납완료' && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openReviewDialog(rental);
-                              }}
-                            >
-                              리뷰 작성
-                            </Button>
+                            <div className="mt-3" onClick={e => e.stopPropagation()}>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openReviewDialog(rental);
+                                }}
+                              >
+                                리뷰 작성
+                              </Button>
+                            </div>
                           )
                         )}
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+          ) : (
+            // Desktop view - table - updated to match Books list view style
+            <div className="rounded-md border overflow-hidden">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead 
+                      className="cursor-pointer font-medium" 
+                      onClick={() => handleSort('title')}
+                    >
+                      <div className="flex items-center">
+                        도서 {renderSortIndicator('title')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer font-medium" 
+                      onClick={() => handleSort('category')}
+                    >
+                      <div className="flex items-center">
+                        카테고리 {renderSortIndicator('category')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer font-medium" 
+                      onClick={() => handleSort('rentDate')}
+                    >
+                      <div className="flex items-center">
+                        대여일 {renderSortIndicator('rentDate')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer font-medium" 
+                      onClick={() => handleSort('dueDate')}
+                    >
+                      <div className="flex items-center">
+                        반납예정일 {renderSortIndicator('dueDate')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer font-medium" 
+                      onClick={() => handleSort('status')}
+                    >
+                      <div className="flex items-center">
+                        상태 {renderSortIndicator('status')}
+                      </div>
+                    </TableHead>
+                    <TableHead className="font-medium">버튼</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedRentals.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        <p className="text-gray-500">대여 내역이 없습니다.</p>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-        
-        {/* Pagination */}
-        {filteredRentals.length > itemsPerPage && (
-          <Pagination className="mt-8">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage > 1) handlePageChange(currentPage - 1);
-                  }}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-              
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                const pageNumber = i + 1;
-                // Show first page, last page, and pages around current
-                const showPage = 
-                  pageNumber === 1 || 
-                  pageNumber === totalPages || 
-                  (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
+                  ) : (
+                    paginatedRentals.map((rental) => (
+                      <TableRow key={rental.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleBookClick(rental.bookId)}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={rental.coverUrl} 
+                              alt={rental.title} 
+                              className="w-12 h-16 object-cover rounded"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "https://via.placeholder.com/150x200?text=No+Cover";
+                              }}
+                            />
+                            <div>
+                              <p className="font-medium">{rental.title}</p>
+                              <p className="text-sm text-gray-500">{rental.author}</p>
+                              <div className="mt-1">
+                                <BadgeDisplay badges={rental.badges} size="xs" />
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-gray-600">{rental.category}</TableCell>
+                        <TableCell className="text-gray-600">{rental.rentDate}</TableCell>
+                        <TableCell className="text-gray-600">{rental.dueDate}</TableCell>
+                        <TableCell>
+                          <span className={cn("px-2 py-1 rounded-full text-xs", getStatusColor(rental.status))}>
+                            {rental.status}
+                          </span>
+                        </TableCell>
+                        <TableCell onClick={e => e.stopPropagation()}>
+                          {rental.status === '대여중' || rental.status === '연체' ? (
+                            <div className="flex space-x-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openReturnDialog(rental);
+                                }}
+                              >
+                                반납
+                              </Button>
+                              
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="border-primary text-primary hover:bg-primary/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openExtendDialog(rental);
+                                }}
+                              >
+                                연장
+                              </Button>
+                            </div>
+                          ) : (
+                            rental.status === '반납완료' && (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openReviewDialog(rental);
+                                }}
+                              >
+                                리뷰 작성
+                              </Button>
+                            )
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+          
+          {/* Pagination */}
+          {filteredRentals.length > itemsPerPage && (
+            <Pagination className="mt-8">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                    }}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
                 
-                if (!showPage && pageNumber === 2) {
-                  return (
-                    <PaginationItem key="ellipsis-start">
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  );
-                }
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  const pageNumber = i + 1;
+                  // Show first page, last page, and pages around current
+                  const showPage = 
+                    pageNumber === 1 || 
+                    pageNumber === totalPages || 
+                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
+                  
+                  if (!showPage && pageNumber === 2) {
+                    return (
+                      <PaginationItem key="ellipsis-start">
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
+                  }
+                  
+                  if (!showPage && pageNumber === totalPages - 1) {
+                    return (
+                      <PaginationItem key="ellipsis-end">
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
+                  }
+                  
+                  if (showPage) {
+                    return (
+                      <PaginationItem key={pageNumber}>
+                        <PaginationLink 
+                          href="#" 
+                          isActive={pageNumber === currentPage}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(pageNumber);
+                          }}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+                  
+                  return null;
+                })}
                 
-                if (!showPage && pageNumber === totalPages - 1) {
-                  return (
-                    <PaginationItem key="ellipsis-end">
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  );
-                }
-                
-                if (showPage) {
-                  return (
-                    <PaginationItem key={pageNumber}>
-                      <PaginationLink 
-                        href="#" 
-                        isActive={pageNumber === currentPage}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePageChange(pageNumber);
-                        }}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                }
-                
-                return null;
-              })}
-              
-              <PaginationItem>
-                <PaginationNext 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage < totalPages) handlePageChange(currentPage + 1);
-                  }}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                    }}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
       </div>
       
       {/* Dialogs */}
       {selectedBook && (
         <>
-          {/* Return Dialog - Using the existing ReturnBookDialog component */}
+          {/* Return Dialog */}
           <ReturnBookDialog 
             book={{
               id: selectedBook.bookId,
               title: selectedBook.title,
               author: selectedBook.author,
               coverImage: selectedBook.coverUrl,
-              // Add other required properties from Book type
               description: '',
               category: selectedBook.category,
-              publishedDate: '',
+              publishDate: '',
               publisher: '',
               tags: [],
               status: {
@@ -757,22 +761,25 @@ const BookRentalHistory = () => {
                 borrowed: 0
               },
               location: '',
+              isbn: '',
+              source: '',
+              registeredDate: '',
+              badges: selectedBook.badges,
             }}
             isOpen={returnDialogOpen} 
             onOpenChange={setReturnDialogOpen} 
           />
           
-          {/* Extend Dialog - Using the existing ExtendBookDialog component */}
+          {/* Extend Dialog */}
           <ExtendBookDialog 
             book={{
               id: selectedBook.bookId,
               title: selectedBook.title,
               author: selectedBook.author,
               coverImage: selectedBook.coverUrl,
-              // Add other required properties from Book type
               description: '',
               category: selectedBook.category,
-              publishedDate: '',
+              publishDate: '',
               publisher: '',
               tags: [],
               status: {
@@ -781,8 +788,12 @@ const BookRentalHistory = () => {
                 borrowed: 0
               },
               location: '',
+              isbn: '',
+              source: '',
+              registeredDate: '',
+              badges: selectedBook.badges,
               returnDueDate: selectedBook.dueDate,
-              hasBeenExtended: selectedBook.status === '연체', // Assume overdue books have been extended
+              hasBeenExtended: selectedBook.status === '연체',
             }}
             isOpen={extendDialogOpen} 
             onOpenChange={setExtendDialogOpen} 
@@ -795,10 +806,9 @@ const BookRentalHistory = () => {
               title: selectedBook.title,
               author: selectedBook.author,
               coverImage: selectedBook.coverUrl,
-              // Add other required properties from Book type
               description: '',
               category: selectedBook.category,
-              publishedDate: '',
+              publishDate: '',
               publisher: '',
               tags: [],
               status: {
@@ -807,6 +817,10 @@ const BookRentalHistory = () => {
                 borrowed: 0
               },
               location: '',
+              isbn: '',
+              source: '',
+              registeredDate: '',
+              badges: selectedBook.badges,
             }}
             isOpen={reviewDialogOpen} 
             onOpenChange={setReviewDialogOpen}
