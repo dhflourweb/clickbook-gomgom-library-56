@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -21,6 +22,7 @@ import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
 import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { ReviewDialog } from '@/components/books/ReviewDialog';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { getBooks } from '@/data/mockData';
 
 // Types
 type SortDirection = 'asc' | 'desc' | null;
@@ -40,67 +42,59 @@ interface RentalBook {
   badges: Array<'new' | 'best' | 'recommended' | null>;
 }
 
-// Sample rental data - in a real application, this would come from an API
-const sampleRentals: RentalBook[] = [
-  {
-    id: '1',
-    bookId: 'book1',
-    title: '클린 아키텍쳐',
-    author: '로버트 C. 마틴',
-    category: '기타',
-    coverUrl: 'https://image.yes24.com/goods/77283734/XL',
-    rentDate: '2025-04-01',
-    dueDate: '2025-04-15',
-    status: '대여중',
-    badges: ['best', 'recommended']
-  },
-  {
-    id: '2',
-    bookId: 'book2',
-    title: '객체지향의 사실과 오해',
-    author: '조영호',
-    category: '기타',
-    coverUrl: 'https://image.yes24.com/goods/18249021/XL',
-    rentDate: '2025-04-03',
-    dueDate: '2025-04-17',
-    status: '대여중',
-    badges: ['new']
-  },
-  {
-    id: '3',
-    bookId: 'book3',
-    title: '이것이 자바다',
-    author: '신용권',
-    category: '기타',
-    coverUrl: 'https://image.yes24.com/goods/15651484/XL',
-    rentDate: '2025-03-28',
-    dueDate: '2025-04-11',
-    status: '연체',
-    badges: []
-  },
-  {
-    id: '4',
-    bookId: 'book4',
-    title: '모던 자바스크립트 Deep Dive',
-    author: '이웅모',
-    category: '기타',
-    coverUrl: 'https://image.yes24.com/goods/92742567/XL',
-    rentDate: '2025-03-15',
-    dueDate: '2025-03-29',
-    status: '반납완료',
-    returnDate: '2025-03-25',
-    badges: ['best']
-  }
-];
-
 const BookRentalHistory = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
+  // Use actual book data from mockData
+  const mockBooks = getBooks();
+  
+  // Generate rental data from mock books
+  const generateRentalData = () => {
+    return mockBooks.slice(0, 10).map((book, index) => {
+      // Create rental dates
+      const today = new Date();
+      const rentDate = new Date();
+      rentDate.setDate(today.getDate() - (index % 3 === 0 ? 15 : 5)); // Some older, some newer
+      
+      const dueDate = new Date(rentDate);
+      dueDate.setDate(rentDate.getDate() + 14); // 14 days rental period
+      
+      let status: '대여중' | '연체' | '반납완료';
+      let returnDate: string | undefined;
+      
+      // Set status based on dates
+      if (index % 3 === 0) {
+        status = '반납완료';
+        const tempReturnDate = new Date(rentDate);
+        tempReturnDate.setDate(rentDate.getDate() + 10);
+        returnDate = format(tempReturnDate, 'yyyy-MM-dd');
+      } else if (index % 3 === 1) {
+        status = '연체';
+      } else {
+        status = '대여중';
+      }
+      
+      return {
+        id: `rental-${index}`,
+        bookId: book.id,
+        title: book.title,
+        author: book.author,
+        category: book.category,
+        coverUrl: book.coverImage,
+        rentDate: format(rentDate, 'yyyy-MM-dd'),
+        dueDate: format(dueDate, 'yyyy-MM-dd'),
+        status,
+        returnDate,
+        badges: book.badges
+      };
+    });
+  };
+  
   // State management
-  const [rentals, setRentals] = useState<RentalBook[]>(sampleRentals);
-  const [filteredRentals, setFilteredRentals] = useState<RentalBook[]>(sampleRentals);
+  const [rentals, setRentals] = useState<RentalBook[]>(generateRentalData());
+  const [filteredRentals, setFilteredRentals] = useState<RentalBook[]>(rentals);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('전체');
   const [dateRange, setDateRange] = useState<{from: Date | undefined, to: Date | undefined}>({
@@ -117,7 +111,7 @@ const BookRentalHistory = () => {
   const [activeTab, setActiveTab] = useState('전체');
   
   // Pagination
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [paginatedRentals, setPaginatedRentals] = useState<RentalBook[]>([]);
 
@@ -324,83 +318,100 @@ const BookRentalHistory = () => {
         {/* Filter Controls - Wrapped with white background */}
         <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              {/* Search */}
-              <div className="relative flex-1">
-                <Input
-                  type="text"
-                  placeholder="도서명, 저자 검색..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
+                {/* Search */}
+                <div className="relative flex-1">
+                  <Input
+                    type="text"
+                    placeholder="도서명, 저자 검색..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                </div>
+                
+                {/* Category Filter */}
+                <div className="w-full sm:w-auto">
+                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                      <SelectValue placeholder="카테고리" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="전체">전체 카테고리</SelectItem>
+                      {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
-              {/* Category Filter */}
-              <div className="w-full sm:w-auto">
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="카테고리" />
+              {/* Items per page selector - Moved to filter section */}
+              <div>
+                <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="표시 개수" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="전체">전체 카테고리</SelectItem>
-                    {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
+                    <SelectItem value="5">5개</SelectItem>
+                    <SelectItem value="10">10개</SelectItem>
+                    <SelectItem value="20">20개</SelectItem>
+                    <SelectItem value="50">50개</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              
-              {/* Date Range Picker */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal sm:w-[300px]"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      dateRange.to ? (
-                        <>
-                          FROM: {format(dateRange.from, "yyyy-MM-dd")} - TO: {format(dateRange.to, "yyyy-MM-dd")}
-                        </>
-                      ) : (
-                        format(dateRange.from, "yyyy-MM-dd")
-                      )
-                    ) : (
-                      <span>대여기간 선택</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="range"
-                    selected={{
-                      from: dateRange.from,
-                      to: dateRange.to,
-                    }}
-                    onSelect={(range) => {
-                      setDateRange({
-                        from: range?.from,
-                        to: range?.to,
-                      });
-                    }}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                  <div className="p-2 border-t border-border">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setDateRange({ from: undefined, to: undefined })}
-                    >
-                      초기화
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
             </div>
+            
+            {/* Date Range Picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      <>
+                        FROM: {format(dateRange.from, "yyyy-MM-dd")} - TO: {format(dateRange.to, "yyyy-MM-dd")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "yyyy-MM-dd")
+                    )
+                  ) : (
+                    <span>대여기간 선택</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={{
+                    from: dateRange.from,
+                    to: dateRange.to,
+                  }}
+                  onSelect={(range) => {
+                    setDateRange({
+                      from: range?.from,
+                      to: range?.to,
+                    });
+                  }}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+                <div className="p-2 border-t border-border">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setDateRange({ from: undefined, to: undefined })}
+                  >
+                    초기화
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           
           {/* Status Tabs */}
@@ -416,21 +427,6 @@ const BookRentalHistory = () => {
         
         {/* Book List Section - Wrapped with white background */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          {/* Items per page selector */}
-          <div className="flex justify-end mb-4">
-            <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue placeholder="표시 개수" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5개</SelectItem>
-                <SelectItem value="10">10개</SelectItem>
-                <SelectItem value="20">20개</SelectItem>
-                <SelectItem value="50">50개</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
           {/* Rental List */}
           {isMobile ? (
             // Mobile view - cards
@@ -680,48 +676,39 @@ const BookRentalHistory = () => {
                   />
                 </PaginationItem>
                 
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                {Array.from({ length: totalPages }).map((_, i) => {
                   const pageNumber = i + 1;
-                  // Show first page, last page, and pages around current
+                  // Show first page, last page, current page, and adjacent pages
                   const showPage = 
                     pageNumber === 1 || 
                     pageNumber === totalPages || 
                     (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
                   
-                  if (!showPage && pageNumber === 2) {
-                    return (
-                      <PaginationItem key="ellipsis-start">
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
+                  if (!showPage) {
+                    if (pageNumber === 2 || pageNumber === totalPages - 1) {
+                      return (
+                        <PaginationItem key={`ellipsis-${pageNumber}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
                   }
                   
-                  if (!showPage && pageNumber === totalPages - 1) {
-                    return (
-                      <PaginationItem key="ellipsis-end">
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
-                  }
-                  
-                  if (showPage) {
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationLink 
-                          href="#" 
-                          isActive={pageNumber === currentPage}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handlePageChange(pageNumber);
-                          }}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  }
-                  
-                  return null;
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink 
+                        href="#" 
+                        isActive={pageNumber === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(pageNumber);
+                        }}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
                 })}
                 
                 <PaginationItem>
