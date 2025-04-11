@@ -25,6 +25,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 import { MOCK_BOOKS } from '@/data/mockData';
 import { BookBadge } from '@/types';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { usePagination } from '@/hooks/use-pagination';
 
 // Types
 type SortDirection = 'asc' | 'desc' | null;
@@ -113,23 +114,22 @@ const BookRentalHistory = () => {
   const [activeTab, setActiveTab] = useState('전체');
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   
-  // Pagination
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [paginatedRentals, setPaginatedRentals] = useState<RentalBook[]>([]);
+  // Use pagination hook
+  const {
+    page: currentPage,
+    setPage: setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage,
+    paginate,
+    totalPages,
+    shouldShowPagination
+  } = usePagination<RentalBook>({
+    initialPage: 1,
+    initialItemsPerPage: 5
+  });
 
   // Calculate paginated rentals
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    setPaginatedRentals(filteredRentals.slice(startIndex, endIndex));
-  }, [filteredRentals, currentPage, itemsPerPage]);
-
-  // Handle items per page change
-  const handleItemsPerPageChange = (value: number) => {
-    setItemsPerPage(value);
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
+  const paginatedRentals = paginate(filteredRentals);
 
   // Go to book detail page
   const handleBookClick = (bookId: string) => {
@@ -219,7 +219,7 @@ const BookRentalHistory = () => {
     
     setFilteredRentals(filtered);
     setCurrentPage(1); // Reset to first page when filters change
-  }, [searchQuery, categoryFilter, dateRange, rentals, activeTab, sortField, sortDirection]);
+  }, [searchQuery, categoryFilter, dateRange, rentals, activeTab, sortField, sortDirection, setCurrentPage]);
 
   // Pagination change
   const handlePageChange = (page: number) => {
@@ -316,17 +316,14 @@ const BookRentalHistory = () => {
     return <ArrowDownUp size={14} className="ml-1 opacity-50" />;
   };
 
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredRentals.length / itemsPerPage);
-
   return (
     <MainLayout>
-      <div className="container pt-6 pb-10">
+      <div className="container">
         <h1 className="text-2xl font-semibold mb-2">도서대여목록</h1>
         <p className="text-gray-500 mb-6">내가 대여한 도서 목록을 조회하고 반납/연장할 수 있습니다.</p>
         
         {/* Filter Controls - Wrapped with white background */}
-        <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+        <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm mb-6">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2 md:gap-3">
               {/* Search - Full Width on Mobile, Fixed Width on Desktop */}
@@ -521,7 +518,7 @@ const BookRentalHistory = () => {
               <div className="w-full md:w-auto flex-grow md:flex-grow-0 md:ml-auto">
                 <Select 
                   value={itemsPerPage.toString()} 
-                  onValueChange={(value) => handleItemsPerPageChange(parseInt(value))}
+                  onValueChange={(value) => setItemsPerPage(parseInt(value))}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="표시 개수" />
@@ -551,10 +548,10 @@ const BookRentalHistory = () => {
         </div>
         
         {/* Book List Section - Wrapped with white background */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm">
           {/* Rental List */}
           {isMobile ? (
-            // Mobile view - cards
+            // Mobile view - cards - FIXED: Improved card layout
             <div className="space-y-4">
               {paginatedRentals.length === 0 ? (
                 <div className="text-center py-8">
@@ -564,10 +561,10 @@ const BookRentalHistory = () => {
                 paginatedRentals.map(rental => (
                   <Card 
                     key={rental.id} 
-                    className="p-4 cursor-pointer hover:shadow-md transition-shadow" 
+                    className="p-4 cursor-pointer hover:shadow-md transition-shadow overflow-hidden" 
                     onClick={() => handleBookClick(rental.bookId)}
                   >
-                    <div className="flex gap-4">
+                    <div className="flex gap-3">
                       <div className="w-20 h-28 flex-shrink-0">
                         <img 
                           src={rental.coverUrl} 
@@ -578,30 +575,27 @@ const BookRentalHistory = () => {
                           }}
                         />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-base line-clamp-2">{rental.title}</h3>
-                            <p className="text-sm text-gray-600 mt-1">{rental.author}</p>
-                            <div className="mt-1">
-                              <BadgeDisplay badges={rental.badges} size="xs" />
-                            </div>
-                          </div>
-                          <div>
-                            <span className={cn("text-xs px-2 py-1 rounded-full inline-block", getStatusColor(rental.status))}>
-                              {rental.status}
-                            </span>
-                          </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-1">
+                          <h3 className="font-medium text-base line-clamp-2 pr-1">{rental.title}</h3>
+                          <span className={cn("text-xs px-2 py-1 rounded-full inline-block whitespace-nowrap flex-shrink-0", getStatusColor(rental.status))}>
+                            {rental.status}
+                          </span>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">{rental.author}</p>
+                        <div className="mt-1">
+                          <BadgeDisplay badges={rental.badges} size="xs" />
                         </div>
                         
                         <div className="text-xs text-gray-500 space-y-1 mt-2">
-                          <p>카테고리: {rental.category}</p>
+                          <p className="truncate">카테고리: {rental.category}</p>
                           <p>대여일: {rental.rentDate}</p>
                           <p>반납예정일: {rental.dueDate}</p>
                           {rental.returnDate && <p>반납일: {rental.returnDate}</p>}
                         </div>
                         
-                        {/* Action buttons */}
+                        {/* Action buttons - FIXED: Ensure buttons don't overflow */}
                         {rental.status === '대여중' || rental.status === '연체' ? (
                           <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
                             <Button 
@@ -787,66 +781,68 @@ const BookRentalHistory = () => {
           )}
           
           {/* Pagination - Always show even with just one page */}
-          <Pagination className="mt-8">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage > 1) handlePageChange(currentPage - 1);
-                  }}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-              
-              {Array.from({ length: totalPages }).map((_, i) => {
-                const pageNumber = i + 1;
-                // Show first page, last page, current page, and adjacent pages
-                const showPage = 
-                  pageNumber === 1 || 
-                  pageNumber === totalPages || 
-                  (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
+          {shouldShowPagination(filteredRentals) && (
+            <Pagination className="mt-8">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                    }}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
                 
-                if (!showPage) {
-                  if (pageNumber === 2 || pageNumber === totalPages - 1) {
-                    return (
-                      <PaginationItem key={`ellipsis-${pageNumber}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
+                {Array.from({ length: totalPages(filteredRentals) }).map((_, i) => {
+                  const pageNumber = i + 1;
+                  // Show first page, last page, current page, and adjacent pages
+                  const showPage = 
+                    pageNumber === 1 || 
+                    pageNumber === totalPages(filteredRentals) || 
+                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
+                  
+                  if (!showPage) {
+                    if (pageNumber === 2 || pageNumber === totalPages(filteredRentals) - 1) {
+                      return (
+                        <PaginationItem key={`ellipsis-${pageNumber}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
                   }
-                  return null;
-                }
+                  
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink 
+                        href="#" 
+                        isActive={pageNumber === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(pageNumber);
+                        }}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
                 
-                return (
-                  <PaginationItem key={pageNumber}>
-                    <PaginationLink 
-                      href="#" 
-                      isActive={pageNumber === currentPage}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handlePageChange(pageNumber);
-                      }}
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
-              
-              <PaginationItem>
-                <PaginationNext 
-                  href="#" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (currentPage < totalPages) handlePageChange(currentPage + 1);
-                  }}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages(filteredRentals)) handlePageChange(currentPage + 1);
+                    }}
+                    className={currentPage === totalPages(filteredRentals) ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       </div>
       
