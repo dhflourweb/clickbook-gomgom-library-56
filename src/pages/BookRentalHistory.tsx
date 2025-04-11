@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -8,11 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Search, BookOpen, ArrowDownUp } from 'lucide-react';
+import { Calendar as CalendarIcon, Search, BookOpen, ArrowDownUp, ArrowUp, ArrowDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from '@/components/ui/textarea';
@@ -25,9 +25,40 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BadgeDisplay } from '@/components/ui/badge-display';
 import { toast } from '@/components/ui/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
+
+// Types
+type SortDirection = 'asc' | 'desc' | null;
+type SortField = 'title' | 'author' | 'category' | 'rentDate' | 'dueDate' | 'status' | null;
+
+interface RentalBook {
+  id: string;
+  bookId: string;
+  title: string;
+  author: string;
+  category: string;
+  coverUrl: string;
+  rentDate: string;
+  dueDate: string;
+  status: '대여중' | '연체' | '반납완료';
+  returnDate?: string;
+  badges: Array<'new' | 'best' | 'recommended' | null>;
+}
+
+interface ReviewFormData {
+  bookId: string;
+  rating: number;
+  review: string;
+  recommended: boolean;
+}
+
+interface ReturnFormData {
+  bookId: string;
+  returnLocation: string;
+}
 
 // Sample rental data - in a real application, this would come from an API
-const sampleRentals = [
+const sampleRentals: RentalBook[] = [
   {
     id: '1',
     bookId: 'book1',
@@ -79,41 +110,14 @@ const sampleRentals = [
   }
 ];
 
-// Types
-interface RentalBook {
-  id: string;
-  bookId: string;
-  title: string;
-  author: string;
-  category: string;
-  coverUrl: string;
-  rentDate: string;
-  dueDate: string;
-  status: '대여중' | '연체' | '반납완료';
-  returnDate?: string;
-  badges: Array<'new' | 'best' | 'recommended' | null>;
-}
-
-interface ReviewFormData {
-  bookId: string;
-  rating: number;
-  review: string;
-  recommended: boolean;
-}
-
-interface ReturnFormData {
-  bookId: string;
-  returnLocation: string;
-}
-
 const BookRentalHistory = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   
   // State management
   const [rentals, setRentals] = useState<RentalBook[]>(sampleRentals);
   const [filteredRentals, setFilteredRentals] = useState<RentalBook[]>(sampleRentals);
-  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('전체');
   const [dateRange, setDateRange] = useState<{from: Date | undefined, to: Date | undefined}>({
@@ -132,9 +136,38 @@ const BookRentalHistory = () => {
     returnLocation: '회사 로비',
   });
   const [activeTab, setActiveTab] = useState('전체');
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [extendDialogOpen, setExtendDialogOpen] = useState(false);
+
+  // Go to book detail page
+  const handleBookClick = (bookId: string) => {
+    navigate(`/books/${bookId}`);
+  };
+
+  // Sort rentals
+  const handleSort = (field: SortField) => {
+    let direction: SortDirection = 'asc';
+    
+    if (sortField === field) {
+      if (sortDirection === 'asc') {
+        direction = 'desc';
+      } else if (sortDirection === 'desc') {
+        direction = null;
+      } else {
+        direction = 'asc';
+      }
+    }
+    
+    setSortField(field);
+    setSortDirection(direction);
+  };
 
   // Filter rentals based on search, category, date range, and status
-  React.useEffect(() => {
+  useEffect(() => {
     let filtered = [...rentals];
     
     // Filter by search query
@@ -166,8 +199,38 @@ const BookRentalHistory = () => {
       filtered = filtered.filter(rental => rental.status === activeTab);
     }
     
+    // Sort data if needed
+    if (sortField && sortDirection) {
+      filtered.sort((a, b) => {
+        let comparison = 0;
+        
+        switch (sortField) {
+          case 'title':
+            comparison = a.title.localeCompare(b.title);
+            break;
+          case 'author':
+            comparison = a.author.localeCompare(b.author);
+            break;
+          case 'category':
+            comparison = a.category.localeCompare(b.category);
+            break;
+          case 'rentDate':
+            comparison = new Date(a.rentDate).getTime() - new Date(b.rentDate).getTime();
+            break;
+          case 'dueDate':
+            comparison = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+            break;
+          case 'status':
+            comparison = a.status.localeCompare(b.status);
+            break;
+        }
+        
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
+    }
+    
     setFilteredRentals(filtered);
-  }, [searchQuery, categoryFilter, dateRange, rentals, activeTab]);
+  }, [searchQuery, categoryFilter, dateRange, rentals, activeTab, sortField, sortDirection]);
 
   // Handle review submission
   const handleReviewSubmit = () => {
@@ -177,13 +240,14 @@ const BookRentalHistory = () => {
       description: `"${rentals.find(r => r.bookId === reviewForm.bookId)?.title}"에 대한 리뷰가 성공적으로 등록되었습니다.`,
     });
     
-    // Reset form
+    // Reset form and close dialog
     setReviewForm({
       bookId: '',
       rating: 0,
       review: '',
       recommended: false
     });
+    setReviewDialogOpen(false);
   };
 
   // Handle return submission
@@ -206,11 +270,12 @@ const BookRentalHistory = () => {
       description: `"${rentals.find(r => r.bookId === bookId)?.title}"이(가) 성공적으로 반납되었습니다.`,
     });
     
-    // Reset form
+    // Reset form and close dialog
     setReturnForm({
       bookId: '',
       returnLocation: '회사 로비'
     });
+    setReturnDialogOpen(false);
   };
   
   // Handle extension
@@ -237,6 +302,9 @@ const BookRentalHistory = () => {
       title: "대여 기간이 연장되었습니다",
       description: `"${rentals.find(r => r.bookId === bookId)?.title}"의 대여 기간이 14일 연장되었습니다.`,
     });
+    
+    // Close dialog
+    setExtendDialogOpen(false);
   };
   
   // Get status color
@@ -263,6 +331,7 @@ const BookRentalHistory = () => {
         review: '',
         recommended: false
       });
+      setReviewDialogOpen(true);
     }
   };
 
@@ -272,6 +341,21 @@ const BookRentalHistory = () => {
       bookId: bookId,
       returnLocation: '회사 로비'
     });
+    setReturnDialogOpen(true);
+  };
+  
+  // Open extend dialog
+  const openExtendDialog = (bookId: string) => {
+    setSelectedBookId(bookId);
+    setExtendDialogOpen(true);
+  };
+
+  // Render sort indicator
+  const renderSortIndicator = (field: SortField) => {
+    if (sortField !== field) return <ArrowDownUp size={14} className="ml-1 opacity-50" />;
+    if (sortDirection === 'asc') return <ArrowUp size={14} className="ml-1" />;
+    if (sortDirection === 'desc') return <ArrowDown size={14} className="ml-1" />;
+    return <ArrowDownUp size={14} className="ml-1 opacity-50" />;
   };
 
   return (
@@ -320,7 +404,7 @@ const BookRentalHistory = () => {
                   {dateRange.from ? (
                     dateRange.to ? (
                       <>
-                        {format(dateRange.from, "yyyy-MM-dd")} - {format(dateRange.to, "yyyy-MM-dd")}
+                        FROM: {format(dateRange.from, "yyyy-MM-dd")} - TO: {format(dateRange.to, "yyyy-MM-dd")}
                       </>
                     ) : (
                       format(dateRange.from, "yyyy-MM-dd")
@@ -344,6 +428,7 @@ const BookRentalHistory = () => {
                     });
                   }}
                   initialFocus
+                  className="p-3 pointer-events-auto"
                 />
                 <div className="p-2 border-t border-border">
                   <Button 
@@ -379,7 +464,11 @@ const BookRentalHistory = () => {
               </div>
             ) : (
               filteredRentals.map(rental => (
-                <Card key={rental.id} className="p-4">
+                <Card 
+                  key={rental.id} 
+                  className="p-4 cursor-pointer hover:shadow-md transition-shadow" 
+                  onClick={() => handleBookClick(rental.bookId)}
+                >
                   <div className="flex gap-4">
                     <div className="w-20 h-28 flex-shrink-0">
                       <img 
@@ -416,137 +505,44 @@ const BookRentalHistory = () => {
                       
                       {/* Action buttons */}
                       {rental.status === '대여중' || rental.status === '연체' ? (
-                        <div className="flex gap-2 mt-3">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => openReturnDialog(rental.bookId)}
-                              >
-                                반납
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                              <DialogHeader>
-                                <DialogTitle>도서 반납</DialogTitle>
-                                <DialogDescription>
-                                  반납 위치를 선택하고 확인 버튼을 눌러주세요.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="py-4">
-                                <RadioGroup 
-                                  value={returnForm.returnLocation} 
-                                  onValueChange={(value) => setReturnForm({...returnForm, returnLocation: value})}
-                                >
-                                  <div className="flex items-center space-x-2 mb-2">
-                                    <RadioGroupItem value="회사 로비" id="lobby" />
-                                    <Label htmlFor="lobby">회사 로비</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2 mb-2">
-                                    <RadioGroupItem value="도서 책장" id="bookshelf" />
-                                    <Label htmlFor="bookshelf">도서 책장</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="부서 사무실" id="office" />
-                                    <Label htmlFor="office">부서 사무실</Label>
-                                  </div>
-                                </RadioGroup>
-                              </div>
-                              <DialogFooter>
-                                <Button 
-                                  type="submit"
-                                  onClick={() => handleReturnSubmit(rental.bookId)}
-                                >
-                                  반납 완료
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
+                        <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openReturnDialog(rental.bookId);
+                            }}
+                          >
+                            반납
+                          </Button>
                           
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                              >
-                                연장
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>대여 기간 연장</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  "{rental.title}" 도서의 대여 기간을 14일 연장하시겠습니까?
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>취소</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleExtend(rental.bookId)}>연장</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="border-primary text-primary hover:bg-primary/10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openExtendDialog(rental.bookId);
+                            }}
+                          >
+                            연장
+                          </Button>
                         </div>
                       ) : (
                         rental.status === '반납완료' && (
-                          <div className="mt-3">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => openReviewDialog(rental.bookId)}
-                                >
-                                  리뷰 작성
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>도서 리뷰 작성</DialogTitle>
-                                  <DialogDescription>
-                                    도서에 대한 평점과 리뷰를 남겨주세요.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4 space-y-4">
-                                  <div>
-                                    <h4 className="mb-2 text-sm font-medium">평점</h4>
-                                    <StarRating
-                                      rating={reviewForm.rating}
-                                      setRating={(rating) => setReviewForm({...reviewForm, rating})}
-                                      size={24}
-                                      interactive={true}
-                                    />
-                                  </div>
-                                  <div>
-                                    <h4 className="mb-2 text-sm font-medium">리뷰</h4>
-                                    <Textarea
-                                      placeholder="도서에 대한 리뷰를 작성해주세요..."
-                                      value={reviewForm.review}
-                                      onChange={(e) => setReviewForm({...reviewForm, review: e.target.value})}
-                                    />
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <input
-                                      type="checkbox"
-                                      id="recommend"
-                                      checked={reviewForm.recommended}
-                                      onChange={(e) => setReviewForm({...reviewForm, recommended: e.target.checked})}
-                                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                    />
-                                    <label htmlFor="recommend" className="text-sm font-medium">이 책을 추천합니다</label>
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button 
-                                    type="submit"
-                                    onClick={handleReviewSubmit}
-                                    disabled={!reviewForm.rating || !reviewForm.review}
-                                  >
-                                    리뷰 등록
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                          <div className="mt-3" onClick={e => e.stopPropagation()}>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openReviewDialog(rental.bookId);
+                              }}
+                            >
+                              리뷰 작성
+                            </Button>
                           </div>
                         )
                       )}
@@ -562,12 +558,47 @@ const BookRentalHistory = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>도서</TableHead>
-                  <TableHead>카테고리</TableHead>
-                  <TableHead>대여일</TableHead>
-                  <TableHead>반납예정일</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead>액션</TableHead>
+                  <TableHead 
+                    className="cursor-pointer" 
+                    onClick={() => handleSort('title')}
+                  >
+                    <div className="flex items-center">
+                      도서 {renderSortIndicator('title')}
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer" 
+                    onClick={() => handleSort('category')}
+                  >
+                    <div className="flex items-center">
+                      카테고리 {renderSortIndicator('category')}
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer" 
+                    onClick={() => handleSort('rentDate')}
+                  >
+                    <div className="flex items-center">
+                      대여일 {renderSortIndicator('rentDate')}
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer" 
+                    onClick={() => handleSort('dueDate')}
+                  >
+                    <div className="flex items-center">
+                      반납예정일 {renderSortIndicator('dueDate')}
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer" 
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center">
+                      상태 {renderSortIndicator('status')}
+                    </div>
+                  </TableHead>
+                  <TableHead>버튼</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -579,7 +610,7 @@ const BookRentalHistory = () => {
                   </TableRow>
                 ) : (
                   filteredRentals.map((rental) => (
-                    <TableRow key={rental.id}>
+                    <TableRow key={rental.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleBookClick(rental.bookId)}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <img 
@@ -607,138 +638,45 @@ const BookRentalHistory = () => {
                           {rental.status}
                         </span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell onClick={e => e.stopPropagation()}>
                         {rental.status === '대여중' || rental.status === '연체' ? (
                           <div className="flex space-x-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => openReturnDialog(rental.bookId)}
-                                >
-                                  반납
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>도서 반납</DialogTitle>
-                                  <DialogDescription>
-                                    반납 위치를 선택하고 확인 버튼을 눌러주세요.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4">
-                                  <RadioGroup 
-                                    value={returnForm.returnLocation} 
-                                    onValueChange={(value) => setReturnForm({...returnForm, returnLocation: value})}
-                                  >
-                                    <div className="flex items-center space-x-2 mb-2">
-                                      <RadioGroupItem value="회사 로비" id="lobby-desktop" />
-                                      <Label htmlFor="lobby-desktop">회사 로비</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2 mb-2">
-                                      <RadioGroupItem value="도서 책장" id="bookshelf-desktop" />
-                                      <Label htmlFor="bookshelf-desktop">도서 책장</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem value="부서 사무실" id="office-desktop" />
-                                      <Label htmlFor="office-desktop">부서 사무실</Label>
-                                    </div>
-                                  </RadioGroup>
-                                </div>
-                                <DialogFooter>
-                                  <Button 
-                                    type="submit"
-                                    onClick={() => handleReturnSubmit(rental.bookId)}
-                                  >
-                                    반납 완료
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openReturnDialog(rental.bookId);
+                              }}
+                            >
+                              반납
+                            </Button>
                             
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                >
-                                  연장
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>대여 기간 연장</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    "{rental.title}" 도서의 대여 기간을 14일 연장하시겠습니까?
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>취소</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleExtend(rental.bookId)}>연장</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-primary text-primary hover:bg-primary/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openExtendDialog(rental.bookId);
+                              }}
+                            >
+                              연장
+                            </Button>
                           </div>
                         ) : (
                           rental.status === '반납완료' && (
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => openReviewDialog(rental.bookId)}
-                                >
-                                  리뷰 작성
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>도서 리뷰 작성</DialogTitle>
-                                  <DialogDescription>
-                                    도서에 대한 평점과 리뷰를 남겨주세요.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4 space-y-4">
-                                  <div>
-                                    <h4 className="mb-2 text-sm font-medium">평점</h4>
-                                    <StarRating
-                                      rating={reviewForm.rating}
-                                      setRating={(rating) => setReviewForm({...reviewForm, rating})}
-                                      size={24}
-                                      interactive={true}
-                                    />
-                                  </div>
-                                  <div>
-                                    <h4 className="mb-2 text-sm font-medium">리뷰</h4>
-                                    <Textarea
-                                      placeholder="도서에 대한 리뷰를 작성해주세요..."
-                                      value={reviewForm.review}
-                                      onChange={(e) => setReviewForm({...reviewForm, review: e.target.value})}
-                                    />
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <input
-                                      type="checkbox"
-                                      id="recommend-desktop"
-                                      checked={reviewForm.recommended}
-                                      onChange={(e) => setReviewForm({...reviewForm, recommended: e.target.checked})}
-                                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                    />
-                                    <label htmlFor="recommend-desktop" className="text-sm font-medium">이 책을 추천합니다</label>
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button 
-                                    type="submit"
-                                    onClick={handleReviewSubmit}
-                                    disabled={!reviewForm.rating || !reviewForm.review}
-                                  >
-                                    리뷰 등록
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openReviewDialog(rental.bookId);
+                              }}
+                            >
+                              리뷰 작성
+                            </Button>
                           )
                         )}
                       </TableCell>
@@ -750,6 +688,123 @@ const BookRentalHistory = () => {
           </div>
         )}
       </div>
+      
+      {/* Review Dialog */}
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>도서 리뷰 작성</DialogTitle>
+            <DialogDescription>
+              도서에 대한 평점과 리뷰를 남겨주세요.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <h4 className="mb-2 text-sm font-medium">만족도</h4>
+              <StarRating
+                rating={reviewForm.rating}
+                setRating={(rating) => setReviewForm({...reviewForm, rating})}
+                size={24}
+              />
+            </div>
+            <div>
+              <h4 className="mb-2 text-sm font-medium">후기</h4>
+              <Textarea
+                placeholder="이 책에 대한 후기를 남겨주세요..."
+                value={reviewForm.review}
+                onChange={(e) => setReviewForm({...reviewForm, review: e.target.value})}
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="recommend"
+                  checked={reviewForm.recommended}
+                  onCheckedChange={(checked) => 
+                    setReviewForm({...reviewForm, recommended: checked as boolean})
+                  }
+                />
+                <label
+                  htmlFor="recommend"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  이 책을 추천하시겠어요?
+                </label>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit"
+              onClick={handleReviewSubmit}
+              disabled={!reviewForm.rating || !reviewForm.review}
+            >
+              리뷰 등록
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Return Dialog */}
+      <Dialog open={returnDialogOpen} onOpenChange={setReturnDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>도서 반납</DialogTitle>
+            <DialogDescription>
+              반납 위치를 선택하고 확인 버튼을 눌러주세요.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <RadioGroup 
+              value={returnForm.returnLocation} 
+              onValueChange={(value) => setReturnForm({...returnForm, returnLocation: value})}
+            >
+              <div className="flex items-center space-x-2 mb-2">
+                <RadioGroupItem value="회사 로비" id="lobby-desktop" />
+                <Label htmlFor="lobby-desktop">회사 로비</Label>
+              </div>
+              <div className="flex items-center space-x-2 mb-2">
+                <RadioGroupItem value="도서 책장" id="bookshelf-desktop" />
+                <Label htmlFor="bookshelf-desktop">도서 책장</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="부서 사무실" id="office-desktop" />
+                <Label htmlFor="office-desktop">부서 사무실</Label>
+              </div>
+            </RadioGroup>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit"
+              onClick={() => handleReturnSubmit(returnForm.bookId)}
+              className="border-secondary-orange bg-secondary-orange hover:bg-secondary-orange/90"
+            >
+              반납 완료
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Extend Dialog */}
+      <AlertDialog open={extendDialogOpen} onOpenChange={setExtendDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>대여 기간 연장</AlertDialogTitle>
+            <AlertDialogDescription>
+              {selectedBookId && rentals.find(r => r.bookId === selectedBookId)?.title} 도서의 대여 기간을 14일 연장하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => selectedBookId && handleExtend(selectedBookId)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              연장
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MainLayout>
   );
 };
