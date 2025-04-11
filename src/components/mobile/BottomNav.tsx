@@ -236,7 +236,7 @@ export const BottomNav = () => {
                       setShowFullMenu(false);
                     }}
                   >
-                    도서대여내역
+                    도서대여목록
                   </button>
                 </div>
               </div>

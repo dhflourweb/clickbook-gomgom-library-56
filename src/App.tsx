@@ -10,8 +10,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Books from "./pages/Books";
 import BookDetail from "./pages/BookDetail";
-import BookRentals from "./pages/BookRentals";
 import MyPage from "./pages/MyPage";
+import BookRentalHistory from "./pages/BookRentalHistory";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import Announcements from "./pages/Announcements";
@@ -36,9 +36,8 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/books" element={<Books />} />
             <Route path="/books/:id" element={<BookDetail />} />
-            <Route path="/books/rentals" element={<BookRentals />} />
             <Route path="/mypage" element={<MyPage />} />
-            <Route path="/mypage/history" element={<MyPage />} />
+            <Route path="/mypage/history" element={<BookRentalHistory />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/announcements/:id" element={<AnnouncementDetail />} />

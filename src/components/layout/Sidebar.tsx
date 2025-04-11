@@ -143,7 +143,7 @@ export const Sidebar = () => {
                   </div>
                   <div className="py-1 px-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer"
                        onClick={() => navigateWithFilter('/mypage/history')}>
-                    도서대여내역
+                    도서대여목록
                   </div>
                 </div>
               </AccordionContent>

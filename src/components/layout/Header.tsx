@@ -111,7 +111,7 @@ export const Header = () => {
                             <div className="space-y-1">
                               <h3 className="elegant-dropdown-header">마이페이지</h3>
                               <p className="elegant-dropdown-item" onClick={() => navigate('/mypage')}>내정보</p>
-                              <p className="elegant-dropdown-item" onClick={() => navigate('/mypage/history')}>도서대여내역</p>
+                              <p className="elegant-dropdown-item" onClick={() => navigate('/mypage/history')}>도서대여목록</p>
                             </div>
                           </div>
                         </NavigationMenuContent>
