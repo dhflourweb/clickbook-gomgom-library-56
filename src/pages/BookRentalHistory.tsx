@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -9,23 +8,19 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Search, BookOpen, ArrowDownUp, ArrowUp, ArrowDown } from 'lucide-react';
+import { Calendar as CalendarIcon, Search, ArrowDownUp, ArrowUp, ArrowDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Textarea } from '@/components/ui/textarea';
-import { StarRating } from '@/components/books/StarRating';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { categories } from '@/components/layout/Header';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BadgeDisplay } from '@/components/ui/badge-display';
-import { toast } from '@/components/ui/use-toast';
-import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
+import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
+import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
+import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
+import { ReviewDialog } from '@/components/books/ReviewDialog';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 // Types
 type SortDirection = 'asc' | 'desc' | null;
@@ -43,18 +38,6 @@ interface RentalBook {
   status: '대여중' | '연체' | '반납완료';
   returnDate?: string;
   badges: Array<'new' | 'best' | 'recommended' | null>;
-}
-
-interface ReviewFormData {
-  bookId: string;
-  rating: number;
-  review: string;
-  recommended: boolean;
-}
-
-interface ReturnFormData {
-  bookId: string;
-  returnLocation: string;
 }
 
 // Sample rental data - in a real application, this would come from an API
@@ -125,23 +108,25 @@ const BookRentalHistory = () => {
     to: undefined
   });
   const [statusFilter, setStatusFilter] = useState('전체');
-  const [reviewForm, setReviewForm] = useState<ReviewFormData>({
-    bookId: '',
-    rating: 0,
-    review: '',
-    recommended: false
-  });
-  const [returnForm, setReturnForm] = useState<ReturnFormData>({
-    bookId: '',
-    returnLocation: '회사 로비',
-  });
-  const [activeTab, setActiveTab] = useState('전체');
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<RentalBook | null>(null);
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('전체');
+  
+  // Pagination
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginatedRentals, setPaginatedRentals] = useState<RentalBook[]>([]);
+
+  // Calculate paginated rentals
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedRentals(filteredRentals.slice(startIndex, endIndex));
+  }, [filteredRentals, currentPage, itemsPerPage]);
 
   // Go to book detail page
   const handleBookClick = (bookId: string) => {
@@ -230,31 +215,22 @@ const BookRentalHistory = () => {
     }
     
     setFilteredRentals(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [searchQuery, categoryFilter, dateRange, rentals, activeTab, sortField, sortDirection]);
 
-  // Handle review submission
-  const handleReviewSubmit = () => {
-    // In a real app, this would be an API call
-    toast({
-      title: "리뷰가 등록되었습니다",
-      description: `"${rentals.find(r => r.bookId === reviewForm.bookId)?.title}"에 대한 리뷰가 성공적으로 등록되었습니다.`,
-    });
-    
-    // Reset form and close dialog
-    setReviewForm({
-      bookId: '',
-      rating: 0,
-      review: '',
-      recommended: false
-    });
-    setReviewDialogOpen(false);
+  // Pagination change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
   };
 
   // Handle return submission
-  const handleReturnSubmit = (bookId: string) => {
+  const handleReturn = () => {
+    if (!selectedBook) return;
+    
     // In a real app, this would be an API call
     const updatedRentals = rentals.map(rental => 
-      rental.bookId === bookId 
+      rental.bookId === selectedBook.bookId 
         ? {
             ...rental,
             status: '반납완료' as const,
@@ -265,24 +241,19 @@ const BookRentalHistory = () => {
     
     setRentals(updatedRentals);
     
-    toast({
-      title: "도서 반납이 완료되었습니다",
-      description: `"${rentals.find(r => r.bookId === bookId)?.title}"이(가) 성공적으로 반납되었습니다.`,
-    });
+    toast.success(`"${selectedBook.title}" 도서가 성공적으로 반납되었습니다.`);
     
-    // Reset form and close dialog
-    setReturnForm({
-      bookId: '',
-      returnLocation: '회사 로비'
-    });
+    // Close dialog
     setReturnDialogOpen(false);
   };
   
   // Handle extension
-  const handleExtend = (bookId: string) => {
+  const handleExtend = () => {
+    if (!selectedBook) return;
+    
     // In a real app, this would be an API call
     const updatedRentals = rentals.map(rental => {
-      if (rental.bookId === bookId) {
+      if (rental.bookId === selectedBook.bookId) {
         // Add 14 days to the due date
         const currentDueDate = new Date(rental.dueDate);
         const newDueDate = new Date(currentDueDate);
@@ -298,10 +269,7 @@ const BookRentalHistory = () => {
     
     setRentals(updatedRentals);
     
-    toast({
-      title: "대여 기간이 연장되었습니다",
-      description: `"${rentals.find(r => r.bookId === bookId)?.title}"의 대여 기간이 14일 연장되었습니다.`,
-    });
+    toast.success(`"${selectedBook.title}" 도서의 대여 기간이 14일 연장되었습니다.`);
     
     // Close dialog
     setExtendDialogOpen(false);
@@ -321,33 +289,20 @@ const BookRentalHistory = () => {
     }
   };
 
-  // Open review dialog
-  const openReviewDialog = (bookId: string) => {
-    const book = rentals.find(r => r.bookId === bookId);
-    if (book) {
-      setReviewForm({
-        bookId: bookId,
-        rating: 0,
-        review: '',
-        recommended: false
-      });
-      setReviewDialogOpen(true);
-    }
-  };
-
-  // Open return dialog
-  const openReturnDialog = (bookId: string) => {
-    setReturnForm({
-      bookId: bookId,
-      returnLocation: '회사 로비'
-    });
+  // Open dialogs
+  const openReturnDialog = (book: RentalBook) => {
+    setSelectedBook(book);
     setReturnDialogOpen(true);
   };
-  
-  // Open extend dialog
-  const openExtendDialog = (bookId: string) => {
-    setSelectedBookId(bookId);
+
+  const openExtendDialog = (book: RentalBook) => {
+    setSelectedBook(book);
     setExtendDialogOpen(true);
+  };
+  
+  const openReviewDialog = (book: RentalBook) => {
+    setSelectedBook(book);
+    setReviewDialogOpen(true);
   };
 
   // Render sort indicator
@@ -357,6 +312,9 @@ const BookRentalHistory = () => {
     if (sortDirection === 'desc') return <ArrowDown size={14} className="ml-1" />;
     return <ArrowDownUp size={14} className="ml-1 opacity-50" />;
   };
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredRentals.length / itemsPerPage);
 
   return (
     <MainLayout>
@@ -386,7 +344,7 @@ const BookRentalHistory = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="전체">전체 카테고리</SelectItem>
-                  {categories.map(category => (
+                  {['기타', '경제/경영', '자기계발', '소설', '역사'].map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
                 </SelectContent>
@@ -454,16 +412,31 @@ const BookRentalHistory = () => {
           </TabsList>
         </Tabs>
         
+        {/* Items per page selector */}
+        <div className="flex justify-end mb-4">
+          <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(parseInt(value))}>
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="표시 개수" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5개</SelectItem>
+              <SelectItem value="10">10개</SelectItem>
+              <SelectItem value="20">20개</SelectItem>
+              <SelectItem value="50">50개</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
         {/* Rental List */}
         {isMobile ? (
           // Mobile view - cards
           <div className="space-y-4">
-            {filteredRentals.length === 0 ? (
+            {paginatedRentals.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">대여 내역이 없습니다.</p>
               </div>
             ) : (
-              filteredRentals.map(rental => (
+              paginatedRentals.map(rental => (
                 <Card 
                   key={rental.id} 
                   className="p-4 cursor-pointer hover:shadow-md transition-shadow" 
@@ -512,7 +485,7 @@ const BookRentalHistory = () => {
                             className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
                             onClick={(e) => {
                               e.stopPropagation();
-                              openReturnDialog(rental.bookId);
+                              openReturnDialog(rental);
                             }}
                           >
                             반납
@@ -524,7 +497,7 @@ const BookRentalHistory = () => {
                             className="border-primary text-primary hover:bg-primary/10"
                             onClick={(e) => {
                               e.stopPropagation();
-                              openExtendDialog(rental.bookId);
+                              openExtendDialog(rental);
                             }}
                           >
                             연장
@@ -538,7 +511,7 @@ const BookRentalHistory = () => {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openReviewDialog(rental.bookId);
+                                openReviewDialog(rental);
                               }}
                             >
                               리뷰 작성
@@ -602,14 +575,14 @@ const BookRentalHistory = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredRentals.length === 0 ? (
+                {paginatedRentals.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
                       <p className="text-gray-500">대여 내역이 없습니다.</p>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredRentals.map((rental) => (
+                  paginatedRentals.map((rental) => (
                     <TableRow key={rental.id} className="cursor-pointer hover:bg-muted/20" onClick={() => handleBookClick(rental.bookId)}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -647,7 +620,7 @@ const BookRentalHistory = () => {
                               className="border-secondary-orange text-secondary-orange hover:bg-secondary-orange/10"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openReturnDialog(rental.bookId);
+                                openReturnDialog(rental);
                               }}
                             >
                               반납
@@ -659,7 +632,7 @@ const BookRentalHistory = () => {
                               className="border-primary text-primary hover:bg-primary/10"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openExtendDialog(rental.bookId);
+                                openExtendDialog(rental);
                               }}
                             >
                               연장
@@ -672,7 +645,7 @@ const BookRentalHistory = () => {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openReviewDialog(rental.bookId);
+                                openReviewDialog(rental);
                               }}
                             >
                               리뷰 작성
@@ -687,124 +660,147 @@ const BookRentalHistory = () => {
             </Table>
           </div>
         )}
+        
+        {/* Pagination */}
+        {filteredRentals.length > itemsPerPage && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage > 1) handlePageChange(currentPage - 1);
+                  }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                const pageNumber = i + 1;
+                // Show first page, last page, and pages around current
+                const showPage = 
+                  pageNumber === 1 || 
+                  pageNumber === totalPages || 
+                  (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
+                
+                if (!showPage && pageNumber === 2) {
+                  return (
+                    <PaginationItem key="ellipsis-start">
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                
+                if (!showPage && pageNumber === totalPages - 1) {
+                  return (
+                    <PaginationItem key="ellipsis-end">
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                
+                if (showPage) {
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink 
+                        href="#" 
+                        isActive={pageNumber === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(pageNumber);
+                        }}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                
+                return null;
+              })}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                  }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
       
-      {/* Review Dialog */}
-      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>도서 리뷰 작성</DialogTitle>
-            <DialogDescription>
-              도서에 대한 평점과 리뷰를 남겨주세요.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div>
-              <h4 className="mb-2 text-sm font-medium">만족도</h4>
-              <StarRating
-                rating={reviewForm.rating}
-                setRating={(rating) => setReviewForm({...reviewForm, rating})}
-                size={24}
-              />
-            </div>
-            <div>
-              <h4 className="mb-2 text-sm font-medium">후기</h4>
-              <Textarea
-                placeholder="이 책에 대한 후기를 남겨주세요..."
-                value={reviewForm.review}
-                onChange={(e) => setReviewForm({...reviewForm, review: e.target.value})}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="recommend"
-                  checked={reviewForm.recommended}
-                  onCheckedChange={(checked) => 
-                    setReviewForm({...reviewForm, recommended: checked as boolean})
-                  }
-                />
-                <label
-                  htmlFor="recommend"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  이 책을 추천하시겠어요?
-                </label>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button 
-              type="submit"
-              onClick={handleReviewSubmit}
-              disabled={!reviewForm.rating || !reviewForm.review}
-            >
-              리뷰 등록
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Return Dialog */}
-      <Dialog open={returnDialogOpen} onOpenChange={setReturnDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>도서 반납</DialogTitle>
-            <DialogDescription>
-              반납 위치를 선택하고 확인 버튼을 눌러주세요.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <RadioGroup 
-              value={returnForm.returnLocation} 
-              onValueChange={(value) => setReturnForm({...returnForm, returnLocation: value})}
-            >
-              <div className="flex items-center space-x-2 mb-2">
-                <RadioGroupItem value="회사 로비" id="lobby-desktop" />
-                <Label htmlFor="lobby-desktop">회사 로비</Label>
-              </div>
-              <div className="flex items-center space-x-2 mb-2">
-                <RadioGroupItem value="도서 책장" id="bookshelf-desktop" />
-                <Label htmlFor="bookshelf-desktop">도서 책장</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="부서 사무실" id="office-desktop" />
-                <Label htmlFor="office-desktop">부서 사무실</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          <DialogFooter>
-            <Button 
-              type="submit"
-              onClick={() => handleReturnSubmit(returnForm.bookId)}
-              className="border-secondary-orange bg-secondary-orange hover:bg-secondary-orange/90"
-            >
-              반납 완료
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Extend Dialog */}
-      <AlertDialog open={extendDialogOpen} onOpenChange={setExtendDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>대여 기간 연장</AlertDialogTitle>
-            <AlertDialogDescription>
-              {selectedBookId && rentals.find(r => r.bookId === selectedBookId)?.title} 도서의 대여 기간을 14일 연장하시겠습니까?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => selectedBookId && handleExtend(selectedBookId)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              연장
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Dialogs */}
+      {selectedBook && (
+        <>
+          {/* Return Dialog - Using the existing ReturnBookDialog component */}
+          <ReturnBookDialog 
+            book={{
+              id: selectedBook.bookId,
+              title: selectedBook.title,
+              author: selectedBook.author,
+              coverImage: selectedBook.coverUrl,
+              // Add other required properties from Book type
+              description: '',
+              category: selectedBook.category,
+              publishedDate: '',
+              publisher: '',
+              tags: [],
+              status: 'available',
+              location: '',
+            }}
+            isOpen={returnDialogOpen} 
+            onOpenChange={setReturnDialogOpen} 
+          />
+          
+          {/* Extend Dialog - Using the existing ExtendBookDialog component */}
+          <ExtendBookDialog 
+            book={{
+              id: selectedBook.bookId,
+              title: selectedBook.title,
+              author: selectedBook.author,
+              coverImage: selectedBook.coverUrl,
+              // Add other required properties from Book type
+              description: '',
+              category: selectedBook.category,
+              publishedDate: '',
+              publisher: '',
+              tags: [],
+              status: 'available',
+              location: '',
+              returnDueDate: selectedBook.dueDate,
+              hasBeenExtended: selectedBook.status === '연체', // Assume overdue books have been extended
+            }}
+            isOpen={extendDialogOpen} 
+            onOpenChange={setExtendDialogOpen} 
+          />
+          
+          {/* Review Dialog */}
+          <ReviewDialog 
+            book={{
+              id: selectedBook.bookId,
+              title: selectedBook.title,
+              author: selectedBook.author,
+              coverImage: selectedBook.coverUrl,
+              // Add other required properties from Book type
+              description: '',
+              category: selectedBook.category,
+              publishedDate: '',
+              publisher: '',
+              tags: [],
+              status: 'available',
+              location: '',
+            }}
+            isOpen={reviewDialogOpen} 
+            onOpenChange={setReviewDialogOpen}
+          />
+        </>
+      )}
     </MainLayout>
   );
 };
