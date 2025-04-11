@@ -8,10 +8,11 @@ interface BadgeDisplayProps {
   size?: "xs" | "sm" | "md" | "lg";
 }
 
-const badgeLabels: Record<Exclude<NonNullable<BookBadge>, 'popular'>, string> = {
-  'new': '신규',
-  'recommended': '추천',
-  'best': '베스트'
+const badgeLabels: Record<Exclude<NonNullable<BookBadge>, null>, string> = {
+  'new': '대여가능',
+  'recommended': '예약중',
+  'best': '대여중',
+  'popular': '인기'
 };
 
 export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
@@ -31,17 +32,19 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
   return (
     <div className="flex flex-wrap gap-1.5">
       {badges
-        .filter((badge): badge is NonNullable<BookBadge> => badge !== null && badge !== 'popular')
+        .filter((badge): badge is NonNullable<BookBadge> => badge !== null)
         .map(badge => {
           let badgeClassName = "font-medium rounded-md inline-block";
           
           // Apply specific styles based on badge type
           if (badge === 'new') {
-            badgeClassName += " bg-secondary-orange text-white";
+            badgeClassName += " bg-secondary-green text-white"; // 대여가능
           } else if (badge === 'recommended') {
-            badgeClassName += " bg-secondary-green text-white";
+            badgeClassName += " bg-secondary-orange text-white"; // 예약중
           } else if (badge === 'best') {
-            badgeClassName += " bg-point-red text-white";
+            badgeClassName += " bg-point-red text-white"; // 대여중
+          } else if (badge === 'popular') {
+            badgeClassName += " bg-primary-skyblue text-white"; // 인기
           } else {
             badgeClassName += " badge-" + badge;
           }
@@ -51,7 +54,7 @@ export const BadgeDisplay = ({ badges, size = "md" }: BadgeDisplayProps) => {
               key={badge}
               className={cn(badgeClassName, sizeClasses[size], isMobile ? "mb-1" : "")}
             >
-              {badgeLabels[badge as keyof typeof badgeLabels]}
+              {badgeLabels[badge]}
             </span>
           );
         })}

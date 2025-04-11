@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -12,9 +13,8 @@ import { BorrowBookDialog } from '@/components/books/BorrowBookDialog';
 import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
 import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { cn } from '@/lib/utils';
-import { Heart, Calendar, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, Calendar, Users } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { BookBadge } from '@/types';
 
 const BookDetail = () => {
@@ -30,7 +30,6 @@ const BookDetail = () => {
   const [extendDialogOpen, setExtendDialogOpen] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
   
   if (!id) {
     navigate('/books');
@@ -123,16 +122,6 @@ const BookDetail = () => {
   const canReserve = !isAvailable && book.isReservable !== false;
   const isBorrowedByUser = book.borrowedByCurrentUser || false;
   const hasReachedBorrowLimit = user?.borrowedCount >= 2;
-
-  const toggleDescription = () => {
-    setIsDescriptionOpen(!isDescriptionOpen);
-  };
-
-  const getStatusClass = () => {
-    if (isAvailable) return "bg-primary-deepblue";
-    if (isReserved || book.isReservable === false) return "bg-secondary-orange";
-    return "bg-point-red";
-  };
 
   const renderActionButtons = () => {
     if (isAvailable) {
@@ -335,9 +324,6 @@ const BookDetail = () => {
                             badges={getStatusBadge()}
                             size="sm"
                           />
-                          <span className="ml-2">
-                            ({book.status.available}/{book.status.total})
-                          </span>
                         </p>
                       </div>
                     </div>
@@ -345,25 +331,10 @@ const BookDetail = () => {
                   
                   {book.description && (
                     <div className="mt-6 border-t border-gray-100 pt-6">
-                      <Collapsible 
-                        open={isDescriptionOpen} 
-                        onOpenChange={setIsDescriptionOpen}
-                        className="border rounded-md"
-                      >
-                        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-t-md">
-                          <h2 className="text-lg font-semibold">도서 줄거리</h2>
-                          <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="p-1 h-auto">
-                              {isDescriptionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </Button>
-                          </CollapsibleTrigger>
-                        </div>
-                        <CollapsibleContent className="p-4">
-                          <p className="text-gray-700 whitespace-pre-line">
-                            {book.description || "이 책은 다양한 주제에 대한 깊은 통찰력을 제공합니다. 저자는 자신의 경험과 연구를 바탕으로 독자들에게 새로운 관점을 제시합니다. 각 장은 특정 주제를 다루며, 이해하기 쉬운 설명과 예시를 통해 복잡한 개념을 명확히 전달합니다. 또한 책의 후반부에서는 실제 사례 연구와 적용 방법을 제시하여 독자들이 배운 내용을 실생활에 활용할 수 있도록 돕습니다. 이 책은 해당 분야에 관심 있는 모든 독자에게 가치 있는 자료가 될 것입니다. 저자의 명확한 문체와 체계적인 접근 방식은 복잡한 주제를 이해하기 쉽게 만들어 주며, 다양한 사례 연구와 예시를 통해 이론이 실제로 어떻게 적용되는지 보여줍니다. 이 책은 학문적 연구뿐만 아니라 실용적인 지식을 찾는 독자들에게도 유용한 자료가 될 것입니다."}
-                          </p>
-                        </CollapsibleContent>
-                      </Collapsible>
+                      <h2 className="text-lg font-semibold mb-4">도서 소개</h2>
+                      <p className="text-gray-700 whitespace-pre-line">
+                        {book.description || "이 책은 다양한 주제에 대한 깊은 통찰력을 제공합니다. 저자는 자신의 경험과 연구를 바탕으로 독자들에게 새로운 관점을 제시합니다. 각 장은 특정 주제를 다루며, 이해하기 쉬운 설명과 예시를 통해 복잡한 개념을 명확히 전달합니다. 또한 책의 후반부에서는 실제 사례 연구와 적용 방법을 제시하여 독자들이 배운 내용을 실생활에 활용할 수 있도록 돕습니다. 이 책은 해당 분야에 관심 있는 모든 독자에게 가치 있는 자료가 될 것입니다. 저자의 명확한 문체와 체계적인 접근 방식은 복잡한 주제를 이해하기 쉽게 만들어 주며, 다양한 사례 연구와 예시를 통해 이론이 실제로 어떻게 적용되는지 보여줍니다. 이 책은 학문적 연구뿐만 아니라 실용적인 지식을 찾는 독자들에게도 유용한 자료가 될 것입니다."}
+                      </p>
                     </div>
                   )}
                 </TabsContent>
