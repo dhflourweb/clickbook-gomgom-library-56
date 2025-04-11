@@ -22,7 +22,7 @@ import { ReturnBookDialog } from '@/components/books/ReturnBookDialog';
 import { ExtendBookDialog } from '@/components/books/ExtendBookDialog';
 import { ReviewDialog } from '@/components/books/ReviewDialog';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { getBooks } from '@/data/mockData';
+import { MOCK_BOOKS } from '@/data/mockData';
 
 // Types
 type SortDirection = 'asc' | 'desc' | null;
@@ -48,7 +48,7 @@ const BookRentalHistory = () => {
   const navigate = useNavigate();
   
   // Use actual book data from mockData
-  const mockBooks = getBooks();
+  const mockBooks = MOCK_BOOKS;
   
   // Generate rental data from mock books
   const generateRentalData = () => {
